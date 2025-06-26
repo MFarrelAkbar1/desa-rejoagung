@@ -1,103 +1,118 @@
-import Image from "next/image";
+'use client'
+import { Users, MapPin, Package, Calendar, TrendingUp } from 'lucide-react'
+import { useSidebar } from '@/context/SidebarContext'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { isOpen } = useSidebar()
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className={`${isOpen ? 'ml-64' : 'ml-16'} min-h-screen p-8 transition-all duration-300`}>
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+              Dashboard Desa Rejoagung
+            </h1>
+            <p className="text-xl text-gray-600">
+              Selamat datang di Portal Resmi Desa Rejoagung
+            </p>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-green-50 border border-green-200 p-6 rounded-xl">
+              <div className="flex items-center space-x-4">
+                <Users className="w-12 h-12 text-green-600" />
+                <div>
+                  <div className="text-3xl font-bold text-green-600">2,547</div>
+                  <div className="text-green-700 font-medium">Total Penduduk</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 border border-blue-200 p-6 rounded-xl">
+              <div className="flex items-center space-x-4">
+                <MapPin className="w-12 h-12 text-blue-600" />
+                <div>
+                  <div className="text-3xl font-bold text-blue-600">1,850</div>
+                  <div className="text-blue-700 font-medium">Luas Wilayah (Ha)</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-orange-50 border border-orange-200 p-6 rounded-xl">
+              <div className="flex items-center space-x-4">
+                <Package className="w-12 h-12 text-orange-600" />
+                <div>
+                  <div className="text-2xl font-bold text-orange-600">Kelapa Sawit</div>
+                  <div className="text-orange-700 font-medium">Produk Unggulan</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Info Sections */}
+        <div className="grid lg:grid-cols-2 gap-8">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+              <Calendar className="w-6 h-6 mr-3 text-green-600" />
+              Informasi Terkini
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <p className="text-gray-600">Panen raya kelapa sawit periode Juni 2025</p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <p className="text-gray-600">Program pelatihan petani modern telah dimulai</p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <p className="text-gray-600">Pembangunan infrastruktur jalan desa selesai</p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <p className="text-gray-600">Peluncuran portal digital desa Rejoagung</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+              <TrendingUp className="w-6 h-6 mr-3 text-blue-600" />
+              Pencapaian 2025
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                <p className="text-gray-600">Peningkatan hasil panen 25% dari tahun sebelumnya</p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                <p className="text-gray-600">15 sekolah tersedia dengan fasilitas lengkap</p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                <p className="text-gray-600">100% akses layanan kesehatan untuk warga</p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                <p className="text-gray-600">Digitalisasi layanan administrasi desa</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Debug Info */}
+        <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+          <p className="text-sm text-gray-600">
+            <strong>Debug:</strong> Sidebar {isOpen ? 'terbuka (256px)' : 'tertutup (64px)'} - Margin content otomatis menyesuaikan
+          </p>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
