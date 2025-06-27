@@ -34,8 +34,7 @@ export default function DataTable({
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null)
   const [openDropdown, setOpenDropdown] = useState<number | null>(null)
-
-  // Filter data berdasarkan search
+  
   const filteredData = data.filter(item =>
     Object.values(item).some(value =>
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
