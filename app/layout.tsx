@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { SidebarProvider } from '@/context/SidebarContext'
-import SidebarNavbar from '@/components/SidebarNavbar'
+import { NavbarProvider } from '@/components/navbar/NavbarContext'
+import TopNavbar from '@/components/navbar/TopNavbar'
+import PageWrapper from '@/components/PageWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,15 +19,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={`${inter.className} bg-white text-gray-800 antialiased`}>
-        <SidebarProvider>
-            <div className="flex min-h-screen bg-white">
-            <SidebarNavbar />
-            <main className="flex-1">
+      <body className={`${inter.className} bg-gray-50 text-gray-800 antialiased`}>
+        <NavbarProvider>
+          <TopNavbar />
+          <main className="pt-16">
+            <PageWrapper>
               {children}
-            </main>
-            </div>
-        </SidebarProvider>
+            </PageWrapper>
+          </main>
+        </NavbarProvider>
       </body>
     </html>
   )

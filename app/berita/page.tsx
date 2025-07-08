@@ -1,6 +1,6 @@
 'use client'
+
 import { useEffect, useState } from 'react'
-import { useSidebar } from '@/context/SidebarContext'
 import { Newspaper, Facebook, ExternalLink, Calendar, Users, MessageCircle, Heart } from 'lucide-react'
 
 // Hook untuk loading Facebook SDK
@@ -22,7 +22,7 @@ function useFacebookSDK() {
       script.defer = true
       script.crossOrigin = 'anonymous'
       script.src = 'https://connect.facebook.net/id_ID/sdk.js#xfbml=1&version=v19.0'
-      
+     
       script.onload = () => {
         setIsLoaded(true)
         // Parse setelah script loaded
@@ -30,7 +30,7 @@ function useFacebookSDK() {
           window.FB.XFBML.parse()
         }
       }
-      
+     
       document.head.appendChild(script)
     }
 
@@ -69,9 +69,9 @@ function FacebookPageFeed() {
           <Facebook className="w-6 h-6 mr-3 text-blue-600" />
           Berita Terkini dari Facebook
         </h2>
-        <a 
-          href="https://www.facebook.com/rejo.agung.374" 
-          target="_blank" 
+        <a
+          href="https://www.facebook.com/rejo.agung.374"
+          target="_blank"
           rel="noopener noreferrer"
           className="flex items-center text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100"
         >
@@ -79,27 +79,27 @@ function FacebookPageFeed() {
           <ExternalLink className="w-4 h-4" />
         </a>
       </div>
-      
+     
       {/* Facebook Page Plugin */}
       <div className="flex justify-center">
-        <div 
-          className="fb-page" 
+        <div
+          className="fb-page"
           data-href="https://www.facebook.com/rejo.agung.374"
-          data-tabs="timeline" 
-          data-width="550" 
+          data-tabs="timeline"
+          data-width="550"
           data-height="700"
-          data-small-header="false" 
-          data-adapt-container-width="true" 
-          data-hide-cover="false" 
+          data-small-header="false"
+          data-adapt-container-width="true"
+          data-hide-cover="false"
           data-show-facepile="true"
           data-hide-cta="false"
         />
       </div>
-      
+     
       {/* Tips untuk pengunjung */}
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-blue-800 text-sm">
-          💡 <strong>Tips:</strong> Klik "Suka" pada halaman Facebook di atas untuk mendapatkan notifikasi 
+          💡 <strong>Tips:</strong> Klik "Suka" pada halaman Facebook di atas untuk mendapatkan notifikasi
           setiap ada pengumuman atau berita terbaru dari Desa Rejoagung!
         </p>
       </div>
@@ -123,7 +123,7 @@ function HighlightedPosts() {
       id: 2,
       title: "Program Pelatihan Petani Modern",
       content: "Dimulainya program pelatihan untuk meningkatkan keterampilan petani dalam menggunakan teknologi modern dan praktik pertanian berkelanjutan.",
-      date: "25 Juni 2025", 
+      date: "25 Juni 2025",
       category: "Pendidikan",
       stats: { likes: 67, comments: 15, shares: 8 }
     },
@@ -132,16 +132,17 @@ function HighlightedPosts() {
       title: "Pembangunan Infrastruktur Selesai",
       content: "Pembangunan jalan desa dan fasilitas umum telah selesai dilaksanakan. Diharapkan dapat meningkatkan mobilitas dan kualitas hidup warga.",
       date: "22 Juni 2025",
-      category: "Infrastruktur", 
+      category: "Infrastruktur",
       stats: { likes: 134, comments: 31, shares: 19 }
     }
   ]
 
   const colors: Record<string, string> = {
     'Pertanian': 'bg-green-100 text-green-800',
-    'Pendidikan': 'bg-blue-100 text-blue-800', 
+    'Pendidikan': 'bg-blue-100 text-blue-800',
     'Infrastruktur': 'bg-orange-100 text-orange-800'
   }
+
   const getCategoryColor = (category: string) => {
     return colors[category] || 'bg-gray-100 text-gray-800'
   }
@@ -152,7 +153,7 @@ function HighlightedPosts() {
         <Newspaper className="w-6 h-6 mr-3 text-green-600" />
         Berita Pilihan
       </h2>
-      
+     
       <div className="space-y-6">
         {highlightedPosts.map((post) => (
           <div key={post.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -174,12 +175,12 @@ function HighlightedPosts() {
 
             {/* Content */}
             <p className="text-gray-600 mb-4 leading-relaxed">{post.content}</p>
-            
+           
             {/* Image jika ada */}
             {post.image && (
               <div className="mb-4">
-                <img 
-                  src={post.image} 
+                <img
+                  src={post.image}
                   alt={post.title}
                   className="w-full h-48 object-cover rounded-lg"
                 />
@@ -202,8 +203,8 @@ function HighlightedPosts() {
                   {post.stats.shares} shares
                 </span>
               </div>
-              <a 
-                href="https://www.facebook.com/rejo.agung.374" 
+              <a
+                href="https://www.facebook.com/rejo.agung.374"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 transition-colors font-medium"
@@ -226,7 +227,7 @@ function SocialMediaInfo() {
         <Facebook className="w-5 h-5 mr-2 text-blue-600" />
         Ikuti Media Sosial Desa Rejoagung
       </h3>
-      
+     
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <div>
           <h4 className="font-medium text-gray-800 mb-2">📱 Facebook</h4>
@@ -243,8 +244,8 @@ function SocialMediaInfo() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <a 
-          href="https://www.facebook.com/rejo.agung.374" 
+        <a
+          href="https://www.facebook.com/rejo.agung.374"
           target="_blank"
           rel="noopener noreferrer"
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center font-medium"
@@ -262,10 +263,8 @@ function SocialMediaInfo() {
 }
 
 export default function BeritaPage() {
-  const { isOpen } = useSidebar()
-
   return (
-    <div className={`${isOpen ? 'ml-64' : 'ml-16'} min-h-screen p-8 transition-all duration-300`}>
+    <div className="min-h-screen p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
@@ -284,11 +283,11 @@ export default function BeritaPage() {
             <FacebookPageFeed />
             <HighlightedPosts />
           </div>
-          
+         
           {/* Sidebar */}
           <div className="space-y-8">
             <SocialMediaInfo />
-            
+           
             {/* Quick Stats */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">📊 Statistik Media Sosial</h3>
@@ -310,7 +309,7 @@ export default function BeritaPage() {
           </div>
         </div>
       </div>
-      
+     
       {/* Facebook SDK Root */}
       <div id="fb-root"></div>
     </div>

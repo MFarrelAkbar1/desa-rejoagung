@@ -2,7 +2,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSidebar } from '@/context/SidebarContext'
 import { GraduationCap, MapPin, School, Users } from 'lucide-react'
 import Legend from '@/components/Legend'
 import { schools } from '@/data/schools'
@@ -23,7 +22,6 @@ const MapContainer = dynamic(() => import('@/components/MapContainer'), {
 })
 
 export default function PetaSekolahPage() {
-  const { isOpen } = useSidebar()
   const [isMapLoaded, setIsMapLoaded] = useState(false)
 
   useEffect(() => {
@@ -31,6 +29,7 @@ export default function PetaSekolahPage() {
     const timer = setTimeout(() => {
       setIsMapLoaded(true)
     }, 1000)
+
     return () => clearTimeout(timer)
   }, [])
 
@@ -41,7 +40,7 @@ export default function PetaSekolahPage() {
   const jumlahSMK = schools.filter(s => s.type === 'SMK').length
 
   return (
-    <div className={`${isOpen ? 'ml-64' : 'ml-16'} min-h-screen p-8 transition-all duration-300`}>
+    <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
@@ -133,8 +132,10 @@ export default function PetaSekolahPage() {
                     {school.type}
                   </span>
                 </div>
+
                 <p className="text-gray-600 text-sm mb-2">{school.description}</p>
                 <p className="text-gray-500 text-xs mb-3 line-clamp-2">{school.address}</p>
+
                 <div className="flex items-center text-xs text-gray-400">
                   <MapPin className="w-3 h-3 mr-1" />
                   {school.coordinates[0].toFixed(6)}, {school.coordinates[1].toFixed(6)}

@@ -1,300 +1,242 @@
+
 'use client'
+
 import { useState } from 'react'
-import { useSidebar } from '@/context/SidebarContext'
-import { Heart, Activity, Calendar, TrendingUp } from 'lucide-react'
-import DataTable from '@/components/DataTable'
-import AddKesehatanModal from './forms/add-kesehatan'
-import EditKesehatanModal from './forms/edit-kesehatan'
-import DeleteKesehatanModal from './forms/delete-kesehatan'
+import { Heart, Calendar, MapPin, Phone, User, Clock, Stethoscope, Pill } from 'lucide-react'
+
+interface LayananKesehatan {
+  id: number
+  nama: string
+  jenis: 'Posyandu' | 'Puskesmas' | 'Dokter Praktik' | 'Bidan'
+  alamat: string
+  jadwal: string
+  kontak: string
+  fasilitas: string[]
+  status: 'Buka' | 'Tutup' | 'Libur'
+}
+
+const layananKesehatan: LayananKesehatan[] = [
+  {
+    id: 1,
+    nama: 'Posyandu Melati',
+    jenis: 'Posyandu',
+    alamat: 'Dusun Krajan RT 01 RW 01',
+    jadwal: 'Setiap Rabu, 08:00-12:00',
+    kontak: '+62 812-3456-7890',
+    fasilitas: ['Imunisasi', 'Penimbangan Bayi', 'Konsultasi Gizi', 'Vitamin A'],
+    status: 'Buka'
+  },
+  {
+    id: 2,
+    nama: 'Puskesmas Srono',
+    jenis: 'Puskesmas',
+    alamat: 'Jl. Raya Srono No. 15',
+    jadwal: 'Senin-Sabtu, 07:00-14:00',
+    kontak: '+62 333-123-456',
+    fasilitas: ['Pemeriksaan Umum', 'Laboratorium', 'Gigi', 'KIA', 'Farmasi'],
+    status: 'Buka'
+  },
+  {
+    id: 3,
+    nama: 'Bidan Siti Khadijah',
+    jenis: 'Bidan',
+    alamat: 'Dusun Sumberagung RT 02 RW 02',
+    jadwal: '24 Jam (On Call)',
+    kontak: '+62 813-4567-8901',
+    fasilitas: ['Persalinan', 'ANC', 'KB', 'Imunisasi'],
+    status: 'Buka'
+  }
+]
 
 export default function LayananKesehatanPage() {
-  const { isOpen } = useSidebar()
-  const [addModal, setAddModal] = useState(false)
-  const [editModal, setEditModal] = useState<{ isOpen: boolean; data?: any }>({ 
-    isOpen: false, 
-    data: null 
-  })
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; data?: any }>({ 
-    isOpen: false, 
-    data: null 
-  })
+  const [selectedFilter, setSelectedFilter] = useState<string>('all')
 
-  // Dummy data layanan kesehatan
-  const [dataLayananKesehatan, setDataLayananKesehatan] = useState([
-    {
-      id: 1,
-      noRekamMedis: 'RM-2025-001',
-      namaPasien: 'Siti Nurhaliza',
-      nik: '3201012505890002',
-      jenisKelamin: 'Perempuan',
-      umur: 36,
-      alamat: 'Jl. Kebon Jeruk No. 8',
-      tanggalKunjungan: '2025-06-25',
-      jenisLayanan: 'Pemeriksaan Ibu Hamil',
-      tenagaMedis: 'Bidan Rina',
-      statusLayanan: 'Selesai',
-      biaya: 50000,
-      keluhan: 'Kontrol kehamilan rutin trimester 2',
-      catatan: 'Kondisi ibu dan janin sehat'
-    },
-    {
-      id: 2,
-      noRekamMedis: 'RM-2025-002',
-      namaPasien: 'Ahmad Wijaya',
-      nik: '3201012801920001',
-      jenisKelamin: 'Laki-laki',
-      umur: 33,
-      alamat: 'Jl. Merdeka No. 15',
-      tanggalKunjungan: '2025-06-24',
-      jenisLayanan: 'Pemeriksaan Umum',
-      tenagaMedis: 'dr. Siti Aminah',
-      statusLayanan: 'Selesai',
-      biaya: 75000,
-      keluhan: 'Demam dan batuk selama 3 hari',
-      catatan: 'Diberi obat penurun demam dan antibiotik'
-    },
-    {
-      id: 3,
-      noRekamMedis: 'RM-2025-003',
-      namaPasien: 'Dewi Sartika',
-      nik: '3201010809870004',
-      jenisKelamin: 'Perempuan',
-      umur: 38,
-      alamat: 'Jl. Suka Maju No. 5',
-      tanggalKunjungan: '2025-06-23',
-      jenisLayanan: 'Imunisasi',
-      tenagaMedis: 'Bidan Maya',
-      statusLayanan: 'Selesai',
-      biaya: 25000,
-      keluhan: 'Imunisasi anak usia 2 tahun',
-      catatan: 'Imunisasi DPT dan Polio berhasil'
-    },
-    {
-      id: 4,
-      noRekamMedis: 'RM-2025-004',
-      namaPasien: 'Budi Santoso',
-      nik: '3201011203950003',
-      jenisKelamin: 'Laki-laki',
-      umur: 30,
-      alamat: 'Jl. Raya Sawit No. 22',
-      tanggalKunjungan: '2025-06-22',
-      jenisLayanan: 'Pemeriksaan Umum',
-      tenagaMedis: 'Perawat Dedi',
-      statusLayanan: 'Dirujuk',
-      biaya: 50000,
-      keluhan: 'Nyeri dada dan sesak napas',
-      catatan: 'Dirujuk ke RS untuk pemeriksaan lebih lanjut'
-    },
-    {
-      id: 5,
-      noRekamMedis: 'RM-2025-005',
-      namaPasien: 'Maya Indah',
-      nik: '3201012207900006',
-      jenisKelamin: 'Perempuan',
-      umur: 35,
-      alamat: 'Jl. Manggis Raya No. 7',
-      tanggalKunjungan: '2025-06-21',
-      jenisLayanan: 'Konsultasi',
-      tenagaMedis: 'dr. Siti Aminah',
-      statusLayanan: 'Selesai',
-      biaya: 40000,
-      keluhan: 'Konsultasi gizi dan diet',
-      catatan: 'Diberikan panduan diet sehat'
-    },
-    {
-      id: 6,
-      noRekamMedis: 'RM-2025-006',
-      namaPasien: 'Lina Marlina',
-      nik: '3201011609940008',
-      jenisKelamin: 'Perempuan',
-      umur: 31,
-      alamat: 'Jl. Harapan Baru No. 3',
-      tanggalKunjungan: '2025-06-27',
-      jenisLayanan: 'Pemeriksaan Balita',
-      tenagaMedis: 'Bidan Rina',
-      statusLayanan: 'Dalam Proses',
-      biaya: 30000,
-      keluhan: 'Tumbuh kembang anak usia 18 bulan',
-      catatan: 'Masih dalam pemeriksaan'
-    },
-    {
-      id: 7,
-      noRekamMedis: 'RM-2025-007',
-      namaPasien: 'Eko Prasetyo',
-      nik: '3201011511930005',
-      jenisKelamin: 'Laki-laki',
-      umur: 32,
-      alamat: 'Jl. Gotong Royong No. 12',
-      tanggalKunjungan: '2025-06-20',
-      jenisLayanan: 'Pengobatan',
-      tenagaMedis: 'dr. Siti Aminah',
-      statusLayanan: 'Selesai',
-      biaya: 60000,
-      keluhan: 'Diabetes mellitus tipe 2',
-      catatan: 'Kontrol rutin dan obat diabetes'
-    },
-    {
-      id: 8,
-      noRekamMedis: 'RM-2025-008',
-      namaPasien: 'Rudi Hermawan',
-      nik: '3201010304880007',
-      jenisKelamin: 'Laki-laki',
-      umur: 37,
-      alamat: 'Jl. Sejahtera No. 18',
-      tanggalKunjungan: '2025-06-28',
-      jenisLayanan: 'Pemeriksaan Lansia',
-      tenagaMedis: 'Perawat Dedi',
-      statusLayanan: 'Dijadwalkan Ulang',
-      biaya: 45000,
-      keluhan: 'Pemeriksaan rutin tekanan darah tinggi',
-      catatan: 'Jadwal ulang minggu depan'
-    }
-  ])
+  const filteredLayanan = selectedFilter === 'all' 
+    ? layananKesehatan 
+    : layananKesehatan.filter(item => item.jenis === selectedFilter)
 
-  const columns = [
-    { key: 'noRekamMedis', label: 'No. RM', sortable: true },
-    { key: 'namaPasien', label: 'Nama Pasien', sortable: true },
-    { key: 'jenisKelamin', label: 'JK', sortable: true },
-    { key: 'umur', label: 'Umur', sortable: true },
-    { key: 'tanggalKunjungan', label: 'Tanggal', sortable: true },
-    { key: 'jenisLayanan', label: 'Jenis Layanan', sortable: true },
-    { key: 'tenagaMedis', label: 'Tenaga Medis', sortable: false },
-    { key: 'statusLayanan', label: 'Status', sortable: true }
-  ]
-
-  const handleAdd = () => {
-    setAddModal(true)
+  const stats = {
+    total: layananKesehatan.length,
+    posyandu: layananKesehatan.filter(l => l.jenis === 'Posyandu').length,
+    puskesmas: layananKesehatan.filter(l => l.jenis === 'Puskesmas').length,
+    bidan: layananKesehatan.filter(l => l.jenis === 'Bidan').length
   }
-
-  const handleEdit = (data: any) => {
-    setEditModal({ isOpen: true, data })
-  }
-
-  const handleDelete = (data: any) => {
-    setDeleteModal({ isOpen: true, data })
-  }
-
-  const handleSaveAdd = (newData: any) => {
-    const id = Math.max(...dataLayananKesehatan.map(p => p.id)) + 1
-    setDataLayananKesehatan([...dataLayananKesehatan, { ...newData, id }])
-  }
-
-  const handleSaveEdit = (updatedData: any) => {
-    setDataLayananKesehatan(dataLayananKesehatan.map(item => 
-      item.id === updatedData.id ? updatedData : item
-    ))
-    setEditModal({ isOpen: false, data: null })
-  }
-
-  const confirmDelete = () => {
-    setDataLayananKesehatan(dataLayananKesehatan.filter(item => item.id !== deleteModal.data.id))
-    setDeleteModal({ isOpen: false, data: null })
-  }
-
-  // Hitung statistik
-  const totalKunjungan = dataLayananKesehatan.length
-  const kunjunganBulanIni = dataLayananKesehatan.filter(item => {
-    const date = new Date(item.tanggalKunjungan)
-    const now = new Date()
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
-  }).length
-  
-  const layananSelesai = dataLayananKesehatan.filter(item => item.statusLayanan === 'Selesai').length
-  const totalPendapatan = dataLayananKesehatan
-    .filter(item => item.statusLayanan === 'Selesai')
-    .reduce((sum, item) => sum + item.biaya, 0)
 
   return (
-    <div className={`${isOpen ? 'ml-64' : 'ml-16'} min-h-screen p-8 transition-all duration-300`}>
+    <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <div className="flex items-center mb-4">
+          <div className="flex items-center mb-6">
             <Heart className="w-8 h-8 mr-4 text-red-600" />
             <div>
               <h1 className="text-3xl font-bold text-gray-800">Layanan Kesehatan</h1>
-              <p className="text-gray-600">Kelola data layanan kesehatan Desa Rejoagung</p>
+              <p className="text-gray-600">Informasi Fasilitas Kesehatan di Desa Rejoagung</p>
             </div>
           </div>
-          
+
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+              <div className="flex items-center">
+                <Heart className="w-8 h-8 text-red-600 mr-3" />
+                <div>
+                  <div className="text-2xl font-bold text-red-600">{stats.total}</div>
+                  <div className="text-red-700 text-sm">Total Layanan</div>
+                </div>
+              </div>
+            </div>
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
               <div className="flex items-center">
-                <Activity className="w-8 h-8 text-blue-600 mr-3" />
+                <Stethoscope className="w-8 h-8 text-blue-600 mr-3" />
                 <div>
-                  <div className="text-2xl font-bold text-blue-600">{totalKunjungan}</div>
-                  <div className="text-blue-700 text-sm">Total Kunjungan</div>
+                  <div className="text-2xl font-bold text-blue-600">{stats.posyandu}</div>
+                  <div className="text-blue-700 text-sm">Posyandu</div>
                 </div>
               </div>
             </div>
-            
             <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
               <div className="flex items-center">
-                <Calendar className="w-8 h-8 text-green-600 mr-3" />
+                <Pill className="w-8 h-8 text-green-600 mr-3" />
                 <div>
-                  <div className="text-2xl font-bold text-green-600">{kunjunganBulanIni}</div>
-                  <div className="text-green-700 text-sm">Bulan Ini</div>
+                  <div className="text-2xl font-bold text-green-600">{stats.puskesmas}</div>
+                  <div className="text-green-700 text-sm">Puskesmas</div>
                 </div>
               </div>
             </div>
-            
             <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
               <div className="flex items-center">
-                <TrendingUp className="w-8 h-8 text-purple-600 mr-3" />
+                <User className="w-8 h-8 text-purple-600 mr-3" />
                 <div>
-                  <div className="text-2xl font-bold text-purple-600">{layananSelesai}</div>
-                  <div className="text-purple-700 text-sm">Layanan Selesai</div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-              <div className="flex items-center">
-                <Heart className="w-8 h-8 text-orange-600 mr-3" />
-                <div>
-                  <div className="text-2xl font-bold text-orange-600">
-                    Rp {totalPendapatan.toLocaleString('id-ID')}
-                  </div>
-                  <div className="text-orange-700 text-sm">Total Pendapatan</div>
+                  <div className="text-2xl font-bold text-purple-600">{stats.bidan}</div>
+                  <div className="text-purple-700 text-sm">Bidan</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Data Table */}
-        <DataTable
-          data={dataLayananKesehatan}
-          columns={columns}
-          title="Daftar Layanan Kesehatan"
-          addButtonText="Layanan"
-          onAdd={handleAdd}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          searchPlaceholder="Cari berdasarkan nama, no. RM, layanan..."
-        />
+        {/* Filter */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Filter Jenis Layanan</h3>
+          <div className="flex flex-wrap gap-3">
+            {['all', 'Posyandu', 'Puskesmas', 'Bidan', 'Dokter Praktik'].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setSelectedFilter(filter)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  selectedFilter === filter
+                    ? 'bg-red-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {filter === 'all' ? 'Semua Layanan' : filter}
+              </button>
+            ))}
+          </div>
+        </div>
 
-        {/* Modals */}
-        <AddKesehatanModal
-          isOpen={addModal}
-          onClose={() => setAddModal(false)}
-          onSave={handleSaveAdd}
-        />
+        {/* Layanan Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredLayanan.map((layanan) => (
+            <div key={layanan.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div className={`p-4 ${
+                layanan.jenis === 'Posyandu' ? 'bg-blue-500' :
+                layanan.jenis === 'Puskesmas' ? 'bg-green-500' :
+                layanan.jenis === 'Bidan' ? 'bg-purple-500' :
+                'bg-orange-500'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-white">{layanan.nama}</h3>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    layanan.status === 'Buka' ? 'bg-green-100 text-green-800' :
+                    layanan.status === 'Tutup' ? 'bg-red-100 text-red-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {layanan.status}
+                  </span>
+                </div>
+                <p className="text-white/90 mt-1">{layanan.jenis}</p>
+              </div>
 
-        <EditKesehatanModal
-          isOpen={editModal.isOpen}
-          onClose={() => setEditModal({ isOpen: false, data: null })}
-          onSave={handleSaveEdit}
-          data={editModal.data}
-        />
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <MapPin className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Alamat</p>
+                      <p className="text-sm text-gray-600">{layanan.alamat}</p>
+                    </div>
+                  </div>
 
-        <DeleteKesehatanModal
-          isOpen={deleteModal.isOpen}
-          onClose={() => setDeleteModal({ isOpen: false, data: null })}
-          onConfirm={confirmDelete}
-          data={deleteModal.data}
-        />
+                  <div className="flex items-start">
+                    <Clock className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Jadwal</p>
+                      <p className="text-sm text-gray-600">{layanan.jadwal}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Phone className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Kontak</p>
+                      <p className="text-sm text-gray-600">{layanan.kontak}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-gray-800 mb-2">Fasilitas</p>
+                    <div className="flex flex-wrap gap-2">
+                      {layanan.fasilitas.map((fasilitas, index) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-lg"
+                        >
+                          {fasilitas}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex space-x-3">
+                  <button className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                    Hubungi
+                  </button>
+                  <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                    Detail
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Emergency Contact */}
+        <div className="mt-8 bg-red-50 border border-red-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-red-800 mb-4 flex items-center">
+            <Heart className="w-5 h-5 mr-2" />
+            Kontak Darurat
+          </h3>
+          <div className="grid md:grid-cols-3 gap-4 text-red-700">
+            <div>
+              <h4 className="font-medium mb-2">🚑 Ambulans Desa</h4>
+              <p className="text-sm">+62 812-3456-7890</p>
+              <p className="text-xs text-red-600">24 Jam Siaga</p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">🏥 Puskesmas Srono</h4>
+              <p className="text-sm">+62 333-123-456</p>
+              <p className="text-xs text-red-600">Senin-Sabtu 07:00-14:00</p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">🩺 Bidan Desa</h4>
+              <p className="text-sm">+62 813-4567-8901</p>
+              <p className="text-xs text-red-600">On Call 24 Jam</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

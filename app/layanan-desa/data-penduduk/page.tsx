@@ -1,274 +1,245 @@
+// app/layanan-desa/data-penduduk/page.tsx
 'use client'
+
 import { useState } from 'react'
-import { useSidebar } from '@/context/SidebarContext'
-import { Users, FileText } from 'lucide-react'
-import DataTable from '@/components/DataTable'
-import AddPendudukModal from './forms/add-penduduk'
-import EditPendudukModal from './forms/edit-penduduk'
-import DeletePendudukModal from './forms/delete-penduduk'
+import { Users, Search, Plus, Edit, Trash2, Filter, Download } from 'lucide-react'
+
+interface Penduduk {
+  id: number
+  nik: string
+  nama: string
+  jenisKelamin: 'L' | 'P'
+  umur: number
+  alamat: string
+  pekerjaan: string
+  status: 'Aktif' | 'Pindah' | 'Meninggal'
+}
+
+const dataPenduduk: Penduduk[] = [
+  {
+    id: 1,
+    nik: '3510010101850001',
+    nama: 'Ahmad Wijaya',
+    jenisKelamin: 'L',
+    umur: 38,
+    alamat: 'Dusun Krajan RT 01 RW 01',
+    pekerjaan: 'Petani',
+    status: 'Aktif'
+  },
+  {
+    id: 2,
+    nik: '3510010202900002',
+    nama: 'Siti Nurhaliza',
+    jenisKelamin: 'P',
+    umur: 33,
+    alamat: 'Dusun Krajan RT 02 RW 01',
+    pekerjaan: 'Ibu Rumah Tangga',
+    status: 'Aktif'
+  },
+  // Add more sample data...
+]
 
 export default function DataPendudukPage() {
-  const { isOpen } = useSidebar()
-  const [addModal, setAddModal] = useState(false)
-  const [editModal, setEditModal] = useState<{ isOpen: boolean; data?: any }>({ 
-    isOpen: false, 
-    data: null 
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  const filteredData = dataPenduduk.filter(item => {
+    const matchesSearch = item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.nik.includes(searchTerm)
+    const matchesFilter = filterStatus === 'all' || item.status === filterStatus
+    return matchesSearch && matchesFilter
   })
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; data?: any }>({ 
-    isOpen: false, 
-    data: null 
-  })
 
-  // Dummy data penduduk
-  const [dataPenduduk, setDataPenduduk] = useState([
-    {
-      id: 1,
-      nik: '3201012801920001',
-      nama: 'Ahmad Wijaya',
-      jenisKelamin: 'Laki-laki',
-      tempatLahir: 'Jakarta',
-      tanggalLahir: '1992-01-28',
-      alamat: 'Jl. Merdeka No. 15',
-      rtRw: '001/002',
-      statusPerkawinan: 'Kawin',
-      pekerjaan: 'Petani Kelapa Sawit',
-      agama: 'Islam',
-      pendidikan: 'SMA/SMK'
-    },
-    {
-      id: 2,
-      nik: '3201012505890002',
-      nama: 'Siti Nurhaliza',
-      jenisKelamin: 'Perempuan',
-      tempatLahir: 'Bandung',
-      tanggalLahir: '1989-05-25',
-      alamat: 'Jl. Kebon Jeruk No. 8',
-      rtRw: '002/003',
-      statusPerkawinan: 'Kawin',
-      pekerjaan: 'Ibu Rumah Tangga',
-      agama: 'Islam',
-      pendidikan: 'SMP'
-    },
-    {
-      id: 3,
-      nik: '3201011203950003',
-      nama: 'Budi Santoso',
-      jenisKelamin: 'Laki-laki',
-      tempatLahir: 'Surabaya',
-      tanggalLahir: '1995-03-12',
-      alamat: 'Jl. Raya Sawit No. 22',
-      rtRw: '003/002',
-      statusPerkawinan: 'Belum Kawin',
-      pekerjaan: 'Karyawan Pabrik',
-      agama: 'Islam',
-      pendidikan: 'SMA/SMK'
-    },
-    {
-      id: 4,
-      nik: '3201010809870004',
-      nama: 'Dewi Sartika',
-      jenisKelamin: 'Perempuan',
-      tempatLahir: 'Medan',
-      tanggalLahir: '1987-09-08',
-      alamat: 'Jl. Suka Maju No. 5',
-      rtRw: '001/003',
-      statusPerkawinan: 'Kawin',
-      pekerjaan: 'Guru',
-      agama: 'Islam',
-      pendidikan: 'Sarjana'
-    },
-    {
-      id: 5,
-      nik: '3201011511930005',
-      nama: 'Eko Prasetyo',
-      jenisKelamin: 'Laki-laki',
-      tempatLahir: 'Yogyakarta',
-      tanggalLahir: '1993-11-15',
-      alamat: 'Jl. Gotong Royong No. 12',
-      rtRw: '002/001',
-      statusPerkawinan: 'Kawin',
-      pekerjaan: 'Petani',
-      agama: 'Islam',
-      pendidikan: 'SD'
-    },
-    {
-      id: 6,
-      nik: '3201012207900006',
-      nama: 'Maya Indah',
-      jenisKelamin: 'Perempuan',
-      tempatLahir: 'Solo',
-      tanggalLahir: '1990-07-22',
-      alamat: 'Jl. Manggis Raya No. 7',
-      rtRw: '003/001',
-      statusPerkawinan: 'Cerai Hidup',
-      pekerjaan: 'Pedagang',
-      agama: 'Islam',
-      pendidikan: 'SMA/SMK'
-    },
-    {
-      id: 7,
-      nik: '3201010304880007',
-      nama: 'Rudi Hermawan',
-      jenisKelamin: 'Laki-laki',
-      tempatLahir: 'Palembang',
-      tanggalLahir: '1988-04-03',
-      alamat: 'Jl. Sejahtera No. 18',
-      rtRw: '001/001',
-      statusPerkawinan: 'Kawin',
-      pekerjaan: 'Sopir',
-      agama: 'Islam',
-      pendidikan: 'SMP'
-    },
-    {
-      id: 8,
-      nik: '3201011609940008',
-      nama: 'Lina Marlina',
-      jenisKelamin: 'Perempuan',
-      tempatLahir: 'Bekasi',
-      tanggalLahir: '1994-09-16',
-      alamat: 'Jl. Harapan Baru No. 3',
-      rtRw: '002/002',
-      statusPerkawinan: 'Belum Kawin',
-      pekerjaan: 'Bidan',
-      agama: 'Islam',
-      pendidikan: 'Diploma'
-    }
-  ])
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
 
-  const columns = [
-    { key: 'nik', label: 'NIK', sortable: true },
-    { key: 'nama', label: 'Nama Lengkap', sortable: true },
-    { key: 'jenisKelamin', label: 'Jenis Kelamin', sortable: true },
-    { key: 'alamat', label: 'Alamat', sortable: false },
-    { key: 'rtRw', label: 'RT/RW', sortable: true },
-    { key: 'pekerjaan', label: 'Pekerjaan', sortable: true },
-    { key: 'statusPerkawinan', label: 'Status Perkawinan', sortable: true }
-  ]
-
-  const handleAdd = () => {
-    setAddModal(true)
+  const stats = {
+    total: dataPenduduk.length,
+    aktif: dataPenduduk.filter(p => p.status === 'Aktif').length,
+    lakiLaki: dataPenduduk.filter(p => p.jenisKelamin === 'L').length,
+    perempuan: dataPenduduk.filter(p => p.jenisKelamin === 'P').length
   }
-
-  const handleEdit = (data: any) => {
-    setEditModal({ isOpen: true, data })
-  }
-
-  const handleDelete = (data: any) => {
-    setDeleteModal({ isOpen: true, data })
-  }
-
-  const handleSaveAdd = (newData: any) => {
-    const id = Math.max(...dataPenduduk.map(p => p.id)) + 1
-    setDataPenduduk([...dataPenduduk, { ...newData, id }])
-  }
-
-  const handleSaveEdit = (updatedData: any) => {
-    setDataPenduduk(dataPenduduk.map(item => 
-      item.id === updatedData.id ? updatedData : item
-    ))
-    setEditModal({ isOpen: false, data: null })
-  }
-
-  const confirmDelete = () => {
-    setDataPenduduk(dataPenduduk.filter(item => item.id !== deleteModal.data.id))
-    setDeleteModal({ isOpen: false, data: null })
-  }
-
-  // Hitung statistik
-  const totalPenduduk = dataPenduduk.length
-  const lakiLaki = dataPenduduk.filter(p => p.jenisKelamin === 'Laki-laki').length
-  const perempuan = dataPenduduk.filter(p => p.jenisKelamin === 'Perempuan').length
-  const sudahMenikah = dataPenduduk.filter(p => p.statusPerkawinan === 'Kawin').length
 
   return (
-    <div className={`${isOpen ? 'ml-64' : 'ml-16'} min-h-screen p-8 transition-all duration-300`}>
+    <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <div className="flex items-center mb-4">
-            <Users className="w-8 h-8 mr-4 text-blue-600" />
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">Data Penduduk</h1>
-              <p className="text-gray-600">Kelola data kependudukan Desa Rejoagung</p>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <Users className="w-8 h-8 mr-4 text-blue-600" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">Data Penduduk</h1>
+                <p className="text-gray-600">Sistem Informasi Kependudukan Desa Rejoagung</p>
+              </div>
+            </div>
+            <div className="flex space-x-3">
+              <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <Download className="w-4 h-4 mr-2" />
+                Export Excel
+              </button>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <Plus className="w-4 h-4 mr-2" />
+                Tambah Penduduk
+              </button>
             </div>
           </div>
-          
+
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
               <div className="flex items-center">
                 <Users className="w-8 h-8 text-blue-600 mr-3" />
                 <div>
-                  <div className="text-2xl font-bold text-blue-600">{totalPenduduk}</div>
+                  <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
                   <div className="text-blue-700 text-sm">Total Penduduk</div>
                 </div>
               </div>
             </div>
-            
             <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
               <div className="flex items-center">
-                <FileText className="w-8 h-8 text-green-600 mr-3" />
+                <Users className="w-8 h-8 text-green-600 mr-3" />
                 <div>
-                  <div className="text-2xl font-bold text-green-600">{lakiLaki}</div>
-                  <div className="text-green-700 text-sm">Laki-laki</div>
+                  <div className="text-2xl font-bold text-green-600">{stats.aktif}</div>
+                  <div className="text-green-700 text-sm">Status Aktif</div>
                 </div>
               </div>
             </div>
-            
+            <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+              <div className="flex items-center">
+                <Users className="w-8 h-8 text-purple-600 mr-3" />
+                <div>
+                  <div className="text-2xl font-bold text-purple-600">{stats.lakiLaki}</div>
+                  <div className="text-purple-700 text-sm">Laki-laki</div>
+                </div>
+              </div>
+            </div>
             <div className="bg-pink-50 border border-pink-200 p-4 rounded-lg">
               <div className="flex items-center">
-                <FileText className="w-8 h-8 text-pink-600 mr-3" />
+                <Users className="w-8 h-8 text-pink-600 mr-3" />
                 <div>
-                  <div className="text-2xl font-bold text-pink-600">{perempuan}</div>
+                  <div className="text-2xl font-bold text-pink-600">{stats.perempuan}</div>
                   <div className="text-pink-700 text-sm">Perempuan</div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-              <div className="flex items-center">
-                <FileText className="w-8 h-8 text-orange-600 mr-3" />
-                <div>
-                  <div className="text-2xl font-bold text-orange-600">{sudahMenikah}</div>
-                  <div className="text-orange-700 text-sm">Sudah Menikah</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Data Table */}
-        <DataTable
-          data={dataPenduduk}
-          columns={columns}
-          title="Daftar Penduduk"
-          addButtonText="Penduduk"
-          onAdd={handleAdd}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          searchPlaceholder="Cari berdasarkan NIK, nama, alamat..."
-        />
+        {/* Filter & Search */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Cari berdasarkan nama atau NIK..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Filter className="w-4 h-4 text-gray-400" />
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">Semua Status</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Pindah">Pindah</option>
+                <option value="Meninggal">Meninggal</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
-        {/* Modals */}
-        <AddPendudukModal
-          isOpen={addModal}
-          onClose={() => setAddModal(false)}
-          onSave={handleSaveAdd}
-        />
+        {/* Table */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIK</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kelamin</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Umur</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pekerjaan</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {paginatedData.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">{item.nik}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.nama}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        item.jenisKelamin === 'L' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800'
+                      }`}>
+                        {item.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.umur} tahun</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{item.alamat}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.pekerjaan}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        item.status === 'Aktif' ? 'bg-green-100 text-green-800' :
+                        item.status === 'Pindah' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button className="text-blue-600 hover:text-blue-900 p-1 rounded">
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button className="text-red-600 hover:text-red-900 p-1 rounded">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        <EditPendudukModal
-          isOpen={editModal.isOpen}
-          onClose={() => setEditModal({ isOpen: false, data: null })}
-          onSave={handleSaveEdit}
-          data={editModal.data}
-        />
-
-        <DeletePendudukModal
-          isOpen={deleteModal.isOpen}
-          onClose={() => setDeleteModal({ isOpen: false, data: null })}
-          onConfirm={confirmDelete}
-          data={deleteModal.data}
-        />
+          {/* Pagination */}
+          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div className="text-sm text-gray-700">
+              Menampilkan {startIndex + 1} - {Math.min(startIndex + itemsPerPage, filteredData.length)} dari {filteredData.length} data
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-gray-700">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
