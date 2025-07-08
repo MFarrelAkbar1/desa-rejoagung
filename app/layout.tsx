@@ -1,9 +1,11 @@
+// app/layout.tsx
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { NavbarProvider } from '@/components/navbar/NavbarContext'
 import TopNavbar from '@/components/navbar/TopNavbar'
 import PageWrapper from '@/components/PageWrapper'
+import Footer from '@/components/Footer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,11 +24,12 @@ export default function RootLayout({
       <body className={`${inter.className} bg-gray-50 text-gray-800 antialiased`}>
         <NavbarProvider>
           <TopNavbar />
-          <main className="pt-16">
+          <main className="pt-16 min-h-screen">
             <PageWrapper>
               {children}
             </PageWrapper>
           </main>
+          <Footer />
         </NavbarProvider>
       </body>
     </html>

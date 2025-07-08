@@ -251,8 +251,6 @@ export default function ProdukUnggulanPage() {
             </div>
           ))}
         </div>
-
-        {/* Contact & Order Section */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border-4 border-gray-200">
           <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center">
             <div className="bg-blue-100 p-3 rounded-xl mr-4">
@@ -262,7 +260,6 @@ export default function ProdukUnggulanPage() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Gula Merah Contact */}
             <div className="bg-amber-50 border-3 border-amber-300 rounded-2xl p-6">
               <h3 className="text-2xl font-bold text-amber-800 mb-4 flex items-center">
                 🍯 Gula Merah (Gula Kelapa)

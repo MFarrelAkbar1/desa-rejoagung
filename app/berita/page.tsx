@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { Newspaper, Facebook, ExternalLink, Calendar, Users, MessageCircle, Heart } from 'lucide-react'
 
-// Hook untuk loading Facebook SDK
 function useFacebookSDK() {
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -40,7 +39,6 @@ function useFacebookSDK() {
   return isLoaded
 }
 
-// Komponen Facebook Page Feed
 function FacebookPageFeed() {
   const isSDKLoaded = useFacebookSDK()
 
@@ -80,7 +78,6 @@ function FacebookPageFeed() {
         </a>
       </div>
      
-      {/* Facebook Page Plugin */}
       <div className="flex justify-center">
         <div
           className="fb-page"
@@ -219,49 +216,6 @@ function HighlightedPosts() {
   )
 }
 
-// Komponen info media sosial
-function SocialMediaInfo() {
-  return (
-    <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
-      <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-        <Facebook className="w-5 h-5 mr-2 text-blue-600" />
-        Ikuti Media Sosial Desa Rejoagung
-      </h3>
-     
-      <div className="grid md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <h4 className="font-medium text-gray-800 mb-2">📱 Facebook</h4>
-          <p className="text-gray-600 text-sm mb-3">
-            Dapatkan update berita, pengumuman, dan informasi kegiatan desa secara real-time.
-          </p>
-        </div>
-        <div>
-          <h4 className="font-medium text-gray-800 mb-2">🔔 Notifikasi</h4>
-          <p className="text-gray-600 text-sm mb-3">
-            Aktifkan notifikasi untuk mendapat pemberitahuan langsung di smartphone Anda.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <a
-          href="https://www.facebook.com/rejo.agung.374"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center font-medium"
-        >
-          <Facebook className="w-5 h-5 mr-2" />
-          Follow Facebook
-        </a>
-        <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center font-medium">
-          <span className="mr-2">🔔</span>
-          Aktifkan Notifikasi
-        </button>
-      </div>
-    </div>
-  )
-}
-
 export default function BeritaPage() {
   return (
     <div className="min-h-screen p-8">
@@ -279,33 +233,9 @@ export default function BeritaPage() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Facebook Feed - Kolom Utama */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-3 space-y-8">
             <FacebookPageFeed />
             <HighlightedPosts />
-          </div>
-         
-          {/* Sidebar */}
-          <div className="space-y-8">
-            <SocialMediaInfo />
-           
-            {/* Quick Stats */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">📊 Statistik Media Sosial</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Pengikut Facebook:</span>
-                  <span className="font-semibold text-blue-600">1,247</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Post Bulan Ini:</span>
-                  <span className="font-semibold text-green-600">18</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Engagement Rate:</span>
-                  <span className="font-semibold text-orange-600">12.5%</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

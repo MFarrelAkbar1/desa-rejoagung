@@ -57,7 +57,7 @@ export default function NavbarMenu({ isScrolled }: NavbarMenuProps) {
                 ${isScrolled
                   ? isParentActive(item.submenu)
                     ? 'bg-emerald-600 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-600'
                   : isParentActive(item.submenu)
                     ? 'bg-white/20 text-white'
                     : 'text-white hover:bg-white/10'
@@ -79,7 +79,7 @@ export default function NavbarMenu({ isScrolled }: NavbarMenuProps) {
                 ${isScrolled
                   ? isActive(item.href!)
                     ? 'bg-emerald-600 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-600'
                   : isActive(item.href!)
                     ? 'bg-white/20 text-white'
                     : 'text-white hover:bg-white/10'
@@ -100,15 +100,19 @@ export default function NavbarMenu({ isScrolled }: NavbarMenuProps) {
                   href={subItem.href}
                   className={`
                     flex items-center space-x-3 px-4 py-3 text-sm
-                    transition-colors duration-200 whitespace-nowrap
+                    transition-all duration-300 whitespace-nowrap group
                     ${isActive(subItem.href)
                       ? 'bg-emerald-50 text-emerald-600 border-r-4 border-emerald-600'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 hover:translate-x-1'
                     }
                   `}
                 >
-                  <subItem.icon className="w-4 h-4" />
-                  <span>{subItem.label}</span>
+                  <subItem.icon className={`w-4 h-4 transition-all duration-300 ${
+                    isActive(subItem.href) 
+                      ? 'text-emerald-600' 
+                      : 'text-gray-500 group-hover:text-emerald-600'
+                  }`} />
+                  <span className="font-medium">{subItem.label}</span>
                 </Link>
               ))}
             </div>
