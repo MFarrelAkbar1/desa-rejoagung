@@ -24,13 +24,13 @@ export default function Footer() {
     { name: 'Profil Desa', href: '/profil/tentang-desa' },
     { name: 'Berita & Artikel', href: '/berita' },
     { name: 'Produk Unggulan', href: '/produk-kuliner/produk' },
-    { name: 'Layanan Desa', href: '/layanan-desa/data-penduduk' },
+    { name: 'Layanan', href: '/informasi/data-desa' },
     { name: 'Galeri Foto', href: '/galeri/foto' }
   ]
 
   const layananDesa = [
-    { name: 'Data Penduduk', href: '/layanan-desa/data-penduduk' },
-    { name: 'Layanan Kesehatan', href: '/layanan-desa/layanan-kesehatan' },
+    { name: 'Data Penduduk', href: '/informasi/data-desa' },
+    { name: 'Layanan', href: '/informasi/layanan' },
     { name: 'Peta Sekolah', href: '/peta-sekolah' },
     { name: 'Visi & Misi', href: '/profil/visi-misi' },
     { name: 'Peta Desa', href: '/profil/peta-desa' },

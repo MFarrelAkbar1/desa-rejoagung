@@ -1,8 +1,4 @@
 
-// ===========================================
-// app/profil/visi/page.tsx
-// ===========================================
-
 'use client'
 
 import { Target, Eye, CheckCircle, Star } from 'lucide-react'

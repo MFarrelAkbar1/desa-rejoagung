@@ -4,7 +4,7 @@ import {
   Newspaper,
   Package,
   Utensils,
-  Settings,
+  Info,
   Users,
   Heart,
   FileText,
@@ -14,7 +14,9 @@ import {
   Image as ImageIcon,
   MapPin,
   Eye,
-  Target
+  Target,
+  Database,
+  Settings
 } from 'lucide-react'
 
 export interface MenuItem {
@@ -102,21 +104,21 @@ export const menuItems: MenuItem[] = [
     ]
   },
   {
-    id: 'layanan-desa',
-    label: 'Layanan Desa',
-    icon: Settings,
+    id: 'informasi',
+    label: 'Informasi',
+    icon: Info,
     submenu: [
       {
-        id: 'data-penduduk',
-        label: 'Data Penduduk',
-        icon: Users,
-        href: '/layanan-desa/data-penduduk'
+        id: 'data-desa',
+        label: 'Data Desa',
+        icon: Database,
+        href: '/informasi/data-desa'
       },
       {
-        id: 'layanan-kesehatan',
-        label: 'Layanan Kesehatan',
-        icon: Heart,
-        href: '/layanan-desa/layanan-kesehatan'
+        id: 'layanan',
+        label: 'Layanan',
+        icon: Settings,
+        href: '/informasi/layanan'
       }
     ]
   },
