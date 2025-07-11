@@ -1,123 +1,117 @@
-// ===========================================
 // app/profil/profil-wilayah/page.tsx
-// ===========================================
-
 'use client'
 
-import { MapPin, Home, Users, TreePine, Factory } from 'lucide-react'
+import { useState } from 'react'
+import { BarChart3, Users, GraduationCap, Heart, Briefcase } from 'lucide-react'
+import { tabsWilayahConfig } from '@/data/dataWilayahConstants'
+import DemografisTab from '@/components/tabs/DemografisTab'
+import EkonomiTab from '@/components/tabs/EkonomiTab'
+import PendidikanWilayahTab from '@/components/tabs/PendidikanWilayahTab'
+import KesehatanWilayahTab from '@/components/tabs/KesehatanWilayahTab'
 
 export default function ProfilWilayahPage() {
+  const [activeTab, setActiveTab] = useState('demografis')
+
+  const getTabIcon = (tab: string) => {
+    const icons = {
+      demografis: Users,
+      ekonomi: Briefcase,
+      pendidikan: GraduationCap,
+      kesehatan: Heart
+    }
+    return icons[tab as keyof typeof icons] || Users
+  }
+
+  const renderTabContent = () => {
+    switch(activeTab) {
+      case 'demografis':
+        return <DemografisTab />
+      case 'ekonomi':
+        return <EkonomiTab />
+      case 'pendidikan':
+        return <PendidikanWilayahTab />
+      case 'kesehatan':
+        return <KesehatanWilayahTab />
+      default:
+        return <DemografisTab />
+    }
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-lg p-8">
-      <div className="flex items-center mb-6">
-        <MapPin className="w-8 h-8 mr-4 text-emerald-600" />
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Profil Wilayah</h1>
-          <p className="text-gray-600">Kondisi geografis dan demografis Desa Rejoagung</p>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-emerald-50 border border-emerald-200 p-6 rounded-xl text-center">
-          <MapPin className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
-          <div className="text-3xl font-bold text-emerald-600 mb-2">1,850</div>
-          <div className="text-emerald-700 font-medium">Luas Wilayah (Ha)</div>
-        </div>
-
-        <div className="bg-blue-50 border border-blue-200 p-6 rounded-xl text-center">
-          <Users className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-          <div className="text-3xl font-bold text-blue-600 mb-2">2,547</div>
-          <div className="text-blue-700 font-medium">Total Penduduk</div>
-        </div>
-
-        <div className="bg-green-50 border border-green-200 p-6 rounded-xl text-center">
-          <TreePine className="w-12 h-12 text-green-600 mx-auto mb-4" />
-          <div className="text-3xl font-bold text-green-600 mb-2">1,200</div>
-          <div className="text-green-700 font-medium">Lahan Pertanian (Ha)</div>
-        </div>
-
-        <div className="bg-orange-50 border border-orange-200 p-6 rounded-xl text-center">
-          <Home className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-          <div className="text-3xl font-bold text-orange-600 mb-2">5</div>
-          <div className="text-orange-700 font-medium">Dusun</div>
-        </div>
-      </div>
-
-      {/* Content Grid */}
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Kondisi Geografis</h2>
-          
-          <div className="space-y-6">
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="font-semibold text-gray-800 mb-3">🌍 Letak Geografis</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Desa Rejoagung terletak di Kecamatan Srono, Kabupaten Banyuwangi, 
-                Jawa Timur dengan koordinat 8°23'S dan 114°18'E.
-              </p>
+    <div className="min-h-screen p-8 bg-gray-50">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+          <div className="flex items-center mb-6">
+            <div className="bg-blue-100 p-3 rounded-xl mr-4">
+              <BarChart3 className="w-8 h-8 text-blue-600" />
             </div>
-
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="font-semibold text-gray-800 mb-3">⛰️ Topografi</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Wilayah desa sebagian besar berupa dataran rendah dengan ketinggian 
-                45 mdpl. Kondisi tanah subur sangat mendukung pertanian kelapa sawit.
-              </p>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">Profil Wilayah</h1>
+              <p className="text-gray-600">Kondisi geografis dan demografis Desa Rejoagung</p>
             </div>
+          </div>
 
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="font-semibold text-gray-800 mb-3">🌡️ Iklim</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Iklim tropis dengan curah hujan rata-rata 2.500mm/tahun. 
-                Suhu berkisar 24-32°C dengan kelembaban udara 75-85%.
-              </p>
-            </div>
+          {/* Intro Text */}
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6 mb-6">
+            <p className="text-emerald-800 text-sm leading-relaxed">
+              Desa Rejoagung adalah salah satu Desa di Kecamatan Srono yang mempunyai luas wilayah 668,883 Ha. 
+              Terdiri dari 5 (Lima) Dusun yaitu Dusun Krajan, Dusun Sumberagung, Dusun Rejoharjo, Dusun Purwosari dan Dusun Mekarjaya. 
+              Jumlah penduduk Desa Rejoagung akhir 2024 sebanyak 8.574 jiwa yang terdiri dari 3.975 laki-laki dan 4.599 perempuan 
+              dengan jumlah Kepala Keluarga sebanyak 2.886 KK. Sedangkan jumlah Keluarga Miskin (Gakin) 876 KK.
+            </p>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="flex flex-wrap gap-2 mb-8">
+            {tabsWilayahConfig.map((tab) => {
+              const IconComponent = getTabIcon(tab.id)
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200
+                    ${activeTab === tab.id
+                      ? `${tab.color} text-white shadow-lg`
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }
+                  `}
+                >
+                  <IconComponent className="w-4 h-4 mr-2" />
+                  {tab.label}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Content */}
+          <div className="bg-white rounded-lg p-6 border-2 border-gray-200">
+            {renderTabContent()}
           </div>
         </div>
 
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Pembagian Wilayah</h2>
-          
-          <div className="space-y-4">
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-800">Dusun Krajan</h3>
-                <span className="text-sm text-gray-500">3 RT</span>
-              </div>
-              <p className="text-gray-600 text-sm">Pusat pemerintahan dan fasilitas umum</p>
+        {/* Footer Info */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-blue-800 mb-3">ℹ️ Informasi Tambahan</h3>
+          <div className="grid md:grid-cols-2 gap-4 text-sm text-blue-700">
+            <div>
+              <h4 className="font-medium mb-2">📍 Lokasi Geografis</h4>
+              <ul className="space-y-1 text-blue-600">
+                <li>• Koordinat: 8°23'S, 114°18'E</li>
+                <li>• Ketinggian: 0,210 mdpl</li>
+                <li>• Curah hujan: 1.066 mm/tahun</li>
+                <li>• Topografi: Dataran rendah</li>
+              </ul>
             </div>
-
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-800">Dusun Sumberagung</h3>
-                <span className="text-sm text-gray-500">2 RT</span>
-              </div>
-              <p className="text-gray-600 text-sm">Area perkebunan kelapa sawit utama</p>
-            </div>
-
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-800">Dusun Rejoharjo</h3>
-                <span className="text-sm text-gray-500">2 RT</span>
-              </div>
-              <p className="text-gray-600 text-sm">Kawasan pemukiman dan UMKM</p>
-            </div>
-
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-800">Dusun Purwosari</h3>
-                <span className="text-sm text-gray-500">2 RT</span>
-              </div>
-              <p className="text-gray-600 text-sm">Area pertanian dan peternakan</p>
-            </div>
-
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-800">Dusun Mekarjaya</h3>
-                <span className="text-sm text-gray-500">1 RT</span>
-              </div>
-              <p className="text-gray-600 text-sm">Kawasan pengembangan wisata agro</p>
+            <div>
+              <h4 className="font-medium mb-2">🌾 Potensi Unggulan</h4>
+              <ul className="space-y-1 text-blue-600">
+                <li>• Perkebunan kelapa sawit</li>
+                <li>• Produksi gula merah tradisional</li>
+                <li>• Pertanian padi dan palawija</li>
+                <li>• Peternakan skala kecil</li>
+              </ul>
             </div>
           </div>
         </div>

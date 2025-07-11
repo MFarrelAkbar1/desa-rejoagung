@@ -1,86 +1,62 @@
-
-// ===========================================
-// app/profil/kepala-desa/page.tsx
-// ===========================================
-
 'use client'
 
-import { User, Mail, Phone, Calendar, Award } from 'lucide-react'
+import Image from 'next/image'
+import Breadcrumb from '@/components/layout/Breadcrumb'
 
 export default function KepalaDesaPage() {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-8">
-      <div className="flex items-center mb-6">
-        <User className="w-8 h-8 mr-4 text-emerald-600" />
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Profil Kepala Desa</h1>
-          <p className="text-gray-600">Pemimpin Desa Rejoagung</p>
-        </div>
-      </div>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <Breadcrumb
+          items={[
+            { label: 'Profil', href: '/profil' },
+            { label: 'Kepala Desa', href: '/profil/kepala-desa' },
+          ]}
+        />
+        
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mt-6">
+          <div className="md:flex">
+            <div className="md:w-1/3 bg-gradient-to-br from-emerald-600 to-green-600 p-8 flex flex-col items-center justify-center text-center">
+              <div className="relative w-48 h-48 rounded-full overflow-hidden border-8 border-white/50 shadow-xl transform transition-transform duration-500 hover:scale-105">
+                <Image
+                  src="/kades.jpg" 
+                  alt="Foto Kepala Desa Shon Haji"
+                  layout="fill"
+                  objectFit="cover"
+                  priority
+                />
+              </div>
+              <h2 className="text-white text-3xl font-bold mt-6">Shon Haji</h2>
+              <p className="text-emerald-200 mt-1">Kepala Desa Rejoagung</p>
+            </div>
+            <div className="md:w-2/3 p-8 md:p-12">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                Sambutan Kepala Desa
+              </h1>
+              <div className="w-24 h-1.5 bg-emerald-500 mb-8"></div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="text-center">
-          <div className="w-48 h-48 mx-auto bg-gray-200 rounded-full mb-6 overflow-hidden">
-            <img 
-              src="/kepala-desa.jpg" 
-              alt="Kepala Desa"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Bapak Ahmad Wijaya</h2>
-          <p className="text-emerald-600 font-medium mb-4">Kepala Desa Rejoagung</p>
-          
-          <div className="space-y-2 text-sm text-gray-600">
-            <div className="flex items-center justify-center">
-              <Calendar className="w-4 h-4 mr-2" />
-              <span>Periode: 2019 - 2025</span>
-            </div>
-            <div className="flex items-center justify-center">
-              <Phone className="w-4 h-4 mr-2" />
-              <span>+62 812-3456-7890</span>
-            </div>
-            <div className="flex items-center justify-center">
-              <Mail className="w-4 h-4 mr-2" />
-              <span>kades@rejoagung.desa.id</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="lg:col-span-2">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Biodata</h3>
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="text-sm font-medium text-gray-600">Nama Lengkap</label>
-              <p className="text-gray-800">Ahmad Wijaya, S.Pd</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">Tempat, Tanggal Lahir</label>
-              <p className="text-gray-800">Banyuwangi, 15 Agustus 1975</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">Pendidikan</label>
-              <p className="text-gray-800">S1 Pendidikan</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">Pengalaman</label>
-              <p className="text-gray-800">Kepala Desa (6 tahun)</p>
+              <article className="prose prose-lg max-w-none text-gray-600">
+                <p>
+                  Assalamualaikum Warahmatullahi Wabarakatuh,
+                </p>
+                <p>
+                  Puji syukur kehadirat Allah SWT yang telah melimpahkan rahmat dan karunia-Nya kepada kita semua. Saya, <strong>Shon Haji</strong>, sebagai Kepala Desa Rejoagung, dengan bangga menyambut Anda di website resmi desa kami.
+                </p>
+                <p>
+                  Website ini kami hadirkan sebagai wujud komitmen pemerintah desa dalam memberikan transparansi informasi dan meningkatkan kualitas pelayanan publik di era digital. Melalui platform ini, kami berharap dapat menjembatani komunikasi yang efektif antara pemerintah desa dengan seluruh lapisan masyarakat, serta menyajikan informasi yang akurat dan terkini seputar program desa, potensi wilayah, dan berita-berita penting lainnya.
+                </p>
+                <p>
+                  Kami mengajak seluruh warga untuk turut serta aktif dalam setiap program pembangunan desa. Mari kita bersama-sama, dengan semangat gotong royong dan kekeluargaan, mewujudkan Desa Rejoagung yang lebih maju, mandiri, dan sejahtera.
+                </p>
+                <p>
+                  Terima kasih atas kunjungan Anda. Kritik dan saran yang membangun sangat kami harapkan demi kemajuan desa kita bersama.
+                </p>
+                <p>
+                  Wassalamualaikum Warahmatullahi Wabarakatuh.
+                </p>
+              </article>
             </div>
           </div>
-
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Visi Kepemimpinan</h3>
-          <p className="text-gray-600 mb-6 leading-relaxed">
-            "Membangun Desa Rejoagung yang mandiri, sejahtera, dan berkeadilan melalui 
-            pengembangan potensi lokal dan pemberdayaan masyarakat yang berkelanjutan."
-          </p>
-
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Program Unggulan</h3>
-          <ul className="list-disc list-inside text-gray-600 space-y-2">
-            <li>Pengembangan agrobisnis kelapa sawit berkelanjutan</li>
-            <li>Peningkatan kualitas infrastruktur desa</li>
-            <li>Pemberdayaan ekonomi masyarakat melalui UMKM</li>
-            <li>Digitalisasi layanan administrasi desa</li>
-            <li>Pengembangan wisata agro dan kuliner</li>
-          </ul>
         </div>
       </div>
     </div>

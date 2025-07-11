@@ -1,5 +1,5 @@
+// components/navbar/NavbarMenu.tsx
 'use client'
-
 import { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -41,7 +41,10 @@ export default function NavbarMenu({ isScrolled }: NavbarMenuProps) {
   }, [])
 
   return (
-    <nav className="hidden lg:flex items-center space-x-1">
+    /* Perubahan:
+      - Mengganti 'space-x-1' menjadi 'space-x-2' untuk menambah jarak antar tombol menu utama.
+    */
+    <nav className="hidden lg:flex items-center space-x-2">
       {menuItems.map((item) => (
         <div
           key={item.id}
@@ -57,7 +60,7 @@ export default function NavbarMenu({ isScrolled }: NavbarMenuProps) {
                 ${isScrolled
                   ? isParentActive(item.submenu)
                     ? 'bg-emerald-600 text-white'
-                    : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-600'
+                    : 'text-gray-700 hover:bg-gray-100'
                   : isParentActive(item.submenu)
                     ? 'bg-white/20 text-white'
                     : 'text-white hover:bg-white/10'
@@ -79,7 +82,7 @@ export default function NavbarMenu({ isScrolled }: NavbarMenuProps) {
                 ${isScrolled
                   ? isActive(item.href!)
                     ? 'bg-emerald-600 text-white'
-                    : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-600'
+                    : 'text-gray-700 hover:bg-gray-100'
                   : isActive(item.href!)
                     ? 'bg-white/20 text-white'
                     : 'text-white hover:bg-white/10'
@@ -100,19 +103,15 @@ export default function NavbarMenu({ isScrolled }: NavbarMenuProps) {
                   href={subItem.href}
                   className={`
                     flex items-center space-x-3 px-4 py-3 text-sm
-                    transition-all duration-300 whitespace-nowrap group
+                    transition-colors duration-200 whitespace-nowrap
                     ${isActive(subItem.href)
                       ? 'bg-emerald-50 text-emerald-600 border-r-4 border-emerald-600'
-                      : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 hover:translate-x-1'
+                      : 'text-gray-700 hover:bg-gray-50'
                     }
                   `}
                 >
-                  <subItem.icon className={`w-4 h-4 transition-all duration-300 ${
-                    isActive(subItem.href) 
-                      ? 'text-emerald-600' 
-                      : 'text-gray-500 group-hover:text-emerald-600'
-                  }`} />
-                  <span className="font-medium">{subItem.label}</span>
+                  <subItem.icon className="w-4 h-4" />
+                  <span>{subItem.label}</span>
                 </Link>
               ))}
             </div>

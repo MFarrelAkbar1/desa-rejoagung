@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, ChevronDown, ChevronRight, LogIn } from 'lucide-react'
+import { Menu, X, ChevronDown, ChevronRight } from 'lucide-react'
 import { useNavbar } from './NavbarContext'
 import { menuItems } from './menuData'
 
@@ -17,7 +17,6 @@ export default function MobileMenu({ isScrolled }: MobileMenuProps) {
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
 
   const isActive = (href: string) => pathname === href
-
   const isParentActive = (submenu: any[]) => submenu?.some(item => pathname === item.href)
 
   const toggleSubmenu = (menuId: string) => {
@@ -29,19 +28,14 @@ export default function MobileMenu({ isScrolled }: MobileMenuProps) {
     setOpenSubmenu(null)
   }
 
-  const handleLoginClick = () => {
-    window.location.href = '/admin/login'
-    setIsMobileMenuOpen(false)
-  }
-
   return (
     <div className="lg:hidden">
       {/* Mobile Menu Button */}
       <button
         onClick={toggleMobileMenu}
         className={`p-2 rounded-lg transition-colors ${
-          isScrolled
-            ? 'text-gray-700 hover:bg-gray-100'
+          isScrolled 
+            ? 'text-gray-700 hover:bg-gray-100' 
             : 'text-white hover:bg-white/10'
         }`}
         aria-label="Toggle mobile menu"
@@ -60,7 +54,7 @@ export default function MobileMenu({ isScrolled }: MobileMenuProps) {
             className="fixed inset-0 bg-black/50 z-40"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-         
+          
           {/* Mobile Menu Panel */}
           <div className="fixed top-16 left-0 right-0 bg-white shadow-xl z-50 max-h-[calc(100vh-4rem)] overflow-y-auto">
             {menuItems.map((item) => (
@@ -88,7 +82,7 @@ export default function MobileMenu({ isScrolled }: MobileMenuProps) {
                         <ChevronRight className="w-5 h-5" />
                       )}
                     </button>
-                   
+                    
                     {/* Submenu */}
                     {openSubmenu === item.id && (
                       <div className="bg-gray-50">
@@ -132,18 +126,7 @@ export default function MobileMenu({ isScrolled }: MobileMenuProps) {
                 )}
               </div>
             ))}
-           
-            {/* Login Button for Mobile */}
-            <div className="border-t border-gray-200 bg-gray-50">
-              <button
-                onClick={handleLoginClick}
-                className="w-full flex items-center space-x-3 px-6 py-4 text-emerald-600 hover:bg-emerald-50 transition-colors duration-200"
-              >
-                <LogIn className="w-5 h-5" />
-                <span className="font-medium">Login Admin</span>
-              </button>
-            </div>
-
+            
             {/* Mobile Footer */}
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
               <div className="text-center">

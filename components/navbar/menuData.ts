@@ -62,7 +62,7 @@ export const menuItems: MenuItem[] = [
         id: 'profil-wilayah',
         label: 'Profil Wilayah',
         icon: MapPin,
-        href: '/profil/wilayah'
+        href: '/profil/profil-wilayah'
       },
       {
         id: 'visi-misi',

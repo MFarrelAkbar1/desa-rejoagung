@@ -1,5 +1,5 @@
+// components/navbar/TopNavbar.tsx
 'use client'
-
 import { useState, useEffect } from 'react'
 import { LogIn, User } from 'lucide-react'
 import NavbarLogo from './NavbarLogo'
@@ -13,7 +13,6 @@ export default function TopNavbar() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
     }
-
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -31,14 +30,19 @@ export default function TopNavbar() {
         : 'bg-gradient-to-r from-emerald-600 to-green-600 shadow-md'
       }
     `}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Perubahan: 
+        - Mengganti 'max-w-7xl mx-auto' dengan 'w-full' untuk membuat navbar full-width.
+        - Menyesuaikan padding horizontal (px) menjadi 'px-6 sm:px-8 lg:px-12' agar konten tidak terlalu menempel ke tepi layar.
+        - Ini akan membuat logo dan menu tampak lebih ke kiri.
+      */}
+      <div className="w-full px-6 sm:px-8 lg:px-12">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <NavbarLogo isScrolled={isScrolled} />
-          
+
           {/* Desktop Menu */}
           <NavbarMenu isScrolled={isScrolled} />
-          
+
           {/* Right Side - Login Button and Mobile Menu */}
           <div className="flex items-center space-x-3">
             {/* Login Button - Hidden on mobile, shown on desktop */}
@@ -56,7 +60,7 @@ export default function TopNavbar() {
               <LogIn className="w-4 h-4" />
               <span>Login Admin</span>
             </button>
-            
+
             {/* Mobile Menu */}
             <MobileMenu isScrolled={isScrolled} />
           </div>

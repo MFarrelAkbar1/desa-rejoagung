@@ -1,4 +1,3 @@
-// app/profil/tentang-desa/page.tsx
 'use client'
 
 import { FileText, Calendar, Users, MapPin } from 'lucide-react'
@@ -46,16 +45,16 @@ export default function TentangDesaPage() {
             <h3 className="font-semibold text-emerald-800 mb-4">Quick Facts</h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-2 text-emerald-600" />
-                <span>Didirikan: 1965</span>
+                <Calendar className="w-4 h-4 mr-2 text-black" />
+                <span className="text-black">Didirikan: 1965</span>
               </div>
               <div className="flex items-center">
-                <Users className="w-4 h-4 mr-2 text-emerald-600" />
-                <span>Penduduk: 2,547 jiwa</span>
+                <Users className="w-4 h-4 mr-2 text-black" />
+                <span className="text-black">Penduduk: 2,547 jiwa</span>
               </div>
               <div className="flex items-center">
                 <MapPin className="w-4 h-4 mr-2 text-emerald-600" />
-                <span>Luas: 1,850 Ha</span>
+                <span className="text-black">Luas: 1,850 Ha</span>
               </div>
             </div>
           </div>
