@@ -1,4 +1,3 @@
-// app/produk-kuliner/kuliner/page.tsx
 'use client'
 
 import { useState, useMemo } from 'react'
@@ -9,6 +8,7 @@ import CulinaryHeader from '@/components/CulinaryHeader'
 import CulinaryFilter from '@/components/CulinaryFilter'
 import CulinaryList from '@/components/CulinaryList'
 import CulinaryInfo from '@/components/CulinaryInfo'
+import CulinaryCard from '@/components/CulinaryCard' // ← TAMBAH INI
 
 export default function KulinerPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -36,7 +36,6 @@ export default function KulinerPage() {
     const totalItems = culinaryData.length
     const signatureItems = culinaryData.filter(item => item.isSignature).length
     const avgRating = culinaryData.reduce((sum, item) => sum + item.rating, 0) / totalItems
-
     return { totalItems, signatureItems, avgRating }
   }, [])
 
@@ -60,7 +59,6 @@ export default function KulinerPage() {
         minuman: 'Menu Minuman',
         camilan: 'Menu Camilan & Jajanan'
       }
-
       title += categoryLabels[selectedCategory as keyof typeof categoryLabels] || 'Menu Kuliner'
     }
 
