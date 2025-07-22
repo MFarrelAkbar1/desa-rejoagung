@@ -1,5 +1,4 @@
-// components/PageWrapper.tsx
-
+// components/PageWrapper.tsx - Fixed to exclude PostTerbaru from admin pages
 'use client'
 
 import { usePathname } from 'next/navigation'
@@ -11,10 +10,22 @@ interface PageWrapperProps {
 
 export default function PageWrapper({ children }: PageWrapperProps) {
   const pathname = usePathname()
-  const isHomePage = pathname === '/'
+  
+  // Pages that should not show PostTerbaru
+  const excludePostTerbaru = [
+    '/', // Home page
+    '/admin/login',
+    '/admin/forgot-password', 
+    '/admin/reset-password',
+    '/admin/register',
+    '/admin/dashboard'
+  ]
 
-  if (isHomePage) {
-    // Home page - no sidebar, full width
+  // Check if current path starts with admin or is in exclude list
+  const shouldExcludePostTerbaru = excludePostTerbaru.includes(pathname) || pathname.startsWith('/admin')
+
+  if (shouldExcludePostTerbaru) {
+    // Admin pages or excluded pages - no sidebar, full width
     return (
       <div className="min-h-[calc(100vh-4rem)]">
         {children}

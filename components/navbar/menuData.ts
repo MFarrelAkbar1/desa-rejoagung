@@ -1,23 +1,29 @@
-// data/menuData.ts
-
-import { 
-  Home, 
-  User, 
-  FileText, 
-  MapPin, 
-  Target, 
+// components/navbar/menuData.ts
+import {
+  Home,
+  User,
+  FileText,
+  MapPin,
+  Target,
   Newspaper,
-  Package, 
-  Utensils, 
-  Info, 
-  Database, 
-  Settings, 
-  GraduationCap, 
-  Camera, 
-  ImageIcon, 
+  Package,
+  Utensils,
+  Info,
+  Database,
+  Settings,
+  Camera,
+  ImageIcon,
   Video,
   Facebook,
-  Globe
+  Globe,
+  Mountain,
+  TreePine,
+  Waves,
+  Wheat,
+  Users,
+  Building,
+  BookOpen,
+  DollarSign
 } from 'lucide-react'
 
 export interface MenuItem {
@@ -118,6 +124,31 @@ export const menuItems: MenuItem[] = [
     ]
   },
   {
+    id: 'potensi-desa',
+    label: 'Potensi Desa',
+    icon: Mountain,
+    submenu: [
+      {
+        id: 'wisata',
+        label: 'Wisata',
+        icon: Mountain,
+        href: '/potensi-desa/wisata'
+      },
+      {
+        id: 'potensi-fisik',
+        label: 'Potensi Fisik',
+        icon: TreePine,
+        href: '/potensi-desa/fisik'
+      },
+      {
+        id: 'potensi-non-fisik',
+        label: 'Potensi Non-Fisik',
+        icon: Users,
+        href: '/potensi-desa/non-fisik'
+      }
+    ]
+  },
+  {
     id: 'informasi',
     label: 'Informasi',
     icon: Info,
@@ -135,12 +166,6 @@ export const menuItems: MenuItem[] = [
         href: '/informasi/layanan'
       }
     ]
-  },
-  {
-    id: 'peta-sekolah',
-    label: 'Peta Sekolah',
-    icon: GraduationCap,
-    href: '/peta-sekolah'
   },
   {
     id: 'galeri',

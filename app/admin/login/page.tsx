@@ -1,5 +1,4 @@
-// app/admin/login/page.tsx - Updated dengan forgot password
-
+// app/admin/login/page.tsx - Fixed with black text inputs
 'use client'
 
 import { useState } from 'react'
@@ -32,7 +31,7 @@ export default function AdminLogin() {
 
     try {
       const success = await loginAdmin(formData.username, formData.password)
-      
+     
       if (success) {
         console.log('Login successful')
         // Redirect ke dashboard umum
@@ -51,7 +50,7 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-blue-50 flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-      
+     
       <div className="w-full max-w-md relative z-10">
         {/* Back to Home Link */}
         <Link
@@ -75,14 +74,14 @@ export default function AdminLogin() {
                 className="object-contain"
               />
             </div>
-            <h1 className="text-2xl font-bold mb-2">Admin Login</h1>
-            <p className="text-emerald-100">Kelola Konten Website Desa Rejoagung</p>
+            <h1 className="text-2xl font-bold mb-2">Login Admin</h1>
+            <p className="text-emerald-100">Portal Administrasi Desa Rejoagung</p>
           </div>
 
           {/* Form */}
           <div className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Username */}
+              {/* Username Input */}
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
                   Username
@@ -91,15 +90,16 @@ export default function AdminLogin() {
                   type="text"
                   id="username"
                   name="username"
-                  required
                   value={formData.username}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                  placeholder="rejo_admin"
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors text-gray-900 placeholder-gray-500"
+                  placeholder="Masukkan username admin"
+                  style={{ color: '#111827' }} // Ensure black text
                 />
               </div>
 
-              {/* Password */}
+              {/* Password Input */}
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                   Password
@@ -109,16 +109,17 @@ export default function AdminLogin() {
                     type={showPassword ? 'text' : 'password'}
                     id="password"
                     name="password"
-                    required
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors pr-12"
+                    required
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors text-gray-900 placeholder-gray-500"
                     placeholder="Masukkan password"
+                    style={{ color: '#111827' }} // Ensure black text
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>

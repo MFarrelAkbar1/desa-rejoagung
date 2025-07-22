@@ -2,30 +2,155 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-import { schools, schoolTypeColors, School } from '@/data/schools'
 
-// Fix for default markers in Leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-})
+// Leaflet imports - should match the existing pattern
+declare global {
+  interface Window {
+    L: any
+  }
+}
+
+interface School {
+  id: number
+  name: string
+  type: 'TK' | 'SD' | 'SMP' | 'SMK' | 'SLB'
+  address: string
+  coordinates: [number, number]
+  description?: string
+  students?: number
+  teachers?: number
+  facilities?: string[]
+  rating?: number
+  contact?: string
+  accreditation?: string
+  principal?: string
+  established?: number
+}
 
 interface MapContainerProps {
   height?: string
 }
 
+// School type colors consistent with Legend
+const schoolTypeColors = {
+  TK: '#ef4444',   // Red
+  SD: '#3b82f6',   // Blue  
+  SMP: '#10b981',  // Green
+  SMK: '#f59e0b',  // Orange
+  SLB: '#8b5cf6'   // Purple
+}
+
+// Import schools from our updated data
+const schools: School[] = [
+  // TK/PAUD (3 buah)
+  {
+    id: 1,
+    name: 'TK Dharma Wanita',
+    type: 'TK',
+    address: 'Dusun Krajan, RT 02 RW 01, Rejoagung',
+    coordinates: [-8.382, 114.302],
+    description: 'Taman Kanak-kanak swasta dengan kurikulum nasional',
+    students: 45,
+    teachers: 4
+  },
+  {
+    id: 2,
+    name: 'PAUD Tunas Harapan',
+    type: 'TK',
+    address: 'Dusun Sumberagung, RT 03 RW 02, Rejoagung',
+    coordinates: [-8.385, 114.308],
+    description: 'Pendidikan Anak Usia Dini dengan metode bermain sambil belajar',
+    students: 38,
+    teachers: 3
+  },
+  {
+    id: 3,
+    name: 'Kelompok Bermain Ceria',
+    type: 'TK',
+    address: 'Dusun Sumbergroto, RT 01 RW 01, Rejoagung',
+    coordinates: [-8.387, 114.295],
+    description: 'Kelompok bermain untuk anak usia 2-4 tahun',
+    students: 25,
+    teachers: 2
+  },
+
+  // SD (3 buah)
+  {
+    id: 4,
+    name: 'SDN 1 Rejoagung Srono',
+    type: 'SD',
+    address: 'J882+2XF, Sumberagung, Rejoagung, Kec. Srono, Kabupaten Banyuwangi, Jawa Timur 68471',
+    coordinates: [-8.384798810410489, 114.30237941420603],
+    description: 'Sekolah Dasar Negeri 1 Rejoagung Srono',
+    students: 245,
+    teachers: 12
+  },
+  {
+    id: 5,
+    name: 'SDN 2 Rejoagung',
+    type: 'SD',
+    address: 'J884+FPQ, Sumberagung, Rejoagung, Kec. Srono, Kabupaten Banyuwangi, Jawa Timur 68471',
+    coordinates: [-8.383768572513736, 114.30685111350854],
+    description: 'Sekolah Dasar Negeri 2 Rejoagung',
+    students: 198,
+    teachers: 10
+  },
+  {
+    id: 6,
+    name: 'SDN 3 Rejoagung',
+    type: 'SD',
+    address: 'Dusun Sumbergroto, RT 05 RW 02, Rejoagung',
+    coordinates: [-8.388, 114.298],
+    description: 'Sekolah Dasar Negeri 3 Rejoagung',
+    students: 156,
+    teachers: 8
+  },
+
+  // SMP (1 buah)
+  {
+    id: 7,
+    name: 'SMP AL AMIRIYYAH',
+    type: 'SMP',
+    address: 'J8C4+3F2, Sumberagung, Rejoagung, Kec. Srono, Kabupaten Banyuwangi, Jawa Timur 68471',
+    coordinates: [-8.379497666674562, 114.30612847162135],
+    description: 'Sekolah Menengah Pertama swasta dengan nuansa Islami',
+    students: 320,
+    teachers: 18
+  },
+
+  // SMK (1 buah)
+  {
+    id: 8,
+    name: 'SMK NU DARUSSALAM',
+    type: 'SMK',
+    address: 'J8C4+52 Rejoagung, Banyuwangi Regency, East Java',
+    coordinates: [-8.379091765348011, 114.3050691166798],
+    description: 'Sekolah Menengah Kejuruan dengan program keahlian Teknik dan Bisnis',
+    students: 380,
+    teachers: 22
+  },
+
+  // SLB (1 buah)
+  {
+    id: 9,
+    name: 'SLB Bina Insani Srono',
+    type: 'SLB',
+    address: 'Jl. Pendidikan No. 12, Srono',
+    coordinates: [-8.381, 114.301],
+    description: 'Sekolah Luar Biasa untuk anak berkebutuhan khusus',
+    students: 45,
+    teachers: 8
+  }
+]
+
 export default function MapContainer({ height = '600px' }: MapContainerProps) {
   const mapRef = useRef<HTMLDivElement>(null)
-  const mapInstanceRef = useRef<L.Map | null>(null)
+  const mapInstanceRef = useRef<any>(null)
 
   const createCustomIcon = (type: School['type']) => {
     const color = schoolTypeColors[type]
-    
-    return L.divIcon({
+   
+    return window.L.divIcon({
       className: 'custom-div-icon',
       html: `
         <div style="
@@ -69,7 +194,9 @@ export default function MapContainer({ height = '600px' }: MapContainerProps) {
             <strong>📍 Alamat:</strong><br>
             ${school.address}
           </p>
-          <p style="margin: 0; font-size: 12px; color: #888;">
+          ${school.students ? `<p style="margin: 0 0 4px 0; font-size: 12px; color: #888;"><strong>👥 Siswa:</strong> ${school.students}</p>` : ''}
+          ${school.teachers ? `<p style="margin: 0 0 4px 0; font-size: 12px; color: #888;"><strong>👨‍🏫 Guru:</strong> ${school.teachers}</p>` : ''}
+          <p style="margin: 4px 0 0 0; font-size: 12px; color: #888;">
             <strong>📍 Koordinat:</strong> ${school.coordinates[0].toFixed(6)}, ${school.coordinates[1].toFixed(6)}
           </p>
         </div>
@@ -78,52 +205,73 @@ export default function MapContainer({ height = '600px' }: MapContainerProps) {
   }
 
   useEffect(() => {
-    if (!mapRef.current || mapInstanceRef.current) return
+    if (typeof window === 'undefined' || !mapRef.current) return
 
-    // Center coordinates (average of all schools)
-    const centerLat = schools.reduce((sum, school) => sum + school.coordinates[0], 0) / schools.length
-    const centerLng = schools.reduce((sum, school) => sum + school.coordinates[1], 0) / schools.length
+    // Load Leaflet dynamically
+    const loadLeaflet = async () => {
+      if (!window.L) {
+        // Load Leaflet CSS
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css'
+        document.head.appendChild(link)
 
-    // Initialize map
-    const map = L.map(mapRef.current).setView([centerLat, centerLng], 15)
+        // Load Leaflet JS
+        const script = document.createElement('script')
+        script.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js'
+        await new Promise((resolve) => {
+          script.onload = resolve
+          document.head.appendChild(script)
+        })
+      }
 
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map)
+      // Center coordinates (average of all schools)
+      const centerLat = schools.reduce((sum, school) => sum + school.coordinates[0], 0) / schools.length
+      const centerLng = schools.reduce((sum, school) => sum + school.coordinates[1], 0) / schools.length
 
-    // Add markers for each school
-    schools.forEach(school => {
-      const marker = L.marker(school.coordinates, {
-        icon: createCustomIcon(school.type)
+      // Initialize map
+      const map = window.L.map(mapRef.current).setView([centerLat, centerLng], 15)
+
+      // Add OpenStreetMap tiles
+      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map)
 
-      marker.bindPopup(createPopupContent(school), {
-        maxWidth: 300,
-        className: 'custom-popup'
+      // Add markers for each school
+      schools.forEach(school => {
+        const marker = window.L.marker(school.coordinates, {
+          icon: createCustomIcon(school.type)
+        }).addTo(map)
+
+        marker.bindPopup(createPopupContent(school), {
+          maxWidth: 300,
+          className: 'custom-popup'
+        })
       })
-    })
 
-    // Fit map to show all markers
-    const group = new L.FeatureGroup(
-      schools.map(school => L.marker(school.coordinates))
-    )
-    map.fitBounds(group.getBounds().pad(0.1))
+      // Fit map to show all markers
+      const group = new window.L.FeatureGroup(
+        schools.map(school => window.L.marker(school.coordinates))
+      )
+      map.fitBounds(group.getBounds().pad(0.1))
 
-    mapInstanceRef.current = map
+      mapInstanceRef.current = map
 
-    return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove()
-        mapInstanceRef.current = null
+      return () => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.remove()
+          mapInstanceRef.current = null
+        }
       }
     }
+
+    loadLeaflet()
   }, [])
 
   return (
     <>
-      <div 
-        ref={mapRef} 
+      <div
+        ref={mapRef}
         style={{ height, width: '100%' }}
         className="rounded-lg shadow-lg border border-gray-300"
       />
