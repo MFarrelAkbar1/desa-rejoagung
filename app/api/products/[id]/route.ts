@@ -1,21 +1,24 @@
-// app/api/culinary/[id]/route.ts
+// app/api/products/[id]/route.ts
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
-// GET /api/culinary/[id] - Ambil satu item kuliner
+// GET /api/products/[id] - Ambil satu produk
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const { data, error } = await supabase
-      .from('culinary_items')
+      .from('products')
       .select('*')
       .eq('id', params.id)
       .single()
 
     if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Produk tidak ditemukan' }, { status: 404 })
+      }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
@@ -25,7 +28,7 @@ export async function GET(
   }
 }
 
-// PUT /api/culinary/[id] - Update item kuliner
+// PUT /api/products/[id] - Update produk
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -34,21 +37,16 @@ export async function PUT(
     const body = await request.json()
     
     const { data, error } = await supabase
-      .from('culinary_items')
+      .from('products')
       .update({
         name: body.name,
-        category: body.category,
         description: body.description,
-        ingredients: body.ingredients || [],
         price: body.price,
-        location: body.location,
         image_url: body.image_url,
-        rating: body.rating || 0,
-        is_signature: body.is_signature || false,
-        cooking_time: body.cooking_time,
-        serving_size: body.serving_size,
-        benefits: body.benefits || [],
+        category: body.category,
+        is_featured: body.is_featured || false,
         contact: body.contact,
+        location: body.location,
         updated_at: new Date().toISOString()
       })
       .eq('id', params.id)
@@ -59,7 +57,7 @@ export async function PUT(
     }
 
     if (!data || data.length === 0) {
-      return NextResponse.json({ error: 'Item not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Produk tidak ditemukan' }, { status: 404 })
     }
 
     return NextResponse.json(data[0])
@@ -68,14 +66,14 @@ export async function PUT(
   }
 }
 
-// DELETE /api/culinary/[id] - Hapus item kuliner
+// DELETE /api/products/[id] - Hapus produk
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const { error } = await supabase
-      .from('culinary_items')
+      .from('products')
       .delete()
       .eq('id', params.id)
 
@@ -83,7 +81,7 @@ export async function DELETE(
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ message: 'Item deleted successfully' })
+    return NextResponse.json({ message: 'Produk berhasil dihapus' })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

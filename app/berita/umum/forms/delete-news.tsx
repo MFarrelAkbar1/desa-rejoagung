@@ -1,15 +1,18 @@
+// app/berita/umum/forms/delete-news.tsx
+
 'use client'
 
 import { useState } from 'react'
 import { Trash2, AlertTriangle } from 'lucide-react'
+import { News } from '@/types/database'
 
-interface DeleteKulinerFormProps {
-  item: any
+interface DeleteNewsFormProps {
+  news: News
   onClose: () => void
   onSuccess: () => void
 }
 
-export default function DeleteKulinerForm({ item, onClose, onSuccess }: DeleteKulinerFormProps) {
+export default function DeleteNewsForm({ news, onClose, onSuccess }: DeleteNewsFormProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [confirmText, setConfirmText] = useState('')
 
@@ -20,19 +23,18 @@ export default function DeleteKulinerForm({ item, onClose, onSuccess }: DeleteKu
     }
 
     setIsDeleting(true)
-
     try {
-      const response = await fetch(`/api/culinary/${item.id}`, {
+      const response = await fetch(`/api/news/${news.id}`, {
         method: 'DELETE'
       })
 
       if (response.ok) {
         onSuccess()
       } else {
-        alert('Gagal menghapus menu kuliner')
+        alert('Gagal menghapus berita')
       }
     } catch (error) {
-      console.error('Error deleting culinary item:', error)
+      console.error('Error deleting news:', error)
       alert('Terjadi kesalahan')
     } finally {
       setIsDeleting(false)
@@ -52,49 +54,41 @@ export default function DeleteKulinerForm({ item, onClose, onSuccess }: DeleteKu
 
           <div className="mb-6">
             <p className="text-gray-600 mb-4">
-              Anda yakin ingin menghapus menu kuliner:
+              Anda yakin ingin menghapus berita:
             </p>
             <div className="bg-gray-50 p-4 rounded-lg border">
-              <h3 className="font-semibold text-lg">{item?.name}</h3>
-              <p className="text-gray-600 text-sm">{item?.location}</p>
-              <p className="text-green-600 font-semibold">{item?.price}</p>
+              <h3 className="font-semibold text-lg line-clamp-2">{news?.title}</h3>
+              <p className="text-gray-600 text-sm">Oleh: {news?.author}</p>
             </div>
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-semibold mb-2 text-red-600">
-              Ketik "HAPUS" untuk konfirmasi:
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Ketik "HAPUS" untuk mengonfirmasi:
             </label>
             <input
               type="text"
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
-              className="w-full border border-red-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               placeholder="HAPUS"
             />
           </div>
 
-          <div className="flex space-x-4">
+          <div className="flex justify-end space-x-4">
             <button
-              type="button"
               onClick={onClose}
-              className="flex-1 border border-gray-300 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-50 font-semibold"
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Batal
             </button>
             <button
               onClick={handleDelete}
               disabled={isDeleting || confirmText !== 'HAPUS'}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg disabled:opacity-50 font-semibold flex items-center justify-center"
+              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
-              {isDeleting ? (
-                'Menghapus...'
-              ) : (
-                <>
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Hapus Menu
-                </>
-              )}
+              <Trash2 className="w-4 h-4 mr-2" />
+              {isDeleting ? 'Menghapus...' : 'Hapus Berita'}
             </button>
           </div>
         </div>

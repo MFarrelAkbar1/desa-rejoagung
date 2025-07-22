@@ -1,21 +1,24 @@
-// app/api/culinary/[id]/route.ts
+// app/api/news/[id]/route.ts
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
-// GET /api/culinary/[id] - Ambil satu item kuliner
+// GET /api/news/[id] - Ambil satu berita
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const { data, error } = await supabase
-      .from('culinary_items')
+      .from('news')
       .select('*')
       .eq('id', params.id)
       .single()
 
     if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Berita tidak ditemukan' }, { status: 404 })
+      }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
@@ -25,7 +28,7 @@ export async function GET(
   }
 }
 
-// PUT /api/culinary/[id] - Update item kuliner
+// PUT /api/news/[id] - Update berita
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -33,22 +36,24 @@ export async function PUT(
   try {
     const body = await request.json()
     
+    // Generate slug baru jika title berubah
+    const slug = body.slug || body.title
+      .toLowerCase()
+      .replace(/[^\w ]+/g, '')
+      .replace(/ +/g, '-')
+
     const { data, error } = await supabase
-      .from('culinary_items')
+      .from('news')
       .update({
-        name: body.name,
-        category: body.category,
-        description: body.description,
-        ingredients: body.ingredients || [],
-        price: body.price,
-        location: body.location,
+        title: body.title,
+        content: body.content,
+        excerpt: body.excerpt,
         image_url: body.image_url,
-        rating: body.rating || 0,
-        is_signature: body.is_signature || false,
-        cooking_time: body.cooking_time,
-        serving_size: body.serving_size,
-        benefits: body.benefits || [],
-        contact: body.contact,
+        category: body.category,
+        is_published: body.is_published || false,
+        is_announcement: body.is_announcement || false,
+        author: body.author || 'Admin Desa',
+        slug: slug,
         updated_at: new Date().toISOString()
       })
       .eq('id', params.id)
@@ -59,7 +64,7 @@ export async function PUT(
     }
 
     if (!data || data.length === 0) {
-      return NextResponse.json({ error: 'Item not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Berita tidak ditemukan' }, { status: 404 })
     }
 
     return NextResponse.json(data[0])
@@ -68,14 +73,14 @@ export async function PUT(
   }
 }
 
-// DELETE /api/culinary/[id] - Hapus item kuliner
+// DELETE /api/news/[id] - Hapus berita
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const { error } = await supabase
-      .from('culinary_items')
+      .from('news')
       .delete()
       .eq('id', params.id)
 
@@ -83,7 +88,7 @@ export async function DELETE(
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ message: 'Item deleted successfully' })
+    return NextResponse.json({ message: 'Berita berhasil dihapus' })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

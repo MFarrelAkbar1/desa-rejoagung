@@ -1,103 +1,175 @@
+// app/produk-kuliner/kuliner/page.tsx
+
 'use client'
 
-import { useState, useMemo } from 'react'
-import { culinaryData } from '@/data/culinary'
+import { useState, useMemo, useEffect } from 'react'
+import { useAdminAuth } from '@/lib/auth'
 
-// Import komponen modular
-import CulinaryHeader from '@/components/CulinaryHeader'
-import CulinaryFilter from '@/components/CulinaryFilter'
-import CulinaryList from '@/components/CulinaryList'
-import CulinaryInfo from '@/components/CulinaryInfo'
-import CulinaryCard from '@/components/CulinaryCard' // ← TAMBAH INI
+// Import components
+import { 
+  KulinerHeader, 
+  KulinerFilter, 
+  KulinerCard, 
+  KulinerEmptyState, 
+  KulinerInfo 
+} from './components/kuliner_components'
+
+// Import admin forms
+import AddKulinerForm from './forms/add-kuliner'
+import EditKulinerForm from './forms/edit-kuliner'
+import DeleteKulinerForm from './forms/delete-kuliner'
+
+interface CulinaryItem {
+  id: string
+  name: string
+  category: 'makanan' | 'minuman' | 'camilan'
+  description: string
+  ingredients?: string[]
+  price?: string
+  location?: string
+  image_url?: string
+  rating?: number
+  is_signature: boolean
+  cooking_time?: string
+  serving_size?: string
+  benefits?: string[]
+  contact?: string
+  created_at: string
+  updated_at: string
+}
 
 export default function KulinerPage() {
+  const { isAdmin } = useAdminAuth()
+  const [culinaryItems, setCulinaryItems] = useState<CulinaryItem[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [showSignatureOnly, setShowSignatureOnly] = useState<boolean>(false)
+  const [loading, setLoading] = useState(true)
 
-  // Filter data berdasarkan kategori dan signature
+  // Admin states
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [editingItem, setEditingItem] = useState<CulinaryItem | null>(null)
+  const [deletingItem, setDeletingItem] = useState<CulinaryItem | null>(null)
+
+  // Fetch culinary data
+  const fetchCulinaryData = async () => {
+    try {
+      const response = await fetch('/api/culinary')
+      if (response.ok) {
+        const data = await response.json()
+        setCulinaryItems(data)
+      }
+    } catch (error) {
+      console.error('Error fetching culinary data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchCulinaryData()
+  }, [])
+
+  // Filter data
   const filteredData = useMemo(() => {
-    let filtered = culinaryData
+    let filtered = culinaryItems
 
-    // Filter berdasarkan kategori
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(item => item.category === selectedCategory)
     }
 
-    // Filter berdasarkan signature
     if (showSignatureOnly) {
-      filtered = filtered.filter(item => item.isSignature)
+      filtered = filtered.filter(item => item.is_signature)
     }
 
     return filtered
-  }, [selectedCategory, showSignatureOnly])
+  }, [culinaryItems, selectedCategory, showSignatureOnly])
 
-  // Hitung statistik
-  const stats = useMemo(() => {
-    const totalItems = culinaryData.length
-    const signatureItems = culinaryData.filter(item => item.isSignature).length
-    const avgRating = culinaryData.reduce((sum, item) => sum + item.rating, 0) / totalItems
-    return { totalItems, signatureItems, avgRating }
-  }, [])
+  // Statistics
+  const totalItems = culinaryItems.length
+  const signatureItems = culinaryItems.filter(item => item.is_signature).length
 
-  // Hitung jumlah per kategori
-  const categoryCount = useMemo(() => {
-    return culinaryData.reduce((acc, item) => {
-      acc[item.category] = (acc[item.category] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
-  }, [])
-
-  // Generate title berdasarkan filter
-  const getListTitle = () => {
-    let title = '🍽️ '
-   
-    if (selectedCategory === 'all') {
-      title += 'Semua Menu Kuliner'
-    } else {
-      const categoryLabels = {
-        makanan: 'Menu Makanan Utama',
-        minuman: 'Menu Minuman',
-        camilan: 'Menu Camilan & Jajanan'
-      }
-      title += categoryLabels[selectedCategory as keyof typeof categoryLabels] || 'Menu Kuliner'
-    }
-
-    if (showSignatureOnly) {
-      title += ' - Signature Only'
-    }
-
-    return title
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-blue-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-600"></div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
-      <div className="max-w-7xl mx-auto space-y-8">
-       
-        {/* Header Section */}
-        <CulinaryHeader
-          totalItems={stats.totalItems}
-          signatureItems={stats.signatureItems}
-          avgRating={stats.avgRating}
-        />
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-blue-50">
+      {/* Header */}
+      <KulinerHeader
+        totalItems={totalItems}
+        signatureItems={signatureItems}
+        isAdmin={isAdmin}
+        onAddClick={() => setShowAddForm(true)}
+      />
 
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
         {/* Filter Section */}
-        <CulinaryFilter
+        <KulinerFilter
           selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
           showSignatureOnly={showSignatureOnly}
+          filteredCount={filteredData.length}
+          onCategoryChange={setSelectedCategory}
           onSignatureToggle={() => setShowSignatureOnly(!showSignatureOnly)}
-          categoryCount={categoryCount}
         />
 
-        {/* Culinary List Section */}
-        <CulinaryList
-          items={filteredData}
-          title={getListTitle()}
-        />
+        {/* Menu Grid */}
+        {filteredData.length === 0 ? (
+          <KulinerEmptyState isAdmin={isAdmin} />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredData.map((item) => (
+              <KulinerCard
+                key={item.id}
+                item={item}
+                isAdmin={isAdmin}
+                onEdit={setEditingItem}
+                onDelete={setDeletingItem}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Information Section */}
-        <CulinaryInfo />
+        <KulinerInfo />
       </div>
+
+      {/* Admin Forms */}
+      {showAddForm && (
+        <AddKulinerForm
+          onClose={() => setShowAddForm(false)}
+          onSuccess={() => {
+            fetchCulinaryData()
+            setShowAddForm(false)
+          }}
+        />
+      )}
+
+      {editingItem && (
+        <EditKulinerForm
+          item={editingItem}
+          onClose={() => setEditingItem(null)}
+          onSuccess={() => {
+            fetchCulinaryData()
+            setEditingItem(null)
+          }}
+        />
+      )}
+
+      {deletingItem && (
+        <DeleteKulinerForm
+          item={deletingItem}
+          onClose={() => setDeletingItem(null)}
+          onSuccess={() => {
+            fetchCulinaryData()
+            setDeletingItem(null)
+          }}
+        />
+      )}
     </div>
   )
 }

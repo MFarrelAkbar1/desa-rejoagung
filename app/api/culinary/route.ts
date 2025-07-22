@@ -1,19 +1,15 @@
-// app/api/culinary/[id]/route.ts
+// app/api/culinary/route.ts
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
-// GET /api/culinary/[id] - Ambil satu item kuliner
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// GET /api/culinary - Ambil semua data kuliner
+export async function GET() {
   try {
     const { data, error } = await supabase
       .from('culinary_items')
       .select('*')
-      .eq('id', params.id)
-      .single()
+      .order('created_at', { ascending: false })
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
@@ -25,17 +21,14 @@ export async function GET(
   }
 }
 
-// PUT /api/culinary/[id] - Update item kuliner
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// POST /api/culinary - Tambah data kuliner baru
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
     const { data, error } = await supabase
       .from('culinary_items')
-      .update({
+      .insert([{
         name: body.name,
         category: body.category,
         description: body.description,
@@ -48,42 +41,15 @@ export async function PUT(
         cooking_time: body.cooking_time,
         serving_size: body.serving_size,
         benefits: body.benefits || [],
-        contact: body.contact,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', params.id)
+        contact: body.contact
+      }])
       .select()
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    if (!data || data.length === 0) {
-      return NextResponse.json({ error: 'Item not found' }, { status: 404 })
-    }
-
-    return NextResponse.json(data[0])
-  } catch (error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-// DELETE /api/culinary/[id] - Hapus item kuliner
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const { error } = await supabase
-      .from('culinary_items')
-      .delete()
-      .eq('id', params.id)
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-
-    return NextResponse.json({ message: 'Item deleted successfully' })
+    return NextResponse.json(data[0], { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

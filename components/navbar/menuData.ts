@@ -1,22 +1,23 @@
-import {
-  Home,
-  User,
+// data/menuData.ts
+
+import { 
+  Home, 
+  User, 
+  FileText, 
+  MapPin, 
+  Target, 
   Newspaper,
-  Package,
-  Utensils,
-  Info,
-  Users,
-  Heart,
-  FileText,
-  GraduationCap,
-  Camera,
+  Package, 
+  Utensils, 
+  Info, 
+  Database, 
+  Settings, 
+  GraduationCap, 
+  Camera, 
+  ImageIcon, 
   Video,
-  Image as ImageIcon,
-  MapPin,
-  Eye,
-  Target,
-  Database,
-  Settings
+  Facebook,
+  Globe
 } from 'lucide-react'
 
 export interface MenuItem {
@@ -82,7 +83,20 @@ export const menuItems: MenuItem[] = [
     id: 'berita',
     label: 'Berita & Artikel',
     icon: Newspaper,
-    href: '/berita'
+    submenu: [
+      {
+        id: 'berita-facebook',
+        label: 'Berita Facebook',
+        icon: Facebook,
+        href: '/berita'
+      },
+      {
+        id: 'berita-umum',
+        label: 'Berita Umum',
+        icon: Globe,
+        href: '/berita/umum'
+      }
+    ]
   },
   {
     id: 'produk-kuliner',
@@ -146,11 +160,5 @@ export const menuItems: MenuItem[] = [
         href: '/galeri/video'
       }
     ]
-  },
-  {
-    id: 'wisata',
-    label: 'Wisata',
-    icon: FileText,
-    href: '/wisata'
   }
 ]

@@ -1,4 +1,5 @@
 // components/PageWrapper.tsx
+
 'use client'
 
 import { usePathname } from 'next/navigation'
@@ -21,18 +22,18 @@ export default function PageWrapper({ children }: PageWrapperProps) {
     )
   }
 
-  // Other pages - with PostTerbaru sidebar
+  // Other pages - with PostTerbaru sidebar positioned more to the right
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
-          {/* Main Content */}
-          <div className="flex-1">
+          {/* Main Content - Takes most of the space */}
+          <div className="flex-1 min-w-0">
             {children}
           </div>
-          
-          {/* Sidebar with PostTerbaru - only show on larger screens */}
-          <div className="hidden xl:block flex-shrink-0">
+         
+          {/* Sidebar with PostTerbaru - Fixed width, positioned to the right */}
+          <div className="hidden xl:block w-80 flex-shrink-0">
             <div className="sticky top-24">
               <PostTerbaru />
             </div>
