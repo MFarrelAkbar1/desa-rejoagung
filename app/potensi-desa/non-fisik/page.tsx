@@ -2,6 +2,7 @@
 'use client'
 
 import { Users, Building, BookOpen, DollarSign, Heart, Music, Award, Briefcase } from 'lucide-react'
+import Breadcrumb from '@/components/layout/Breadcrumb'
 
 interface PotensiNonFisik {
   id: string
@@ -120,8 +121,16 @@ export default function PotensiNonFisikPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12">
+        {/* Breadcrumb - Tambahkan di sini */}
+        <Breadcrumb
+          items={[
+            { label: 'Potensi Desa', href: '/potensi-desa' },
+            { label: 'Potensi Non-Fisik', href: '/potensi-desa/non-fisik' },
+          ]}
+        />
+
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 mt-6">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
             <Users className="w-8 h-8 text-blue-600" />
           </div>

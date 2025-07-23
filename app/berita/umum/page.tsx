@@ -1,4 +1,4 @@
-// app/berita/umum/page.tsx - Updated with SearchBar
+// app/berita/umum/page.tsx - Updated with Breadcrumb
 
 'use client'
 
@@ -7,7 +7,7 @@ import { Plus, Edit, Trash2, Calendar, User, Eye, Newspaper } from 'lucide-react
 import Link from 'next/link'
 import { useAdminAuth } from '@/lib/auth'
 import PageSearchBar from '@/components/SearchBar/PageSearchBar'
-
+import Breadcrumb from '@/components/layout/Breadcrumb'
 // Import forms
 import AddNewsForm from './forms/add-news'
 import EditNewsForm from './forms/edit-news'
@@ -92,10 +92,21 @@ export default function BeritaUmumPage() {
       </div>
     )
   }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-blue-50">
+      {/* Breadcrumb - Tambahkan di sini */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-8">
+        <Breadcrumb
+          items={[
+            { label: 'Berita & Artikel', href: '/berita' },
+            { label: 'Berita Umum', href: '/berita/umum' },
+          ]}
+        />
+      </div>
+
       {/* Header */}
-      <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white pt-12 pb-4">
+      <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white pt-4 pb-4">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="flex justify-between items-start mb-4">
             <div>
@@ -198,7 +209,6 @@ export default function BeritaUmumPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
-
         {/* News Grid */}
         {filteredNews.length === 0 ? (
           <div className="text-center py-16">

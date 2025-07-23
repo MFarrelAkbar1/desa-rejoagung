@@ -9,6 +9,7 @@ import PendidikanTab from '@/components/tabs/PendidikanTab'
 import KesehatanTab from '@/components/tabs/KesehatanTab'
 import SeniTab from '@/components/tabs/SeniTab'
 import OlahragaTab from '@/components/tabs/OlahragaTab'
+import Breadcrumb from '@/components/layout/Breadcrumb'
 
 export default function DataDesaPage() {
   const [activeTab, setActiveTab] = useState('kependudukan')
@@ -44,8 +45,16 @@ export default function DataDesaPage() {
   return (
     <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
+        {/* Breadcrumb - Tambahkan di sini */}
+        <Breadcrumb
+          items={[
+            { label: 'Informasi', href: '/informasi' },
+            { label: 'Data Desa', href: '/informasi/data-desa' },
+          ]}
+        />
+
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8 mt-6">
           <div className="flex items-center mb-6">
             <div className="bg-blue-100 p-3 rounded-xl mr-4">
               <BarChart3 className="w-8 h-8 text-blue-600" />

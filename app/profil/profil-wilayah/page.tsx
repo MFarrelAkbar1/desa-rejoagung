@@ -8,6 +8,7 @@ import DemografisTab from '@/components/tabs/DemografisTab'
 import EkonomiTab from '@/components/tabs/EkonomiTab'
 import PendidikanWilayahTab from '@/components/tabs/PendidikanWilayahTab'
 import KesehatanWilayahTab from '@/components/tabs/KesehatanWilayahTab'
+import Breadcrumb from '@/components/layout/Breadcrumb'
 
 export default function ProfilWilayahPage() {
   const [activeTab, setActiveTab] = useState('demografis')
@@ -40,8 +41,16 @@ export default function ProfilWilayahPage() {
   return (
     <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
+        {/* Breadcrumb - Tambahkan di sini */}
+        <Breadcrumb
+          items={[
+            { label: 'Profil', href: '/profil' },
+            { label: 'Profil Wilayah', href: '/profil/profil-wilayah' },
+          ]}
+        />
+
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8 mt-6">
           <div className="flex items-center mb-6">
             <div className="bg-blue-100 p-3 rounded-xl mr-4">
               <BarChart3 className="w-8 h-8 text-blue-600" />

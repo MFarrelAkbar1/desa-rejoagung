@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Newspaper, Facebook, ExternalLink, Calendar, Users, MessageCircle, Heart } from 'lucide-react'
+import Breadcrumb from '@/components/layout/Breadcrumb'
 
 function useFacebookSDK() {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -220,8 +221,15 @@ export default function BeritaPage() {
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-6xl mx-auto">
+        {/* Breadcrumb - Tambahkan di sini */}
+        <Breadcrumb
+          items={[
+            { label: 'Berita Facebook', href: '/berita' },
+          ]}
+        />
+
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8 mt-6">
           <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
             <Newspaper className="w-8 h-8 mr-4 text-green-600" />
             Berita & Artikel Desa Rejoagung

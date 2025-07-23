@@ -4,7 +4,13 @@
 
 import { useState, useEffect } from 'react'
 import { useAdminAuth } from '@/lib/auth'
-
+import Breadcrumb from '@/components/layout/Breadcrumb'
+<Breadcrumb
+  items={[
+    { label: 'Produk & Kuliner', href: '/produk-kuliner' },
+    { label: 'Produk', href: '/produk-kuliner/produk' },
+  ]}
+/>
 // Import components
 import { 
   ProdukHeader, 
@@ -76,6 +82,14 @@ export default function ProdukUnggulanPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-blue-50">
+            {/* Breadcrumb Navigation */}
+      <Breadcrumb
+        items={[
+          { label: 'Produk & Kuliner', href: '/produk-kuliner' },
+          { label: 'Produk', href: '/produk-kuliner/produk' },
+        ]}
+      />
+      
       {/* Header */}
       <ProdukHeader
         totalProducts={totalProducts}
@@ -83,7 +97,6 @@ export default function ProdukUnggulanPage() {
         isAdmin={isAdmin}
         onAddClick={() => setShowAddForm(true)}
       />
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
         {/* Products Grid */}

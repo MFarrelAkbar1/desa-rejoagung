@@ -6,6 +6,7 @@ import { MapPin, School, GraduationCap, Users, Building, Map } from 'lucide-reac
 import { schools, schoolsStatistics } from '@/data/schools'
 import Legend from '@/components/Legend'
 import ToggleableLegend from '@/components/ToggleableLegend'
+import Breadcrumb from '@/components/layout/Breadcrumb'
 
 // Dynamic imports for maps to avoid SSR issues
 import dynamic from 'next/dynamic'
@@ -64,8 +65,16 @@ export default function PetaDesaPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12">
+        {/* Breadcrumb - Tambahkan di sini */}
+        <Breadcrumb
+          items={[
+            { label: 'Profil', href: '/profil' },
+            { label: 'Peta Desa', href: '/profil/peta-desa' },
+          ]}
+        />
+
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 mt-6">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
             <Map className="w-8 h-8 text-emerald-600" />
           </div>

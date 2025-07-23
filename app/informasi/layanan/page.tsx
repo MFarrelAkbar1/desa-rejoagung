@@ -1,8 +1,8 @@
-
 'use client'
 
 import { useState } from 'react'
 import { Heart, Calendar, MapPin, Phone, User, Clock, Stethoscope, Pill } from 'lucide-react'
+import Breadcrumb from '@/components/layout/Breadcrumb'
 
 interface LayananKesehatan {
   id: number
@@ -65,8 +65,16 @@ export default function LayananKesehatanPage() {
   return (
     <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
+        {/* Breadcrumb - Tambahkan di sini */}
+        <Breadcrumb
+          items={[
+            { label: 'Informasi', href: '/informasi' },
+            { label: 'Layanan', href: '/informasi/layanan' },
+          ]}
+        />
+
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8 mt-6">
           <div className="flex items-center mb-6">
             <Heart className="w-8 h-8 mr-4 text-red-600" />
             <div>
