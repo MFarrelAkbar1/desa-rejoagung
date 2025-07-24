@@ -1,30 +1,30 @@
-// app/produk-kuliner/kuliner/forms/add-kuliner.tsx
-
+// app/produk-kuliner/kuliner/forms/add-culinary-form.tsx
 'use client'
 
 import { useState } from 'react'
-import { X, Upload, Plus } from 'lucide-react'
+import { X, Plus, Minus } from 'lucide-react'
+import ImageUpload from '@/components/ImageUpload/ImageUpload'
 
-interface AddKulinerFormProps {
+interface AddCulinaryFormProps {
   onClose: () => void
   onSuccess: () => void
 }
 
-export default function AddKulinerForm({ onClose, onSuccess }: AddKulinerFormProps) {
+export default function AddCulinaryForm({ onClose, onSuccess }: AddCulinaryFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [ingredients, setIngredients] = useState<string[]>([''])
+  const [benefits, setBenefits] = useState<string[]>([''])
   const [formData, setFormData] = useState({
     name: '',
-    category: 'makanan' as 'makanan' | 'minuman' | 'camilan',
+    category: '',
     description: '',
-    ingredients: '',
     price: '',
     location: '',
     image_url: '',
-    rating: 5,
+    rating: 0,
     is_signature: false,
     cooking_time: '',
     serving_size: '',
-    benefits: '',
     contact: ''
   })
 
@@ -41,24 +41,57 @@ export default function AddKulinerForm({ onClose, onSuccess }: AddKulinerFormPro
     }
   }
 
+  const handleImageChange = (imageUrl: string) => {
+    setFormData(prev => ({ ...prev, image_url: imageUrl }))
+  }
+
+  // Handle ingredients array
+  const addIngredient = () => {
+    setIngredients([...ingredients, ''])
+  }
+
+  const removeIngredient = (index: number) => {
+    if (ingredients.length > 1) {
+      setIngredients(ingredients.filter((_, i) => i !== index))
+    }
+  }
+
+  const updateIngredient = (index: number, value: string) => {
+    const newIngredients = [...ingredients]
+    newIngredients[index] = value
+    setIngredients(newIngredients)
+  }
+
+  // Handle benefits array
+  const addBenefit = () => {
+    setBenefits([...benefits, ''])
+  }
+
+  const removeBenefit = (index: number) => {
+    if (benefits.length > 1) {
+      setBenefits(benefits.filter((_, i) => i !== index))
+    }
+  }
+
+  const updateBenefit = (index: number, value: string) => {
+    const newBenefits = [...benefits]
+    newBenefits[index] = value
+    setBenefits(newBenefits)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      // Konversi array fields
-      const ingredientsArray = formData.ingredients 
-        ? formData.ingredients.split(',').map(item => item.trim()).filter(item => item.length > 0)
-        : []
-      
-      const benefitsArray = formData.benefits 
-        ? formData.benefits.split(',').map(item => item.trim()).filter(item => item.length > 0)
-        : []
+      // Filter empty ingredients and benefits
+      const filteredIngredients = ingredients.filter(item => item.trim() !== '')
+      const filteredBenefits = benefits.filter(item => item.trim() !== '')
 
-      const payload = {
+      const submitData = {
         ...formData,
-        ingredients: ingredientsArray,
-        benefits: benefitsArray
+        ingredients: filteredIngredients,
+        benefits: filteredBenefits
       }
 
       const response = await fetch('/api/culinary', {
@@ -66,18 +99,18 @@ export default function AddKulinerForm({ onClose, onSuccess }: AddKulinerFormPro
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(submitData)
       })
 
       if (response.ok) {
         onSuccess()
       } else {
         const error = await response.json()
-        alert(`Gagal menambahkan menu: ${error.error || 'Unknown error'}`)
+        alert(`Gagal menambahkan menu kuliner: ${error.error || 'Unknown error'}`)
       }
     } catch (error) {
-      console.error('Error adding culinary item:', error)
-      alert('Terjadi kesalahan saat menambahkan menu')
+      console.error('Error adding culinary:', error)
+      alert('Terjadi kesalahan saat menambahkan menu kuliner')
     } finally {
       setIsLoading(false)
     }
@@ -85,7 +118,8 @@ export default function AddKulinerForm({ onClose, onSuccess }: AddKulinerFormPro
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        {/* Header */}
         <div className="sticky top-0 bg-white p-6 border-b rounded-t-xl">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-800">Tambah Menu Kuliner</h2>
@@ -110,62 +144,33 @@ export default function AddKulinerForm({ onClose, onSuccess }: AddKulinerFormPro
               required
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
               placeholder="Masukkan nama menu kuliner"
+              style={{ color: '#111827' }}
             />
           </div>
 
-          {/* Kategori */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kategori *
-            </label>
-            <select
-              name="category"
-              required
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            >
-              <option value="makanan">Makanan</option>
-              <option value="minuman">Minuman</option>
-              <option value="camilan">Camilan</option>
-            </select>
-          </div>
-
-          {/* Deskripsi */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Deskripsi *
-            </label>
-            <textarea
-              name="description"
-              required
-              rows={3}
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Deskripsikan menu kuliner ini..."
-            />
-          </div>
-
-          {/* Bahan-bahan */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Bahan-bahan (pisahkan dengan koma)
-            </label>
-            <textarea
-              name="ingredients"
-              rows={2}
-              value={formData.ingredients}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Contoh: Ayam, Bumbu kari, Santan, Daun jeruk"
-            />
-          </div>
-
-          {/* Row 1: Harga & Rating */}
+          {/* Row: Kategori & Harga */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kategori *
+              </label>
+              <select
+                name="category"
+                required
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
+                style={{ color: '#111827' }}
+              >
+                <option value="">Pilih Kategori</option>
+                <option value="makanan">Makanan</option>
+                <option value="minuman">Minuman</option>
+                <option value="camilan">Camilan</option>
+              </select>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Harga
@@ -175,117 +180,201 @@ export default function AddKulinerForm({ onClose, onSuccess }: AddKulinerFormPro
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Contoh: Rp 15.000 - 20.000"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Rating (1-5)
-              </label>
-              <input
-                type="number"
-                name="rating"
-                min="1"
-                max="5"
-                step="0.1"
-                value={formData.rating}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+                placeholder="Contoh: Rp 25.000"
+                style={{ color: '#111827' }}
               />
             </div>
           </div>
 
-          {/* Lokasi */}
+          {/* Deskripsi */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Lokasi Penjualan
+              Deskripsi Menu *
             </label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
+            <textarea
+              name="description"
+              required
+              rows={4}
+              value={formData.description}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Contoh: Warung Bu Sari - Jl. Raya Rejoagung"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+              placeholder="Deskripsikan menu kuliner..."
+              style={{ color: '#111827' }}
             />
           </div>
 
-          {/* URL Gambar */}
+          {/* Upload Gambar */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL Gambar
+              Gambar Menu
             </label>
-            <input
-              type="url"
-              name="image_url"
-              value={formData.image_url}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="https://example.com/image.jpg"
+            <ImageUpload
+              currentImage={formData.image_url}
+              onImageChange={handleImageChange}
+              folder="culinary"
+              maxSize={5}
+              disabled={isLoading}
             />
           </div>
 
-          {/* Row 2: Waktu Masak & Porsi */}
+          {/* Ingredients */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Bahan-bahan
+            </label>
+            <div className="space-y-2">
+              {ingredients.map((ingredient, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={ingredient}
+                    onChange={(e) => updateIngredient(index, e.target.value)}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+                    placeholder={`Bahan ${index + 1}`}
+                    style={{ color: '#111827' }}
+                  />
+                  {ingredients.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeIngredient(index)}
+                      className="p-2 text-red-500 hover:text-red-700"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addIngredient}
+                className="flex items-center text-emerald-600 hover:text-emerald-700"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Tambah Bahan
+              </button>
+            </div>
+          </div>
+
+          {/* Benefits */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Manfaat
+            </label>
+            <div className="space-y-2">
+              {benefits.map((benefit, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={benefit}
+                    onChange={(e) => updateBenefit(index, e.target.value)}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+                    placeholder={`Manfaat ${index + 1}`}
+                    style={{ color: '#111827' }}
+                  />
+                  {benefits.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeBenefit(index)}
+                      className="p-2 text-red-500 hover:text-red-700"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addBenefit}
+                className="flex items-center text-emerald-600 hover:text-emerald-700"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Tambah Manfaat
+              </button>
+            </div>
+          </div>
+
+          {/* Row: Waktu Masak & Porsi */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Waktu Masak
+                Waktu Memasak
               </label>
               <input
                 type="text"
                 name="cooking_time"
                 value={formData.cooking_time}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
                 placeholder="Contoh: 30 menit"
+                style={{ color: '#111827' }}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ukuran Porsi
+                Porsi
               </label>
               <input
                 type="text"
                 name="serving_size"
                 value={formData.serving_size}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Contoh: 1 porsi"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+                placeholder="Contoh: 4-6 orang"
+                style={{ color: '#111827' }}
               />
             </div>
           </div>
 
-          {/* Manfaat */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Manfaat (pisahkan dengan koma)
-            </label>
-            <textarea
-              name="benefits"
-              rows={2}
-              value={formData.benefits}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Contoh: Kaya protein, Menambah stamina, Bergizi tinggi"
-            />
-          </div>
+          {/* Row: Rating, Kontak & Lokasi */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Rating (0-5)
+              </label>
+              <input
+                type="number"
+                name="rating"
+                min="0"
+                max="5"
+                step="0.1"
+                value={formData.rating}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
+                style={{ color: '#111827' }}
+              />
+            </div>
 
-          {/* Kontak */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kontak
-            </label>
-            <input
-              type="text"
-              name="contact"
-              value={formData.contact}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Contoh: 0812-3456-7890"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kontak
+              </label>
+              <input
+                type="text"
+                name="contact"
+                value={formData.contact}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+                placeholder="WhatsApp/Telepon"
+                style={{ color: '#111827' }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lokasi
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+                placeholder="Alamat warung/toko"
+                style={{ color: '#111827' }}
+              />
+            </div>
           </div>
 
           {/* Menu Signature */}
@@ -296,29 +385,39 @@ export default function AddKulinerForm({ onClose, onSuccess }: AddKulinerFormPro
               name="is_signature"
               checked={formData.is_signature}
               onChange={handleChange}
-              className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 focus:ring-2"
+              className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
             />
-            <label htmlFor="is_signature" className="ml-2 text-sm font-medium text-gray-700">
-              Jadikan Menu Signature
+            <label htmlFor="is_signature" className="ml-2 block text-sm text-gray-700">
+              Tandai sebagai menu signature/andalan
             </label>
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end space-x-4 pt-4 border-t">
+          <div className="flex justify-end space-x-3 pt-4 border-t">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              disabled={isLoading}
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center"
+              className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              {isLoading ? 'Menyimpan...' : 'Tambah Menu'}
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Menyimpan...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Tambah Menu
+                </>
+              )}
             </button>
           </div>
         </form>

@@ -1,9 +1,8 @@
 // app/api/culinary/route.ts
-
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
-// GET /api/culinary - Ambil semua data kuliner
+// GET /api/culinary - Ambil semua menu kuliner
 export async function GET() {
   try {
     const { data, error } = await supabase
@@ -21,7 +20,7 @@ export async function GET() {
   }
 }
 
-// POST /api/culinary - Tambah data kuliner baru
+// POST /api/culinary - Tambah menu kuliner baru
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -49,8 +48,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json(data[0], { status: 201 })
+    return NextResponse.json(data[0])
   } catch (error) {
+    console.error('Error adding culinary:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

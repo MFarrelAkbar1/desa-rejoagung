@@ -1,16 +1,16 @@
-// app/produk-kuliner/produk/forms/add-produk.tsx
-
+// app/produk-kuliner/produk/forms/add-product-form.tsx
 'use client'
 
 import { useState } from 'react'
-import { X, Upload, Plus } from 'lucide-react'
+import { X, Plus } from 'lucide-react'
+import ImageUpload from '@/components/ImageUpload/ImageUpload'
 
-interface AddProdukFormProps {
+interface AddProductFormProps {
   onClose: () => void
   onSuccess: () => void
 }
 
-export default function AddProdukForm({ onClose, onSuccess }: AddProdukFormProps) {
+export default function AddProductForm({ onClose, onSuccess }: AddProductFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -32,6 +32,10 @@ export default function AddProdukForm({ onClose, onSuccess }: AddProdukFormProps
     } else {
       setFormData(prev => ({ ...prev, [name]: value }))
     }
+  }
+
+  const handleImageChange = (imageUrl: string) => {
+    setFormData(prev => ({ ...prev, image_url: imageUrl }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,15 +67,18 @@ export default function AddProdukForm({ onClose, onSuccess }: AddProdukFormProps
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-bold text-gray-800">Tambah Produk Unggulan</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
+      <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white p-6 border-b rounded-t-xl">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-800">Tambah Produk Unggulan</h2>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 p-2"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -86,30 +93,16 @@ export default function AddProdukForm({ onClose, onSuccess }: AddProdukFormProps
               required
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
               placeholder="Masukkan nama produk"
-            />
-          </div>
-
-          {/* Kategori */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kategori
-            </label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Contoh: Makanan Tradisional, Kerajinan, dll"
+              style={{ color: '#111827' }}
             />
           </div>
 
           {/* Deskripsi */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Deskripsi *
+              Deskripsi Produk *
             </label>
             <textarea
               name="description"
@@ -117,102 +110,139 @@ export default function AddProdukForm({ onClose, onSuccess }: AddProdukFormProps
               rows={4}
               value={formData.description}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Deskripsikan produk unggulan..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+              placeholder="Deskripsikan produk secara detail..."
+              style={{ color: '#111827' }}
             />
           </div>
 
-          {/* Harga */}
+          {/* Upload Gambar */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Harga
+              Gambar Produk
             </label>
-            <input
-              type="text"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Contoh: Rp 15.000 - 25.000 / kg"
+            <ImageUpload
+              currentImage={formData.image_url}
+              onImageChange={handleImageChange}
+              folder="products"
+              maxSize={5}
+              disabled={isLoading}
             />
           </div>
 
-          {/* Lokasi */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Lokasi Produksi
-            </label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Contoh: Dusun Krajan, Desa Rejoagung"
-            />
+          {/* Row: Harga & Kategori */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Harga
+              </label>
+              <input
+                type="text"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+                placeholder="Contoh: Rp 50.000 / kg"
+                style={{ color: '#111827' }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kategori
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
+                style={{ color: '#111827' }}
+              >
+                <option value="">Pilih Kategori</option>
+                <option value="pertanian">Pertanian</option>
+                <option value="kerajinan">Kerajinan</option>
+                <option value="makanan">Makanan Olahan</option>
+                <option value="minuman">Minuman</option>
+                <option value="tekstil">Tekstil</option>
+                <option value="lainnya">Lainnya</option>
+              </select>
+            </div>
           </div>
 
-          {/* Kontak */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kontak
-            </label>
-            <input
-              type="text"
-              name="contact"
-              value={formData.contact}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Nomor HP/WhatsApp"
-            />
-          </div>
+          {/* Row: Kontak & Lokasi */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kontak
+              </label>
+              <input
+                type="text"
+                name="contact"
+                value={formData.contact}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+                placeholder="Nomor WhatsApp atau telepon"
+                style={{ color: '#111827' }}
+              />
+            </div>
 
-          {/* URL Gambar */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL Gambar
-            </label>
-            <input
-              type="url"
-              name="image_url"
-              value={formData.image_url}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="https://example.com/gambar-produk.jpg"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lokasi
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500"
+                placeholder="Alamat atau lokasi produksi"
+                style={{ color: '#111827' }}
+              />
+            </div>
           </div>
 
           {/* Produk Unggulan */}
           <div className="flex items-center">
             <input
               type="checkbox"
-              name="is_featured"
               id="is_featured"
+              name="is_featured"
               checked={formData.is_featured}
               onChange={handleChange}
-              className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+              className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
             />
-            <label htmlFor="is_featured" className="ml-2 text-sm text-gray-700">
-              Produk Unggulan (akan ditampilkan di halaman utama)
+            <label htmlFor="is_featured" className="ml-2 block text-sm text-gray-700">
+              Tandai sebagai produk unggulan
             </label>
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end space-x-4 pt-4">
+          <div className="flex justify-end space-x-3 pt-4 border-t">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              disabled={isLoading}
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              {isLoading ? 'Menyimpan...' : 'Tambah Produk'}
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Menyimpan...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Tambah Produk
+                </>
+              )}
             </button>
           </div>
         </form>
