@@ -1,4 +1,4 @@
-// components/PostTerbaru.tsx
+// components/PostTerbaru.tsx - Fixed with working article links
 
 'use client'
 
@@ -68,36 +68,47 @@ export default function PostTerbaru() {
   }
 
   const getCategoryColor = (category?: string) => {
-    if (!category) return 'bg-gray-100 text-gray-800'
-    
-    const colors: Record<string, string> = {
-      'PEMBANGUNAN': 'bg-blue-100 text-blue-800',
-      'KESEHATAN': 'bg-green-100 text-green-800',
-      'PENDIDIKAN': 'bg-purple-100 text-purple-800',
-      'EKONOMI': 'bg-yellow-100 text-yellow-800',
-      'SOSIAL': 'bg-pink-100 text-pink-800',
-      'KEAMANAN': 'bg-red-100 text-red-800',
-      'LINGKUNGAN': 'bg-teal-100 text-teal-800'
+    switch (category?.toLowerCase()) {
+      case 'pengumuman': return 'bg-red-100 text-red-800'
+      case 'berita': return 'bg-blue-100 text-blue-800'
+      case 'kegiatan': return 'bg-green-100 text-green-800'
+      case 'ekonomi': return 'bg-yellow-100 text-yellow-800'
+      case 'kesehatan': return 'bg-purple-100 text-purple-800'
+      default: return 'bg-gray-100 text-gray-800'
     }
-    return colors[category.toUpperCase()] || 'bg-gray-100 text-gray-800'
+  }
+
+  // Generate proper article URL
+  const getArticleUrl = (post: News) => {
+    // Jika ada slug, gunakan slug. Jika tidak, gunakan ID
+    const identifier = post.slug || post.id
+    
+    // Tentukan path berdasarkan jenis post
+    if (post.is_announcement) {
+      return `/berita/pengumuman/${identifier}`
+    }
+    
+    // Untuk berita umum, gunakan kategori jika ada
+    if (post.category) {
+      const categoryPath = post.category.toLowerCase().replace(/\s+/g, '-')
+      return `/berita/${categoryPath}/${identifier}`
+    }
+    
+    // Default ke berita umum
+    return `/berita/umum/${identifier}`
   }
 
   if (loading) {
     return (
-      <div className="w-80 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white p-6">
-          <h3 className="text-xl font-bold mb-2">📰 Pos Terbaru</h3>
-          <p className="text-emerald-100 text-sm">Berita terkini dari Desa Rejoagung</p>
-        </div>
+      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         <div className="p-6">
-          <div className="animate-pulse space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-300 rounded w-full"></div>
-                <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-              </div>
-            ))}
+          <div className="animate-pulse">
+            <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+            <div className="space-y-3">
+              <div className="h-4 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -105,11 +116,16 @@ export default function PostTerbaru() {
   }
 
   return (
-    <div className="w-80 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white p-6">
-        <h3 className="text-xl font-bold mb-2">📰 Pos Terbaru</h3>
-        <p className="text-emerald-100 text-sm">Berita terkini dari Desa Rejoagung</p>
+      <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 p-4">
+        <h3 className="font-bold text-white text-lg flex items-center">
+          <Newspaper className="w-5 h-5 mr-2" />
+          Info Terkini
+        </h3>
+        <p className="text-emerald-100 text-sm mt-1">
+          Berita dan pengumuman terbaru dari Desa Rejoagung
+        </p>
       </div>
 
       {/* Tab Navigation */}
@@ -147,7 +163,7 @@ export default function PostTerbaru() {
           </div>
         ) : (
           filteredPosts.map((post) => (
-            <div key={post.id} className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
+            <article key={post.id} className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
               {/* Post Image */}
               {post.image_url && (
                 <div className="h-32 bg-gray-200 relative overflow-hidden">
@@ -155,6 +171,7 @@ export default function PostTerbaru() {
                     src={post.image_url}
                     alt={post.title}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                   {post.is_announcement && (
                     <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
@@ -163,7 +180,7 @@ export default function PostTerbaru() {
                   )}
                 </div>
               )}
-              
+             
               <div className="p-4">
                 {/* Category & Date */}
                 <div className="flex items-center justify-between mb-2">
@@ -185,7 +202,7 @@ export default function PostTerbaru() {
 
                 {/* Content */}
                 <p className="text-gray-600 text-xs mb-3 leading-relaxed">
-                  {expandedPost === post.id 
+                  {expandedPost === post.id
                     ? post.content.substring(0, 300) + (post.content.length > 300 ? '...' : '')
                     : getExcerpt(post.content, post.excerpt)
                   }
@@ -211,10 +228,10 @@ export default function PostTerbaru() {
                   </button>
                 )}
 
-                {/* Action Button */}
+                {/* Action Button - FIXED */}
                 <Link
-                  href={`/berita/umum/${post.slug || post.id}`}
-                  className="inline-flex items-center text-emerald-600 hover:text-emerald-700 text-xs font-medium transition-colors"
+                  href={getArticleUrl(post)}
+                  className="inline-flex items-center text-emerald-600 hover:text-emerald-700 text-xs font-medium transition-colors hover:underline"
                 >
                   Baca Artikel Lengkap
                   <ExternalLink className="w-3 h-3 ml-1" />
@@ -227,7 +244,7 @@ export default function PostTerbaru() {
                   </p>
                 </div>
               </div>
-            </div>
+            </article>
           ))
         )}
       </div>
@@ -236,7 +253,7 @@ export default function PostTerbaru() {
       <div className="p-4 bg-gray-50 border-t border-gray-200">
         <Link
           href="/berita/umum"
-          className="block text-center text-emerald-600 hover:text-emerald-700 text-sm font-medium transition-colors"
+          className="block text-center text-emerald-600 hover:text-emerald-700 text-sm font-medium transition-colors hover:underline"
         >
           Lihat Semua Berita →
         </Link>

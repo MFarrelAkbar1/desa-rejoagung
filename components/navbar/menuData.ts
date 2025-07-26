@@ -1,4 +1,5 @@
 // components/navbar/menuData.ts
+
 import {
   Home,
   User,
@@ -8,22 +9,12 @@ import {
   Newspaper,
   Package,
   Utensils,
-  Info,
-  Database,
-  Settings,
-  Camera,
-  ImageIcon,
-  Video,
+  BarChart3,
+  Mountain,
   Facebook,
   Globe,
-  Mountain,
-  TreePine,
-  Waves,
-  Wheat,
-  Users,
-  Building,
-  BookOpen,
-  DollarSign
+  UserCheck,
+  Award
 } from 'lucide-react'
 
 export interface MenuItem {
@@ -60,22 +51,22 @@ export const menuItems: MenuItem[] = [
         href: '/profil/tentang-desa'
       },
       {
-        id: 'profil-kepala-desa',
-        label: 'Profil Kepala Desa',
-        icon: User,
-        href: '/profil/kepala-desa'
-      },
-      {
-        id: 'profil-wilayah',
-        label: 'Profil Wilayah',
-        icon: MapPin,
-        href: '/profil/profil-wilayah'
-      },
-      {
         id: 'visi-misi',
         label: 'Visi dan Misi',
         icon: Target,
         href: '/profil/visi-misi'
+      },
+      {
+        id: 'kepala-desa',
+        label: 'Profil Kepala Desa',
+        icon: UserCheck,
+        href: '/profil/kepala-desa'
+      },
+      {
+        id: 'pahlawan-lokal',
+        label: 'Pahlawan Lokal',
+        icon: Award,
+        href: '/profil/pahlawan-lokal'
       },
       {
         id: 'peta-desa',
@@ -86,23 +77,16 @@ export const menuItems: MenuItem[] = [
     ]
   },
   {
-    id: 'berita',
-    label: 'Berita & Artikel',
-    icon: Newspaper,
-    submenu: [
-      {
-        id: 'berita-facebook',
-        label: 'Berita Facebook',
-        icon: Facebook,
-        href: '/berita'
-      },
-      {
-        id: 'berita-umum',
-        label: 'Berita Umum',
-        icon: Globe,
-        href: '/berita/umum'
-      }
-    ]
+    id: 'data-statistik',
+    label: 'Data Statistik Desa',
+    icon: BarChart3,
+    href: '/data-statistik'
+  },
+  {
+    id: 'potensi-desa',
+    label: 'Potensi Desa',
+    icon: Mountain,
+    href: '/potensi-desa'
   },
   {
     id: 'produk-kuliner',
@@ -124,65 +108,21 @@ export const menuItems: MenuItem[] = [
     ]
   },
   {
-    id: 'potensi-desa',
-    label: 'Potensi Desa',
-    icon: Mountain,
+    id: 'berita',
+    label: 'Berita & Artikel',
+    icon: Newspaper,
     submenu: [
       {
-        id: 'wisata',
-        label: 'Wisata',
-        icon: Mountain,
-        href: '/potensi-desa/wisata'
+        id: 'berita-facebook',
+        label: 'Berita Facebook',
+        icon: Facebook,
+        href: '/berita'
       },
       {
-        id: 'potensi-fisik',
-        label: 'Potensi Fisik',
-        icon: TreePine,
-        href: '/potensi-desa/fisik'
-      },
-      {
-        id: 'potensi-non-fisik',
-        label: 'Potensi Non-Fisik',
-        icon: Users,
-        href: '/potensi-desa/non-fisik'
-      }
-    ]
-  },
-  {
-    id: 'informasi',
-    label: 'Informasi',
-    icon: Info,
-    submenu: [
-      {
-        id: 'data-desa',
-        label: 'Data Desa',
-        icon: Database,
-        href: '/informasi/data-desa'
-      },
-      {
-        id: 'layanan',
-        label: 'Layanan',
-        icon: Settings,
-        href: '/informasi/layanan'
-      }
-    ]
-  },
-  {
-    id: 'galeri',
-    label: 'Galeri',
-    icon: Camera,
-    submenu: [
-      {
-        id: 'galeri-foto',
-        label: 'Galeri Foto',
-        icon: ImageIcon,
-        href: '/galeri/foto'
-      },
-      {
-        id: 'galeri-video',
-        label: 'Galeri Video',
-        icon: Video,
-        href: '/galeri/video'
+        id: 'berita-umum',
+        label: 'Berita Umum',
+        icon: Globe,
+        href: '/berita/umum'
       }
     ]
   }
