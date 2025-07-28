@@ -16,14 +16,16 @@ const SDAImage = ({
   alt: string, 
   title: string,
   className?: string,
-  zoomLevel?: "normal" | "zoom-out" | "zoom-in" | "zoom-out-more" | "zoom-in-more" | "zoom-in-max"
+  zoomLevel?: "normal" | "zoom-out" | "zoom-in" | "zoom-out-more" | "zoom-in-more" | "zoom-in-max" | "zoom-out-extra"
 }) => {
   const getImageStyle = () => {
     switch (zoomLevel) {
+      case "zoom-out-extra":
+        return "max-w-[60%] max-h-[60%] object-contain w-auto h-auto"
       case "zoom-out-more":
-        return "max-w-[75%] max-h-[75%] object-contain w-auto h-auto"
+        return "max-w-[65%] max-h-[65%] object-contain w-auto h-auto"
       case "zoom-out":
-        return "max-w-[85%] max-h-[85%] object-contain w-auto h-auto"
+        return "max-w-[70%] max-h-[70%] object-contain w-auto h-auto"
       case "zoom-in-max":
         return "max-w-full max-h-full object-contain w-auto h-auto scale-[1.35]"
       case "zoom-in-more":
@@ -37,10 +39,12 @@ const SDAImage = ({
 
   const getContainerHeight = () => {
     switch (zoomLevel) {
+      case "zoom-out-extra":
+        return "min-h-[180px] md:min-h-[220px] lg:min-h-[250px]"
       case "zoom-out-more":
-        return "min-h-[350px] md:min-h-[450px] lg:min-h-[500px]"
+        return "min-h-[200px] md:min-h-[240px] lg:min-h-[280px]"
       case "zoom-out":
-        return "min-h-[350px] md:min-h-[450px] lg:min-h-[500px]"
+        return "min-h-[220px] md:min-h-[260px] lg:min-h-[300px]"
       case "zoom-in-max":
         return "min-h-[300px] md:min-h-[400px] lg:min-h-[450px]"
       case "zoom-in-more":
@@ -120,55 +124,10 @@ export default function SumberDayaAlamTab() {
       <div className="w-full px-4 py-6 md:py-8">
         <div className="max-w-7xl mx-auto">
           
-          {/* Layout Desktop: Grid 3x3 dengan Tanaman Sayur full width di bawah */}
-          <div className="hidden lg:grid lg:grid-cols-3 lg:grid-rows-3 gap-6 md:gap-8 h-auto">
-            {/* Row 1, Col 1: Tanaman Perkebunan - DIPERBESAR LEBIH */}
-            <div className="lg:col-span-1 lg:row-span-1">
-              <SDAImage
-                src="/tanaman-perkebunan.png"
-                alt="Infografis Tanaman Perkebunan Desa Rejoagung"
-                title="Tanaman Perkebunan"
-                zoomLevel="zoom-in-more"
-              />
-            </div>
-
-            {/* Row 1-2, Col 2-3: Tanaman Buah - KOTAK DIPERKECIL */}
-            <div className="lg:col-span-2 lg:row-span-2">
-              <SDAImage
-                src="/tanaman-buah.png"
-                alt="Infografis Tanaman Buah Desa Rejoagung"
-                title="Tanaman Buah"
-                zoomLevel="zoom-out-more"
-                className="min-h-[300px] lg:min-h-[350px]"
-              />
-            </div>
-
-            {/* Row 2, Col 1: Tanaman Pangan - DIPERBESAR LEBIH */}
-            <div className="lg:col-span-1 lg:row-span-1">
-              <SDAImage
-                src="/tanaman-pangan.png"
-                alt="Infografis Tanaman Pangan Desa Rejoagung"
-                title="Tanaman Pangan"
-                zoomLevel="zoom-in-more"
-              />
-            </div>
-
-            {/* Row 3, Col 1-3: Tanaman Sayur - DIPERKECIL */}
-            <div className="lg:col-span-3 lg:row-span-1">
-              <SDAImage
-                src="/tanaman-sayur.png"
-                alt="Infografis Tanaman Sayur Desa Rejoagung"
-                title="Tanaman Sayur"
-                zoomLevel="zoom-out"
-                className="min-h-[300px] lg:min-h-[400px]"
-              />
-            </div>
-          </div>
-
-          {/* Layout Tablet: 2 kolom dengan Tanaman Buah di bawah */}
-          <div className="hidden md:grid lg:hidden gap-6 md:gap-8">
-            {/* Row 1: Perkebunan dan Pangan - DIPERBESAR LEBIH */}
-            <div className="grid md:grid-cols-2 gap-6">
+          {/* Layout Desktop dan Tablet: Grid Layout yang Sederhana */}
+          <div className="hidden md:block space-y-6 md:space-y-8">
+            {/* Baris 1: Perkebunan dan Pangan berdampingan */}
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8">
               <SDAImage
                 src="/tanaman-perkebunan.png"
                 alt="Infografis Tanaman Perkebunan Desa Rejoagung"
@@ -180,31 +139,32 @@ export default function SumberDayaAlamTab() {
                 src="/tanaman-pangan.png"
                 alt="Infografis Tanaman Pangan Desa Rejoagung"
                 title="Tanaman Pangan"
-                zoomLevel="zoom-in-max"
+                zoomLevel="zoom-in-more"
               />
             </div>
 
-            {/* Row 2: Sayur full width - DIPERKECIL */}
-            <SDAImage
-              src="/tanaman-sayur.png"
-              alt="Infografis Tanaman Sayur Desa Rejoagung"
-              title="Tanaman Sayur"
-              zoomLevel="zoom-out"
-            />
-
-            {/* Row 3: Buah full width - KOTAK DIPERKECIL */}
+            {/* Baris 2: Tanaman Buah melebar penuh */}
             <SDAImage
               src="/tanaman-buah.png"
               alt="Infografis Tanaman Buah Desa Rejoagung"
               title="Tanaman Buah"
               zoomLevel="zoom-out-more"
-              className="min-h-[350px]"
+              className="min-h-[250px] lg:min-h-[300px]"
+            />
+
+            {/* Baris 3: Tanaman Sayur melebar penuh */}
+            <SDAImage
+              src="/tanaman-sayur.png"
+              alt="Infografis Tanaman Sayur Desa Rejoagung"
+              title="Tanaman Sayur"
+              zoomLevel="zoom-out-more"
+              className="min-h-[250px] lg:min-h-[300px]"
             />
           </div>
 
           {/* Layout Mobile: Single Column */}
           <div className="md:hidden space-y-4">
-            {/* Tanaman Perkebunan - DIPERBESAR LEBIH */}
+            {/* Tanaman Perkebunan */}
             <SDAImage
               src="/tanaman-perkebunan.png"
               alt="Infografis Tanaman Perkebunan Desa Rejoagung"
@@ -212,29 +172,30 @@ export default function SumberDayaAlamTab() {
               zoomLevel="zoom-in-more"
             />
             
-            {/* Tanaman Pangan - DIPERBESAR MAKSIMAL */}
+            {/* Tanaman Pangan */}
             <SDAImage
               src="/tanaman-pangan.png"
               alt="Infografis Tanaman Pangan Desa Rejoagung"
               title="Tanaman Pangan"
-              zoomLevel="zoom-in-max"
+              zoomLevel="zoom-in-more"
             />
             
-            {/* Tanaman Sayur - DIPERKECIL */}
-            <SDAImage
-              src="/tanaman-sayur.png"
-              alt="Infografis Tanaman Sayur Desa Rejoagung"
-              title="Tanaman Sayur"
-              zoomLevel="zoom-out"
-            />
-            
-            {/* Tanaman Buah - KOTAK DIPERKECIL */}
+            {/* Tanaman Buah */}
             <SDAImage
               src="/tanaman-buah.png"
               alt="Infografis Tanaman Buah Desa Rejoagung"
               title="Tanaman Buah"
               zoomLevel="zoom-out-more"
-              className="min-h-[300px]"
+              className="min-h-[200px]"
+            />
+            
+            {/* Tanaman Sayur */}
+            <SDAImage
+              src="/tanaman-sayur.png"
+              alt="Infografis Tanaman Sayur Desa Rejoagung"
+              title="Tanaman Sayur"
+              zoomLevel="zoom-out-more"
+              className="min-h-[200px]"
             />
           </div>
         </div>

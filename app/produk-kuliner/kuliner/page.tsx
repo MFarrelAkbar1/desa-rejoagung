@@ -1,24 +1,26 @@
-// app/produk-kuliner/kuliner/page.tsx
-
+// app/produk-kuliner/kuliner/page.tsx - UPDATED
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAdminAuth } from '@/lib/auth'
+import { useSearchParams } from 'next/navigation'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 
-// Import components
-import { 
-  KulinerHeader, 
-  KulinerFilter, 
-  KulinerCard, 
-  KulinerEmptyState, 
-  KulinerInfo 
-} from './components/kuliner_components'
+// Import enhanced components
+import {
+  KulinerPageHeader,
+  KulinerStats,
+  KulinerFilter,
+  KulinerInfo
+} from './components'
 
-// Import admin forms
-import AddKulinerForm from './forms/add-kuliner'
-import EditKulinerForm from './forms/edit-kuliner'
-import DeleteKulinerForm from './forms/delete-kuliner'
+// Import enhanced grid
+import KulinerGrid from './components/KulinerGrid'
+
+// Import modals
+import CreateKulinerModal from './components/CreateKulinerModal'
+import EditKulinerModal from './components/EditKulinerModal'
+import DeleteConfirmation from '@/components/DeleteConfirmation'
 
 interface CulinaryItem {
   id: string
@@ -41,19 +43,36 @@ interface CulinaryItem {
 
 export default function KulinerPage() {
   const { isAdmin } = useAdminAuth()
+  const searchParams = useSearchParams()
+  
+  // Simple states
   const [culinaryItems, setCulinaryItems] = useState<CulinaryItem[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [showSignatureOnly, setShowSignatureOnly] = useState<boolean>(false)
-  const [loading, setLoading] = useState(true)
-
+  const [searchQuery, setSearchQuery] = useState('')
+  
   // Admin states
-  const [showAddForm, setShowAddForm] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingItem, setEditingItem] = useState<CulinaryItem | null>(null)
   const [deletingItem, setDeletingItem] = useState<CulinaryItem | null>(null)
 
-  // Fetch culinary data
+  // Check for edit parameter from detail page
+  useEffect(() => {
+    const editId = searchParams.get('edit')
+    if (editId && isAdmin) {
+      // Find and set editing item
+      const itemToEdit = culinaryItems.find(item => item.id === editId)
+      if (itemToEdit) {
+        setEditingItem(itemToEdit)
+      }
+    }
+  }, [searchParams, culinaryItems, isAdmin])
+
+  // Fetch data from API
   const fetchCulinaryData = async () => {
     try {
+      setLoading(true)
       const response = await fetch('/api/culinary')
       if (response.ok) {
         const data = await response.json()
@@ -72,113 +91,125 @@ export default function KulinerPage() {
 
   // Filter data
   const filteredData = useMemo(() => {
-    let filtered = culinaryItems
+    return culinaryItems.filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           item.description.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory
+      const matchesSignature = !showSignatureOnly || item.is_signature
+      
+      return matchesSearch && matchesCategory && matchesSignature
+    })
+  }, [culinaryItems, searchQuery, selectedCategory, showSignatureOnly])
 
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(item => item.category === selectedCategory)
+  // CRUD Handlers
+  const handleCreateSuccess = () => {
+    fetchCulinaryData()
+    setShowCreateModal(false)
+  }
+
+  const handleEditSuccess = () => {
+    fetchCulinaryData()
+    setEditingItem(null)
+    // Clear URL parameter
+    window.history.replaceState({}, '', '/produk-kuliner/kuliner')
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingItem) return
+    
+    try {
+      const response = await fetch(`/api/culinary/${deletingItem.id}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.ok) {
+        fetchCulinaryData()
+        setDeletingItem(null)
+      } else {
+        alert('Gagal menghapus menu kuliner')
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error)
+      alert('Terjadi kesalahan saat menghapus')
     }
-
-    if (showSignatureOnly) {
-      filtered = filtered.filter(item => item.is_signature)
-    }
-
-    return filtered
-  }, [culinaryItems, selectedCategory, showSignatureOnly])
-
-  // Statistics
-  const totalItems = culinaryItems.length
-  const signatureItems = culinaryItems.filter(item => item.is_signature).length
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-blue-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-600"></div>
-      </div>
-    )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-blue-50">
-      {/* Breadcrumb - Tambahkan di container yang sama dengan header */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-8">
-        <Breadcrumb
-          items={[
-            { label: 'Produk & Kuliner', href: '/produk-kuliner' },
-            { label: 'Kuliner', href: '/produk-kuliner/kuliner' },
-          ]}
-        />
+    <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <Breadcrumb
+            items={[
+              { label: 'Produk & Kuliner', href: '/produk-kuliner' },
+              { label: 'Kuliner', href: '/produk-kuliner/kuliner' },
+            ]}
+          />
+        </div>
       </div>
 
-      {/* Header */}
-      <KulinerHeader
-        totalItems={totalItems}
-        signatureItems={signatureItems}
+      {/* Page Header */}
+      <KulinerPageHeader
         isAdmin={isAdmin}
-        onAddClick={() => setShowAddForm(true)}
+        totalItems={culinaryItems.length}
+        filteredCount={filteredData.length}
+        onAddKuliner={() => setShowCreateModal(true)}
       />
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Statistics */}
+        <KulinerStats items={culinaryItems} />
+
         {/* Filter Section */}
         <KulinerFilter
           selectedCategory={selectedCategory}
           showSignatureOnly={showSignatureOnly}
           filteredCount={filteredData.length}
+          searchQuery={searchQuery}
           onCategoryChange={setSelectedCategory}
           onSignatureToggle={() => setShowSignatureOnly(!showSignatureOnly)}
+          onSearchChange={setSearchQuery}
         />
 
-        {/* Menu Grid */}
-        {filteredData.length === 0 ? (
-          <KulinerEmptyState isAdmin={isAdmin} />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredData.map((item) => (
-              <KulinerCard
-                key={item.id}
-                item={item}
-                isAdmin={isAdmin}
-                onEdit={setEditingItem}
-                onDelete={setDeletingItem}
-              />
-            ))}
-          </div>
-        )}
+        {/* Enhanced Content Grid */}
+        <KulinerGrid
+          items={filteredData}
+          loading={loading}
+          isAdmin={isAdmin}
+          onEdit={setEditingItem}
+          onDelete={setDeletingItem}
+        />
 
-        {/* Information Section */}
+        {/* Info Section */}
         <KulinerInfo />
       </div>
 
-      {/* Admin Forms */}
-      {showAddForm && (
-        <AddKulinerForm
-          onClose={() => setShowAddForm(false)}
-          onSuccess={() => {
-            fetchCulinaryData()
-            setShowAddForm(false)
-          }}
+      {/* Modals */}
+      {showCreateModal && (
+        <CreateKulinerModal
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={handleCreateSuccess}
         />
       )}
 
       {editingItem && (
-        <EditKulinerForm
+        <EditKulinerModal
           item={editingItem}
-          onClose={() => setEditingItem(null)}
-          onSuccess={() => {
-            fetchCulinaryData()
+          onClose={() => {
             setEditingItem(null)
+            // Clear URL parameter
+            window.history.replaceState({}, '', '/produk-kuliner/kuliner')
           }}
+          onSuccess={handleEditSuccess}
         />
       )}
 
       {deletingItem && (
-        <DeleteKulinerForm
-          item={deletingItem}
-          onClose={() => setDeletingItem(null)}
-          onSuccess={() => {
-            fetchCulinaryData()
-            setDeletingItem(null)
-          }}
+        <DeleteConfirmation
+          title="Hapus Menu Kuliner"
+          message={`Apakah Anda yakin ingin menghapus "${deletingItem.name}"? Tindakan ini tidak dapat dibatalkan.`}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeletingItem(null)}
         />
       )}
     </div>

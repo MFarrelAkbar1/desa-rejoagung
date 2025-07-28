@@ -1,13 +1,20 @@
 'use client'
 
 import { Users, MapPin, Package, Calendar, TrendingUp } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+  const router = useRouter()
+
+  const handleExploreClick = () => {
+    router.push('/profil/tentang-desa')
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div 
-        className="relative h-screen bg-cover bg-center bg-no-repeat"
+          className="relative h-[70vh] bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/foto-beranda.jpg')`
         }}
@@ -25,7 +32,10 @@ export default function Home() {
             </p>
             
             {/* CTA Button */}
-            <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+            <button 
+              onClick={handleExploreClick}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
               JELAJAHI DESA KAMI
             </button>
           </div>
@@ -59,7 +69,7 @@ export default function Home() {
                 <div className="flex items-center space-x-4">
                   <Users className="w-12 h-12 text-emerald-600" />
                   <div>
-                    <div className="text-3xl font-bold text-emerald-600">2,547</div>
+                    <div className="text-3xl font-bold text-emerald-600">10,709</div>
                     <div className="text-emerald-700 font-medium">Total Penduduk</div>
                   </div>
                 </div>
@@ -69,8 +79,8 @@ export default function Home() {
                 <div className="flex items-center space-x-4">
                   <MapPin className="w-12 h-12 text-blue-600" />
                   <div>
-                    <div className="text-3xl font-bold text-blue-600">1,850</div>
-                    <div className="text-blue-700 font-medium">Luas Wilayah (Ha)</div>
+                    <div className="text-3xl font-bold text-blue-600">6,7776</div>
+                    <div className="text-blue-700 font-medium">Luas Wilayah (km<sup>2</sup>)</div>
                   </div>
                 </div>
               </div>
