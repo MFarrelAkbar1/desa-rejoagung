@@ -1,10 +1,46 @@
 // data/dataDesaConstants.ts
 
 export const kependudukanData = {
-  deskripsi: "Desa Rejoagung terdiri dari 5 Dusun yaitu Dusun Krajan, Dusun Sumberagung, Dusun Rejoharjo, Dusun Purwosari, dan Dusun Mekarjaya, dengan 14 RT dan 5 RW. Jumlah penduduk Desa Rejoagung akhir Januari 2025 sebanyak 8.574 jiwa yang terdiri dari 3.975 laki-laki dan 4.599 perempuan dengan jumlah Kepala Keluarga sebanyak 2.886 KK. Sedangkan jumlah Keluarga Miskin (Gakin) 876 KK.",
+  deskripsi: "Desa Rejoagung terdiri dari 5 Dusun yaitu Dusun Krajan, Dusun Sumberagung, Dusun Rejoharjo, Dusun Purwosari, dan Dusun Mekarjaya, dengan 14 RT dan 5 RW. Jumlah penduduk Desa Rejoagung akhir Januari 2025 sebanyak 8451 jiwa yang terdiri dari 4247 laki-laki dan 4204 perempuan dengan jumlah Kepala Keluarga sebanyak 2886 KK.",
+
   table: [
     ["LAKI-LAKI", "PEREMPUAN", "TOTAL"],
-    ["3975 Jiwa", "4599 Jiwa", "8574 Jiwa"]
+    ["4247 Jiwa", "4204 Jiwa", "8451 Jiwa"]
+  ],
+
+  // Data usia
+  usiaTable: [
+    ["Kategori Usia", "Laki-laki", "Perempuan"],
+    ["Bayi/Balita (0-5 tahun)", "487", "506"],
+    ["Anak-anak (6-10 tahun)", "397", "393"],
+    ["Remaja (10-18 tahun)", "711", "750"],
+    ["Dewasa (19-59 tahun)", "2.648", "2.525"],
+    ["Lansia (> 60 tahun)", "962", "1.042"]
+  ],
+
+  // Data mata pencaharian
+  mataPencaharianTable: [
+    ["Mata Pencaharian", "Laki-laki", "Perempuan", "Total"],
+    ["Petani", "1.352", "506", "1.858"],
+    ["Buruh Tani", "1.126", "982", "2.108"],
+    ["Pengrajin", "82", "941", "1.023"],
+    ["Peternak", "242", "210", "452"],
+    ["Pedagang", "54", "42", "96"],
+    ["PNS", "26", "84", "110"],
+    ["Nelayan", "9", "0", "9"],
+    ["Montir", "4", "0", "4"],
+    ["TNI", "5", "0", "5"],
+    ["Polri", "3", "0", "3"],
+    ["Dokter Swasta", "0", "1", "1"],
+    ["Bidan Swasta", "0", "6", "6"]
+  ],
+
+  // Data agama
+  agamaTable: [
+    ["Agama/Kepercayaan", "Laki-laki", "Perempuan", "Total"],
+    ["Islam", "4.513", "3.936", "8.449"],
+    ["Hindu", "51", "31", "82"],
+    ["Katholik", "1", "3", "4"]
   ]
 }
 
@@ -21,23 +57,6 @@ export const pendidikanData = {
     ["SEKOLAH MENENGAH", "", "", ""],
     ["SMP Al Amiriyyah", "1", "-", "Ya"],
     ["SMK NU Darussalam", "1", "-", "Ya"]
-  ],
-  tingkatPendidikan: [
-    ["URAIAN", "JUMLAH ORANG"],
-    ["Usia 3-6 Tahun belum masuk TK", "145"],
-    ["Usia 3-6 Tahun yang sedang TK/Playgroup", "298"],
-    ["Usia 7-18 Tahun yang sedang sekolah", "1.876"],
-    ["Usia 18-56 Tahun tidak pernah sekolah", "23"],
-    ["Usia 18-56 Tahun pernah SD tapi tidak tamat", "156"],
-    ["Tamat SD/sederajat", "2.845"],
-    ["Tamat SLTP/sederajat", "1.923"],
-    ["Tamat SLTA/sederajat", "1.401"],
-    ["Tamat D-1/sederajat", "45"],
-    ["Tamat D-2/sederajat", "67"],
-    ["Tamat D-3/sederajat", "123"],
-    ["Tamat S-1/sederajat", "189"],
-    ["Tamat S-2/sederajat", "34"],
-    ["Tamat S-3/sederajat", "8"]
   ]
 }
 
@@ -49,13 +68,6 @@ export const kesehatanData = {
     ["PUSKESMAS PEMBANTU", "1", "1", "-", "8 Orang"],
     ["BIDAN DESA", "2", "2", "-", "2 Orang"],
     ["DUKUN BERANAK TERLATIH", "1", "-", "-", "1 Orang"]
-  ],
-  keluargaWC: [
-    ["URAIAN", "JUMLAH", "PERMANEN", "DARURAT", "BAIK", "RUSAK"],
-    ["MCK UMUM", "-", "-", "-", "-", "-"],
-    ["JAMBAN KELUARGA", "2.156", "2.089", "67", "2.024", "132"],
-    ["RESAPAN AIR LIMBAH RUMAH TANGGA", "-", "-", "-", "-", "-"],
-    ["SALURAN PEMBUANGAN AIR", "-", "-", "-", "-", "-"]
   ]
 }
 
@@ -64,38 +76,24 @@ export const seniData = {
   kesenianTradisional: ["Gandrung", "Janger", "Barong", "Seblang", "Kuntulan"],
   budayaInfo: "Kesenian tradisional (Osing) biasanya dilakukan setiap ada acara tertentu seperti pada saat 17 Agustus namun saat ini kesenian ini sudah kurang yang disebabkan dengan banyaknya kesenian konvensional yang lebih mendominasi di daerah.",
   budayaTitle: "BUDAYA",
-  budayaDesc: "Desa Rejoagung adalah salah satu dari 5 (Delapan) Desa di Kecamatan Srono Kabupaten Banyuwangi dihuni oleh ± 99,06 % Etnis/Suku Bugis secara turun temurun sejak hampir seluruh aktivitas masyarakat memiliki ciri khas Bugis Budaya yang sampai saat ini dilestarikan dan bahkan dikembangkan untuk menjaga keasliannya dan khususnya pada pelaksanaan pesta seperti:",
-  pestaPernikahan: "PESTA PERNIKAHAN"
+  budayaDesc: "Desa Rejoagung adalah salah satu dari 5 (Delapan) Desa di Kecamatan Srono Kabupaten Banyuwangi dihuni oleh ± 99,06 % Etnis/Suku Bugis secara turun temurun sejak hampir seluruh aktivitas masyarakat memiliki ciri khas Bugis Budaya yang sampai saat ini tetap terjaga dengan baik."
 }
 
 export const olahragaData = {
-  deskripsi: "Adapun jenis olahraga yang terdapat di Desa Rejoagung adalah:",
-  olahragaTradisional: [
-    "Gandrung (Tari Tradisional)",
-    "Hadrah",
-    "Jaranan",
-    "Kuntulan",
-    "Patrol",
-    "Angklung Osing",
-    "Seblang"
-  ],
-  olahragaKonvensional: [
-    "Sepakbola",
-    "Bola Voli", 
-    "Tenis Meja",
-    "Badminton",
-    "Futsal"
-  ],
+  deskripsi: "Di Desa Rejoagung terdapat berbagai macam olahraga yang dimainkan oleh masyarakat.",
+  olahragaTradisional: ["Egrang", "Gobak Sodor", "Lompat Tali", "Petak Umpet"],
+  olahragaKonvensional: ["Sepak Bola", "Voli", "Badminton", "Tenis Meja", "Takraw"],
   saranaOlahraga: [
-    ["URAIAN", "JUMLAH", "BAIK", "RUSAK", "KETERANGAN"],
-    ["Lapangan Sepakbola", "1", "1", "-", "Fasilitas Masyarakat"],
-    ["Lapangan Bola Voli", "3", "3", "-", "Fasilitas Masyarakat"],
-    ["Lapangan Badminton", "2", "2", "-", "Fasilitas Swasta"],
-    ["Meja Ping Pong", "4", "4", "-", "Fasilitas Masyarakat"]
+    ["Jenis Sarana", "Jumlah", "Kondisi"],
+    ["Lapangan Sepak Bola", "2", "Baik"],
+    ["Lapangan Voli", "3", "Baik"],
+    ["Lapangan Badminton", "1", "Cukup"],
+    ["Meja Tenis", "2", "Baik"]
   ]
 }
 
 export const tabsConfig = [
+  { id: 'booklet', label: 'Booklet Statistik', color: 'bg-indigo-600' },
   { id: 'kependudukan', label: 'Kependudukan', color: 'bg-blue-600' },
   { id: 'pendidikan', label: 'Pendidikan', color: 'bg-green-600' },
   { id: 'kesehatan', label: 'Kesehatan', color: 'bg-red-600' },

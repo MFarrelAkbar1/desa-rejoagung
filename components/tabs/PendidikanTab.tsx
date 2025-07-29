@@ -10,11 +10,6 @@ export default function PendidikanTab() {
         {pendidikanData.title}
       </h3>
       <DataTable data={pendidikanData.table} />
-      
-      <h3 className="font-bold text-gray-900 mb-4 mt-8 text-lg">
-        DATA TINGKAT PENDIDIKAN PENDUDUK
-      </h3>
-      <DataTable data={pendidikanData.tingkatPendidikan} />
     </div>
   )
 }

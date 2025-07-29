@@ -51,22 +51,22 @@ export const menuItems: MenuItem[] = [
         href: '/profil/tentang-desa'
       },
       {
-        id: 'visi-misi',
-        label: 'Visi dan Misi',
-        icon: Target,
-        href: '/profil/visi-misi'
-      },
-      {
         id: 'kepala-desa',
         label: 'Profil Kepala Desa',
         icon: UserCheck,
         href: '/profil/kepala-desa'
       },
       {
-        id: 'pahlawan-lokal',
-        label: 'Pahlawan Lokal',
+        id: 'struktur-organisasi',
+        label: 'Struktur Organisasi Desa',
         icon: Award,
-        href: '/profil/pahlawan-lokal'
+        href: '/profil/struktur-organisasi'
+      },
+      {
+        id: 'visi-misi',
+        label: 'Visi dan Misi',
+        icon: Target,
+        href: '/profil/visi-misi'
       },
       {
         id: 'peta-desa',

@@ -1,4 +1,4 @@
-// components/forms/ImageUpload.tsx - FALLBACK VERSION (jika Cloudinary belum ready)
+// components/forms/ImageUpload.tsx - FIXED untuk menggunakan API endpoint seperti kuliner/produk
 'use client'
 
 import { useState, useRef } from 'react'
@@ -12,12 +12,12 @@ interface ImageUploadProps {
   required?: boolean
 }
 
-export default function ImageUpload({ 
-  value, 
-  onChange, 
+export default function ImageUpload({
+  value,
+  onChange,
   label = "Upload Gambar",
   className = "",
-  required = false 
+  required = false
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -25,23 +25,23 @@ export default function ImageUpload({
   const [urlInput, setUrlInput] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Check if Cloudinary is configured
-  const isCloudinaryConfigured = Boolean(process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME)
-
   const handleFileUpload = async (file: File) => {
-    if (!isCloudinaryConfigured) {
-      setError('Cloudinary belum dikonfigurasi. Gunakan mode URL atau setup Cloudinary.')
+    // Validate file - FIXED untuk support JPG dan JPEG
+    const allowedTypes = [
+      'image/jpeg', 
+      'image/jpg',   // JPG support
+      'image/png', 
+      'image/webp',
+      'image/gif'
+    ]
+    
+    if (!allowedTypes.includes(file.type.toLowerCase())) {
+      setError(`File harus berupa gambar (JPG, JPEG, PNG, WEBP, GIF). File type: ${file.type}`)
       return
     }
 
-    // Validate file
-    if (!file.type.startsWith('image/')) {
-      setError('File harus berupa gambar')
-      return
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Ukuran file maksimal 5MB')
+    if (file.size > 10 * 1024 * 1024) { // 10MB
+      setError('Ukuran file maksimal 10MB')
       return
     }
 
@@ -51,30 +51,35 @@ export default function ImageUpload({
     try {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append(
-        'upload_preset',
-        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'ml_default'
-      )
+      formData.append('folder', 'berita') // Folder untuk berita
 
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        {
-          method: 'POST',
-          body: formData
-        }
-      )
+      console.log('🔄 Uploading via API...', {
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size
+      })
+
+      // Upload menggunakan API endpoint yang sama seperti kuliner/produk
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      })
 
       if (!response.ok) {
-        throw new Error('Upload failed')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('❌ Upload API error:', errorData)
+        throw new Error(errorData.error || `Upload failed: ${response.status}`)
       }
 
-      const data = await response.json()
-      onChange(data.secure_url)
+      const result = await response.json()
+      console.log('✅ Upload successful:', result.imageUrl)
       
+      onChange(result.imageUrl)
+      setMode('upload') // Reset to upload mode after success
+     
     } catch (error) {
-      console.error('Upload error:', error)
-      setError('Gagal upload gambar. Coba mode URL sebagai alternatif.')
+      console.error('❌ Upload error:', error)
+      setError(`Gagal upload gambar: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsUploading(false)
     }
@@ -83,235 +88,166 @@ export default function ImageUpload({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      console.log('📁 File selected:', {
+        name: file.name,
+        type: file.type,
+        size: file.size
+      })
       handleFileUpload(file)
     }
+    // Reset input value so same file can be selected again
+    e.target.value = ''
   }
 
   const handleUrlSubmit = () => {
     if (urlInput.trim()) {
-      // Basic URL validation
-      try {
-        new URL(urlInput)
-        onChange(urlInput.trim())
-        setUrlInput('')
-        setError(null)
-      } catch {
-        setError('URL tidak valid')
-      }
+      onChange(urlInput.trim())
+      setUrlInput('')
+      setMode('upload')
+      setError(null)
     }
   }
 
-  const handleRemove = () => {
+  const handleRemoveImage = () => {
     onChange('')
-    setUrlInput('')
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
     setError(null)
   }
 
   return (
-    <div className={className}>
-      <div className="flex items-center justify-between mb-2">
-        <label className="block text-sm font-medium text-gray-700">
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        
-        {/* Mode Toggle */}
-        <div className="flex rounded-lg border border-gray-300 overflow-hidden">
+    <div className={`space-y-4 ${className}`}>
+      <label className="block text-sm font-medium text-gray-700">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      {/* Mode Toggle */}
+      <div className="flex space-x-2 mb-4">
+        <button
+          type="button"
+          onClick={() => setMode('upload')}
+          className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+            mode === 'upload'
+              ? 'bg-emerald-600 text-white'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          📤 Upload File
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('url')}
+          className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+            mode === 'url'
+              ? 'bg-emerald-600 text-white'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          🔗 URL Gambar
+        </button>
+      </div>
+
+      {/* Current Image Preview */}
+      {value && (
+        <div className="relative inline-block">
+          <img
+            src={value}
+            alt="Preview"
+            className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+            onError={(e) => {
+              console.error('❌ Image load error:', value)
+              e.currentTarget.style.display = 'none'
+            }}
+          />
           <button
             type="button"
-            onClick={() => setMode('upload')}
-            className={`px-3 py-1 text-xs font-medium transition-colors ${
-              mode === 'upload' 
-                ? 'bg-emerald-100 text-emerald-700' 
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-            }`}
+            onClick={handleRemoveImage}
+            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
           >
-            📁 Upload
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('url')}
-            className={`px-3 py-1 text-xs font-medium transition-colors ${
-              mode === 'url' 
-                ? 'bg-emerald-100 text-emerald-700' 
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            🔗 URL
+            <X className="w-3 h-3" />
           </button>
         </div>
-      </div>
-      
-      {/* Upload Area */}
-      <div className="space-y-4">
-        {!value ? (
-          <div>
-            {mode === 'upload' ? (
-              // File Upload Mode
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  required={required && !value}
-                />
-                
-                <div className="space-y-2">
-                  <ImageIcon className="w-12 h-12 text-gray-400 mx-auto" />
-                  <div className="text-gray-600">
-                    {!isCloudinaryConfigured ? (
-                      <div className="space-y-2">
-                        <p className="text-yellow-600 font-medium">
-                          ⚠️ Cloudinary belum dikonfigurasi
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Gunakan mode URL atau setup Cloudinary
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => setMode('url')}
-                          className="text-emerald-600 hover:text-emerald-700 font-medium text-sm"
-                        >
-                          → Gunakan Mode URL
-                        </button>
-                      </div>
-                    ) : (
-                      <div>
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          disabled={isUploading}
-                          className="text-emerald-600 hover:text-emerald-700 font-medium disabled:opacity-50"
-                        >
-                          {isUploading ? 'Mengupload...' : 'Pilih gambar'}
-                        </button>
-                        <p className="text-sm text-gray-500 mt-1">
-                          atau drag & drop file di sini
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-400">
-                    PNG, JPG, GIF hingga 5MB
-                  </p>
-                </div>
+      )}
 
-                {isUploading && (
-                  <div className="mt-4">
-                    <div className="bg-gray-200 rounded-full h-2">
-                      <div className="bg-emerald-600 h-2 rounded-full animate-pulse w-1/2"></div>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-2">Mengupload gambar...</p>
-                  </div>
-                )}
+      {/* Upload Mode */}
+      {mode === 'upload' && (
+        <div className="space-y-3">
+          <div
+            className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-emerald-500 transition-colors cursor-pointer"
+            onClick={() => !isUploading && fileInputRef.current?.click()}
+          >
+            {isUploading ? (
+              <div className="space-y-2">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+                <p className="text-sm text-gray-600">Mengupload ke Cloudinary...</p>
               </div>
             ) : (
-              // URL Input Mode
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <Link className="w-12 h-12 text-gray-400 mx-auto" />
-                    <p className="text-gray-600 font-medium mt-2">
-                      Masukkan URL Gambar
-                    </p>
-                  </div>
-                  
-                  <div className="flex space-x-2">
-                    <input
-                      type="url"
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.target.value)}
-                      placeholder="https://example.com/image.jpg"
-                      className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
-                      onKeyPress={(e) => e.key === 'Enter' && handleUrlSubmit()}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleUrlSubmit}
-                      disabled={!urlInput.trim()}
-                      className="px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors"
-                    >
-                      Tambah
-                    </button>
-                  </div>
-                  
-                  <p className="text-xs text-gray-500 text-center">
-                    Pastikan URL gambar dapat diakses secara publik
-                  </p>
-                </div>
+              <div className="space-y-2">
+                <Upload className="w-8 h-8 text-gray-400 mx-auto" />
+                <p className="text-sm text-gray-600">
+                  Klik untuk upload atau drag & drop file
+                </p>
+                <p className="text-xs text-gray-400">
+                  JPG, JPEG, PNG, WEBP, GIF (max 10MB)
+                </p>
               </div>
             )}
           </div>
-        ) : (
-          <div className="relative">
-            <img
-              src={value}
-              alt="Uploaded"
-              className="w-full h-48 object-cover rounded-lg border"
-              onError={(e) => {
-                e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTUwQzIwNSAxNTAgMjEwIDE0NSAyMTAgMTQwQzIxMCAxMzUgMjA1IDEzMCAyMDAgMTMwQzE5NSAxMzAgMTkwIDEzNSAxOTAgMTQwQzE5MCAxNDUgMTk1IDE1MCAyMDAgMTUwWiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMTcwIDE4MEwyMzAgMTgwTDIyMCAxNjBMMjEwIDE3MEwxOTAgMTUwTDE3MCAxODBaIiBmaWxsPSIjOUNBM0FGIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOUNBM0FGIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPkdhbWJhciB0aWRhayBkYXBhdCBkaW11YXQ8L3RleHQ+Cjwvc3ZnPgo='
-                setError('Gambar tidak dapat dimuat')
-              }}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,.jpg,.jpeg,.png,.webp,.gif"
+            onChange={handleFileSelect}
+            className="hidden"
+            disabled={isUploading}
+          />
+        </div>
+      )}
+
+      {/* URL Mode */}
+      {mode === 'url' && (
+        <div className="space-y-3">
+          <div className="flex space-x-2">
+            <input
+              type="url"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              placeholder="https://example.com/image.jpg"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             />
             <button
               type="button"
-              onClick={handleRemove}
-              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+              onClick={handleUrlSubmit}
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
             >
-              <X className="w-4 h-4" />
+              <Link className="w-4 h-4" />
             </button>
-            
-            {/* Change button */}
-            <div className="absolute bottom-2 left-2">
-              <button
-                type="button"
-                onClick={() => mode === 'upload' ? fileInputRef.current?.click() : setMode('url')}
-                disabled={isUploading}
-                className="bg-white bg-opacity-90 text-gray-700 px-3 py-1 rounded text-sm hover:bg-opacity-100 transition-all disabled:opacity-50"
-              >
-                <Upload className="w-4 h-4 inline mr-1" />
-                Ganti
-              </button>
-            </div>
-            
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
           </div>
-        )}
+          <p className="text-xs text-gray-500">
+            Masukkan URL gambar dari internet (JPG, PNG, WEBP, GIF)
+          </p>
+        </div>
+      )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-            <div className="text-sm">{error}</div>
-            {error.includes('Cloudinary') && (
-              <button
-                onClick={() => setMode('url')}
-                className="text-xs underline hover:no-underline mt-1"
-              >
-                Gunakan mode URL sebagai alternatif
-              </button>
-            )}
-          </div>
-        )}
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+          <div className="text-sm">{error}</div>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="text-xs underline hover:no-underline mt-1"
+          >
+            Tutup
+          </button>
+        </div>
+      )}
 
-        {/* Info */}
-        {!isCloudinaryConfigured && (
-          <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
-            <div className="text-sm">
-              <strong>💡 Tips:</strong> Untuk upload file langsung, setup Cloudinary di file .env.local
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Success Message */}
+      {value && !error && (
+        <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
+          <div className="text-sm">✅ Gambar berhasil diupload!</div>
+        </div>
+      )}
     </div>
   )
 }

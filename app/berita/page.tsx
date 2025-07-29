@@ -93,130 +93,9 @@ function FacebookPageFeed() {
           data-hide-cta="false"
         />
       </div>
-     
-      {/* Tips untuk pengunjung */}
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <p className="text-blue-800 text-sm">
-          💡 <strong>Tips:</strong> Klik "Suka" pada halaman Facebook di atas untuk mendapatkan notifikasi
-          setiap ada pengumuman atau berita terbaru dari Desa Rejoagung!
-        </p>
-      </div>
     </div>
   )
 }
-
-// Komponen untuk highlight posts penting
-function HighlightedPosts() {
-  const highlightedPosts = [
-    {
-      id: 1,
-      title: "Panen Raya Kelapa Sawit 2025",
-      content: "Alhamdulillah, hasil panen kelapa sawit periode Juni 2025 mengalami peningkatan 25% dari tahun sebelumnya. Terima kasih kepada semua petani yang telah bekerja keras.",
-      date: "27 Juni 2025",
-      category: "Pertanian",
-      image: "/images/panen-sawit.jpg",
-      stats: { likes: 89, comments: 23, shares: 12 }
-    },
-    {
-      id: 2,
-      title: "Program Pelatihan Petani Modern",
-      content: "Dimulainya program pelatihan untuk meningkatkan keterampilan petani dalam menggunakan teknologi modern dan praktik pertanian berkelanjutan.",
-      date: "25 Juni 2025",
-      category: "Pendidikan",
-      stats: { likes: 67, comments: 15, shares: 8 }
-    },
-    {
-      id: 3,
-      title: "Pembangunan Infrastruktur Selesai",
-      content: "Pembangunan jalan desa dan fasilitas umum telah selesai dilaksanakan. Diharapkan dapat meningkatkan mobilitas dan kualitas hidup warga.",
-      date: "22 Juni 2025",
-      category: "Infrastruktur",
-      stats: { likes: 134, comments: 31, shares: 19 }
-    }
-  ]
-
-  const colors: Record<string, string> = {
-    'Pertanian': 'bg-green-100 text-green-800',
-    'Pendidikan': 'bg-blue-100 text-blue-800',
-    'Infrastruktur': 'bg-orange-100 text-orange-800'
-  }
-
-  const getCategoryColor = (category: string) => {
-    return colors[category] || 'bg-gray-100 text-gray-800'
-  }
-
-  return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-        <Newspaper className="w-6 h-6 mr-3 text-green-600" />
-        Berita Pilihan
-      </h2>
-     
-      <div className="space-y-6">
-        {highlightedPosts.map((post) => (
-          <div key={post.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            {/* Header */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <div className="flex items-center mb-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(post.category)}`}>
-                    {post.category}
-                  </span>
-                  <span className="text-gray-500 text-sm ml-3 flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {post.date}
-                  </span>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">{post.title}</h3>
-              </div>
-            </div>
-
-            {/* Content */}
-            <p className="text-gray-600 mb-4 leading-relaxed">{post.content}</p>
-           
-            {/* Image jika ada */}
-            {post.image && (
-              <div className="mb-4">
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-              </div>
-            )}
-
-            {/* Stats */}
-            <div className="flex items-center justify-between text-gray-500 text-sm border-t pt-4">
-              <div className="flex items-center space-x-6">
-                <span className="flex items-center">
-                  <Heart className="w-4 h-4 mr-1 text-red-500" />
-                  {post.stats.likes}
-                </span>
-                <span className="flex items-center">
-                  <MessageCircle className="w-4 h-4 mr-1 text-blue-500" />
-                  {post.stats.comments}
-                </span>
-                <span className="flex items-center">
-                  <Users className="w-4 h-4 mr-1 text-green-500" />
-                  {post.stats.shares} shares
-                </span>
-              </div>
-              <a
-                href="https://www.facebook.com/rejo.agung.374"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 transition-colors font-medium"
-              >
-                Lihat di Facebook →
-              </a>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export default function BeritaPage() {
   return (
     <div className="min-h-screen p-8">
@@ -243,7 +122,6 @@ export default function BeritaPage() {
           {/* Facebook Feed - Kolom Utama */}
           <div className="lg:col-span-3 space-y-8">
             <FacebookPageFeed />
-            <HighlightedPosts />
           </div>
         </div>
       </div>

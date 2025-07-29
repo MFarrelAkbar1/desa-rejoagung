@@ -43,9 +43,6 @@ export default function SeniTab() {
       <p className="text-gray-800 mb-4 text-sm font-medium">
         {seniData.budayaDesc}
       </p>
-      <h4 className="font-bold text-gray-900 text-base">
-        {seniData.pestaPernikahan}
-      </h4>
     </div>
   )
 }

@@ -1,14 +1,14 @@
-// app/informasi/data-desa/page.tsx
 'use client'
 
 import { useState } from 'react'
-import { BarChart3, Users, GraduationCap, Heart, Music, Trophy } from 'lucide-react'
+import { BarChart3, Users, GraduationCap, Heart, Music, Trophy, FileText } from 'lucide-react'
 import { tabsConfig } from '@/data/dataDesaConstants'
 import KependudukanTab from '@/components/tabs/KependudukanTab'
 import PendidikanTab from '@/components/tabs/PendidikanTab'
 import KesehatanTab from '@/components/tabs/KesehatanTab'
 import SeniTab from '@/components/tabs/SeniTab'
 import OlahragaTab from '@/components/tabs/OlahragaTab'
+import BookletTab from '@/components/tabs/BookletTab'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 
 export default function DataDesaPage() {
@@ -20,7 +20,8 @@ export default function DataDesaPage() {
       pendidikan: GraduationCap,
       kesehatan: Heart,
       seni: Music,
-      olahraga: Trophy
+      olahraga: Trophy,
+      booklet: FileText
     }
     return icons[tab as keyof typeof icons] || Users
   }
@@ -37,6 +38,8 @@ export default function DataDesaPage() {
         return <SeniTab />
       case 'olahraga':
         return <OlahragaTab />
+      case 'booklet':
+        return <BookletTab />
       default:
         return <KependudukanTab />
     }
@@ -45,7 +48,7 @@ export default function DataDesaPage() {
   return (
     <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
-        {/* Breadcrumb - Tambahkan di sini */}
+        {/* Breadcrumb */}
         <Breadcrumb
           items={[
             { label: 'Informasi', href: '/informasi' },
@@ -75,8 +78,8 @@ export default function DataDesaPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`
                     flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200
-                    ${activeTab === tab.id 
-                      ? `${tab.color} text-white shadow-lg` 
+                    ${activeTab === tab.id
+                      ? `${tab.color} text-white shadow-lg`
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }
                   `}

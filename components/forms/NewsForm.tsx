@@ -1,4 +1,4 @@
-// components/forms/NewsForm.tsx
+// components/forms/NewsForm.tsx - LENGKAP dengan semua field
 'use client'
 
 import { useState } from 'react'
@@ -57,6 +57,17 @@ export default function NewsForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await onSubmit(formData)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target
+    
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked
+      setFormData(prev => ({ ...prev, [name]: checked }))
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }))
+    }
   }
 
   const handleAddContentBlock = (type: 'text' | 'image') => {
@@ -144,9 +155,10 @@ export default function NewsForm({
               </label>
               <input
                 type="text"
+                name="title"
                 required
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
                 placeholder="Masukkan judul berita yang menarik"
               />
@@ -158,10 +170,11 @@ export default function NewsForm({
                 Konten Utama <span className="text-red-500">*</span>
               </label>
               <textarea
+                name="content"
                 required
                 rows={8}
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
                 placeholder="Tulis konten berita lengkap di sini. Konten ini akan menjadi isi utama dari berita Anda."
               />
@@ -173,9 +186,10 @@ export default function NewsForm({
                 Ringkasan (Excerpt)
               </label>
               <textarea
+                name="excerpt"
                 rows={3}
                 value={formData.excerpt}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
                 placeholder="Ringkasan singkat yang akan muncul di daftar berita (opsional)"
               />
@@ -203,55 +217,78 @@ export default function NewsForm({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Kategori
               </label>
-              <input
-                type="text"
+              <select
+                name="category"
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
-                placeholder="Contoh: Pembangunan, Sosial, Pendidikan"
-              />
+              >
+                <option value="">Pilih Kategori</option>
+                <option value="berita">Berita</option>
+                <option value="pengumuman">Pengumuman</option>
+                <option value="kegiatan">Kegiatan</option>
+                <option value="ekonomi">Ekonomi</option>
+                <option value="kesehatan">Kesehatan</option>
+                <option value="pendidikan">Pendidikan</option>
+                <option value="infrastruktur">Infrastruktur</option>
+                <option value="budaya">Budaya</option>
+              </select>
             </div>
 
             {/* Author */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Penulis
+                Penulis <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
+                name="author"
+                required
                 value={formData.author}
-                onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
                 placeholder="Nama penulis berita"
               />
             </div>
           </div>
+        </div>
 
-          {/* Status Checkboxes */}
-          <div className="flex flex-wrap items-center gap-6">
-            <label className="flex items-center">
+        {/* Publication Settings */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
+            📤 Pengaturan Publikasi
+          </h2>
+          
+          <div className="space-y-4">
+            {/* Published Status */}
+            <div className="flex items-center">
               <input
                 type="checkbox"
+                name="is_published"
+                id="is_published"
                 checked={formData.is_published}
-                onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+                onChange={handleInputChange}
                 className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 h-4 w-4"
               />
-              <span className="ml-2 text-sm text-gray-700">
-                Publikasikan berita (akan terlihat oleh publik)
-              </span>
-            </label>
-            
-            <label className="flex items-center">
+              <label htmlFor="is_published" className="ml-2 text-sm text-gray-700">
+                Publikasikan berita sekarang
+              </label>
+            </div>
+
+            {/* Announcement Status */}
+            <div className="flex items-center">
               <input
                 type="checkbox"
+                name="is_announcement"
+                id="is_announcement"
                 checked={formData.is_announcement}
-                onChange={(e) => setFormData({ ...formData, is_announcement: e.target.checked })}
+                onChange={handleInputChange}
                 className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 h-4 w-4"
               />
-              <span className="ml-2 text-sm text-gray-700">
+              <label htmlFor="is_announcement" className="ml-2 text-sm text-gray-700">
                 Tandai sebagai pengumuman penting
-              </span>
-            </label>
+              </label>
+            </div>
           </div>
         </div>
 

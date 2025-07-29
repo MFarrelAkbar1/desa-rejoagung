@@ -124,7 +124,6 @@ export default function GeografiPendudukTab() {
               src="/tingkat-pendidikan1.png"
               alt="Infografis Tingkat Pendidikan Desa Rejoagung"
               title="Tingkat Pendidikan"
-              zoomlevel="normal"
               isRow2={true}
             />
             
