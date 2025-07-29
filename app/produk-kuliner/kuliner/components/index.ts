@@ -1,13 +1,12 @@
 // app/produk-kuliner/kuliner/components/index.ts
 
-// Main components (sudah ada sebelumnya)
+// Main components (REMOVED KulinerInfo export)
 export { default as KulinerPageHeader } from './KulinerPageHeader'
 export { default as KulinerGrid } from './KulinerGrid'
 export { default as KulinerStats } from './KulinerStats'
 export { default as KulinerFilter } from './KulinerFilter'
-export { default as KulinerInfo } from './KulinerInfo'
 
-// Simple modal components (BARU - versi simplified)
+// Simple modal components
 export { default as CreateKulinerModal } from './CreateKulinerModal'
 export { default as EditKulinerModal } from './EditKulinerModal'
 

@@ -116,7 +116,7 @@ export default function SaranaPrasaranaTab() {
                 src="/layanan-kesehatan.png"
                 alt="Infografis Layanan Kesehatan Desa Rejoagung"
                 title="Layanan Kesehatan"
-                zoomLevel="normal"
+                zoomLevel="zoom-out"
               />
             </div>
 
@@ -126,7 +126,7 @@ export default function SaranaPrasaranaTab() {
                 src="/jumlah-sekolah.png"
                 alt="Infografis Jumlah Sekolah Desa Rejoagung"
                 title="Jumlah Sekolah"
-                zoomLevel="normal"
+                zoomLevel="zoom-out"
               />
             </div>
 
@@ -136,7 +136,7 @@ export default function SaranaPrasaranaTab() {
                 src="/internet.png"
                 alt="Infografis Rumah dengan Akses Internet Desa Rejoagung"
                 title="Rumah dengan Akses Internet"
-                zoomLevel="normal"
+                zoomLevel="zoom-out"
               />
             </div>
           </div>
@@ -197,35 +197,39 @@ export default function SaranaPrasaranaTab() {
             />
           </div>
         </div>
-
         {/* Footer Info */}
         <div className="max-w-7xl mx-auto mt-8 md:mt-12 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-            {/* Sarana Pendidikan */}
+          <div className="space-y-6 md:space-y-8">
+          <div>
+            <div className="text-xl md:text-xl text-black justify-paragraph">
+            <p>Dalam upaya meningkatkan kualitas hidup masyarakat, Desa Rejoagung terus berupaya mengembangkan sarana dan prasarana dasar yang mendukung kegiatan sosial, ekonomi, dan kesehatan warga. Untuk menunjang mobilitas dan kebutuhan darurat masyarakat, desa menyediakan mobil desa sebagai sarana transportasi umum bagi keperluan administratif maupun sosial. Selain itu, terdapat juga ambulans desa yang siap digunakan dalam keadaan darurat medis.</p>
+            </div>
+          </div>
+
             <div>
-              <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4">
-                🏫 Sarana Pendidikan
-              </h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>🎓 <strong>TK:</strong> 2 unit dengan 80 siswa</p>
-                <p>📚 <strong>SD:</strong> 4 unit dengan 420 siswa</p>
-                <p>📖 <strong>SMP:</strong> 2 unit dengan 180 siswa</p>
-                <p>🎯 <strong>SMK:</strong> 1 unit dengan 150 siswa</p>
+              <div className="text-xl md:text-xl text-black justify-paragraph">
+                <p>Di bidang kesehatan, desa memiliki 9 Posyandu aktif yang tersebar di beberapa titik dusun. Posyandu ini secara rutin memberikan pelayanan kesehatan ibu dan anak, imunisasi, penimbangan balita, serta edukasi gizi. Dari segi infrastruktur, Desa Rejoagung telah memiliki akses jalan yang cukup baik dengan sebagian besar jalannya sudah beraspal, serta keberadaan Jembatan Gantung Rejoagung yang menghubungkan antarwilayah desa dan mempermudah akses warga, terutama di daerah yang dipisahkan oleh aliran sungai atau medan berat.</p>
               </div>
             </div>
 
-            {/* Sarana Kesehatan & Infrastruktur */}
             <div>
-              <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4">
-                🏥 Kesehatan & Infrastruktur
-              </h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>🏥 <strong>Puskesmas:</strong> 1 unit dengan 5 dokter</p>
-                <p>💊 <strong>Posyandu:</strong> 6 unit aktif</p>
-                <p>📶 <strong>Internet:</strong> 75% rumah berkoneksi</p>
-                <p>🛣️ <strong>Jalan:</strong> 85% jalan beraspal baik</p>
+              <div className="text-xl md:text-xl text-black justify-paragraph">
+                <p>Meski demikian, jumlah fasilitas pendidikan formal di desa masih tergolong minim, terutama jika dibandingkan dengan jumlah penduduk yang terus bertambah. Hal ini menjadi tantangan tersendiri dalam penyediaan layanan pendidikan yang merata dan berkualitas, khususnya untuk anak-anak usia sekolah.</p>
               </div>
             </div>
+
+            <div>
+              <div className="text-xl md:text-xl text-black justify-paragraph">
+                <p>Sementara itu, sektor peternakan dan perikanan di Desa Rejoagung saat ini masih dalam tahap pengembangan. Kepemilikan ternak oleh warga umumnya masih berskala kecil dan bersifat tradisional, sehingga kontribusinya terhadap perekonomian desa belum terlalu signifikan. Meski demikian, sektor ini menyimpan potensi besar untuk dikembangkan di masa depan melalui dukungan program pemerintah, pelatihan, serta inisiatif swadaya masyarakat.</p>
+              </div>
+            </div>
+          <style jsx>{`
+            .justify-paragraph p {
+              text-align: justify;
+              text-justify: inter-word;
+            }
+          `}</style>
+          <div className="justify-paragraph"></div>
           </div>
         </div>
       </div>

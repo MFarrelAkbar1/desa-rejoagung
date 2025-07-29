@@ -132,14 +132,14 @@ export default function SumberDayaAlamTab() {
                 src="/tanaman-perkebunan.png"
                 alt="Infografis Tanaman Perkebunan Desa Rejoagung"
                 title="Tanaman Perkebunan"
-                zoomLevel="zoom-in-more"
+                zoomLevel="normal"
               />
               
               <SDAImage
                 src="/tanaman-pangan.png"
                 alt="Infografis Tanaman Pangan Desa Rejoagung"
                 title="Tanaman Pangan"
-                zoomLevel="zoom-in-more"
+                zoomLevel="normal"
               />
             </div>
 
@@ -199,42 +199,58 @@ export default function SumberDayaAlamTab() {
             />
           </div>
         </div>
-
         {/* Footer Info */}
-        <div className="max-w-7xl mx-auto mt-8 md:mt-12 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-            {/* Potensi Alam */}
+        <div className="max-w-7xl mx-auto mt-8 md:mt-12 bg-white rounded-lg p-4 md:p-6 border shadow-sm ">
+          <div className="space-y-6 md:space-y-8">
+            {/* Intro SDA */}
             <div>
-              <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4">
-                🌱 Potensi Sumber Daya Alam
-              </h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>🌴 <strong>Perkebunan:</strong> Kelapa sawit sebagai komoditas utama</p>
-                <p>🌾 <strong>Pangan:</strong> Padi, jagung, dan umbi-umbian lokal</p>
-                <p>🍊 <strong>Buah-buahan:</strong> Jeruk, mangga, dan buah tropis</p>
-                <p>🥬 <strong>Sayuran:</strong> Cabai, tomat, dan sayuran hijau</p>
+              <div className="text-xl md:text-xl text-black justify-paragraph">
+                <p>Desa Rejoagung merupakan salah satu desa dengan potensi sumber daya alam yang sangat menjanjikan, khususnya di sektor pertanian dan perkebunan. Hingga saat ini, sektor pertanian menjadi tulang punggung utama perekonomian masyarakat desa. Dengan luas lahan sawah mencapai 63,776 hektare per tahun 2025, serta dukungan kondisi iklim dan struktur tanah yang subur, Desa Rejoagung mampu menghasilkan berbagai komoditas pertanian dengan produktivitas cukup tinggi.</p>
               </div>
             </div>
 
-            {/* Karakteristik Lahan */}
+            {/* Pertanian */}
             <div>
-              <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4">
-                🌍 Karakteristik Lahan
+              <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 justify-paragraph">
+                🌾 Pertanian
               </h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>🌿 <strong>Iklim:</strong> Tropis dengan curah hujan tinggi</p>
-                <p>🏞️ <strong>Topografi:</strong> Dataran rendah yang subur</p>
-                <p>💧 <strong>Irigasi:</strong> Sistem pengairan yang memadai</p>
-                <p>🌱 <strong>Produktivitas:</strong> Lahan cocok untuk pertanian intensif</p>
+              <div className="text-xl md:text-xl text-black justify-paragraph">
+                <p>Komoditas utama yang dibudidayakan meliputi padi dan jagung, yang menjadi hasil pertanian unggulan desa. Selain itu, masyarakat juga menanam berbagai jenis tanaman hortikultura, seperti buah-buahan dan sayur-mayur, yang memiliki nilai jual tinggi dan diminati pasar. Produk-produk pertanian dari Desa Rejoagung dipasarkan ke berbagai daerah, di antaranya ke Pasar Induk Genteng di Banyuwangi dan Pasar Caringin di Bandung. Keberadaan BUMDesa yang bergerak di bidang perdagangan pertanian turut memperkuat rantai distribusi hasil panen. Melalui unit usaha ini, hasil pertanian dikelola dan dipasarkan secara lebih profesional dan terorganisir, sehingga memberikan nilai tambah bagi petani dan meningkatkan pendapatan asli desa.</p>
               </div>
             </div>
+
+            {/* Perkebunan */}
+            <div>
+              <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
+                🌴 Perkebunan
+              </h3>
+              <div className="text-xl md:text-xl text-black justify-paragraph">
+                <p>Selain pertanian, sektor perkebunan rakyat juga berkembang dengan cukup baik. Beberapa komoditas yang banyak dihasilkan antara lain pisang dan kelapa, yang diolah menjadi produk turunan seperti sale pisang dan gula merah, baik untuk konsumsi lokal maupun dipasarkan keluar desa. Komoditas unggulan lainnya adalah durian dan tembakau, yang memiliki nilai ekonomi tinggi. Hasil panen dari dua komoditas ini dipasarkan ke wilayah sekitar, seperti Banyuwangi dan Jember, dan menjadi sumber pendapatan tambahan bagi petani, terutama di luar musim tanam padi.</p>
+              </div>
+            </div>
+
+            {/* Peternakan */}
+            <div>
+              <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
+                🐄 Peternakan
+              </h3>
+              <div className="text-xl md:text-xl text-black justify-paragraph">
+                <p>Sementara itu, sektor peternakan dan perikanan di Desa Rejoagung saat ini masih dalam tahap pengembangan. Kepemilikan ternak oleh warga umumnya masih berskala kecil dan bersifat tradisional, sehingga kontribusinya terhadap perekonomian desa belum terlalu signifikan. Meski demikian, sektor ini menyimpan potensi besar untuk dikembangkan di masa depan melalui dukungan program pemerintah, pelatihan, serta inisiatif swadaya masyarakat.</p>
+              </div>
+            </div>
+            <style jsx>{`
+            .justify-paragraph p {
+              text-align: justify;
+              text-justify: inter-word;
+            }
+          `}</style>
+          <div className="justify-paragraph"></div>
           </div>
         </div>
       </div>
-
       {/* Footer */}
       <div className="bg-gray-800 text-white py-4 md:py-6">
-        <div className="max-w-full px-4 text-center">
+        <div className="max-w-full px-4 text-center ">
           <p className="text-sm opacity-80">
             © 2025 KKN-PPM Serona Srono - Universitas Gadjah Mada
           </p>

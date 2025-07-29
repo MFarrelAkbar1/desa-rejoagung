@@ -124,6 +124,7 @@ export default function GeografiPendudukTab() {
               src="/tingkat-pendidikan1.png"
               alt="Infografis Tingkat Pendidikan Desa Rejoagung"
               title="Tingkat Pendidikan"
+              zoomlevel="normal"
               isRow2={true}
             />
             
@@ -139,32 +140,37 @@ export default function GeografiPendudukTab() {
 
         {/* Footer Info */}
         <div className="max-w-7xl mx-auto mt-8 md:mt-12 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-            {/* Informasi Umum */}
+          <div className="space-y-6 md:space-y-8">
+            {/* Wilayah Geografi */}
             <div>
-              <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4">
-                ℹ️ Informasi Umum
+              <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
+                🗺️ Wilayah Geografi
               </h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>📍 <strong>Lokasi:</strong> Kecamatan Srono, Kabupaten Banyuwangi</p>
-                <p>📏 <strong>Luas:</strong> 6.7776 km² dengan 4 dusun</p>
-                <p>👥 <strong>Penduduk:</strong> 10.715 jiwa dalam 4.413 keluarga</p>
-                <p>🏘️ <strong>Administrasi:</strong> 4 Dusun, 9 RW, 50 RT</p>
-              </div>
+                <div className="text-xl md:text-xl text-black">
+                <p>Secara geografis, Desa Rejoagung terbagi menjadi empat dusun, yaitu Dusun Sumberagung, Dusun Sumberagung Lor, Dusun Sumbergroto, dan Dusun Sumbergroto Lor.</p>
+                </div>
             </div>
 
-            {/* Potensi Unggulan */}
+            {/* Kegiatan Ekonomi */}
             <div>
-              <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4">
-                🌟 Potensi Unggulan
-              </h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>🌾 <strong>Pertanian:</strong> Kelapa sawit dan padi sebagai komoditas utama</p>
-                <p>👷 <strong>SDM:</strong> Mayoritas pekerja swasta dengan pendidikan SMP</p>
-                <p>🕌 <strong>Sosial:</strong> Harmoni beragama dengan mayoritas Muslim</p>
-                <p>🏞️ <strong>Geografis:</strong> Dataran rendah cocok untuk pertanian</p>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
+                💼 Kegiatan Ekonomi
+                </h3>
+                <div className="text-xl md:text-xl text-black justify-paragraph">
+                <p>Mengenai pertumbuhan perekonomian desa, Desa Rejoagung masih didominasi oleh sektor pertanian dan perkebunan, yang menjadi tulang punggung kehidupan masyarakat. Sektor ini tidak hanya menjadi sumber penghasilan utama, tetapi juga berperan besar dalam ketahanan pangan lokal. Di samping itu, cukup banyak masyarakat yang bekerja sebagai pegawai swasta, baik di sektor formal yang berada di dalam maupun di luar desa. Pekerjaan ini memberikan alternatif penghasilan yang lebih stabil, terutama bagi generasi muda yang telah menempuh pendidikan menengah dan tinggi.</p>
+                <div></div>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
+                </h3>
+                <p>Sebagian warga lainnya mengandalkan pendapatan dari usaha di sektor informal, seperti menjadi pedagang kecil, pemilik warung, pengelola toko kelontong, penjual makanan, hingga pelaku industri rumah tangga. Meskipun berskala kecil, kegiatan ekonomi ini memiliki peran penting dalam mendukung kebutuhan sehari-hari masyarakat dan memperkuat perekonomian lokal. Keberadaan industri mikro dan kecil, perdagangan lokal, serta usaha retail turut memberikan kontribusi nyata terhadap kesejahteraan warga Desa Rejoagung.</p>
               </div>
             </div>
+                      <style jsx>{`
+            .justify-paragraph p {
+              text-align: justify;
+              text-justify: inter-word;
+            }
+          `}</style>
+          <div className="justify-paragraph"></div>
           </div>
         </div>
       </div>
