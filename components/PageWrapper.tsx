@@ -1,4 +1,5 @@
-// components/PageWrapper.tsx - PostTerbaru dengan tombol toggle
+// components/PageWrapper.tsx - Modified untuk menampilkan PostTerbaru di halaman potensi desa
+
 'use client'
 
 import { usePathname } from 'next/navigation'
@@ -24,9 +25,9 @@ export default function PageWrapper({ children }: PageWrapperProps) {
     '/admin/dashboard'
   ]
 
-  // Pages that need full width (like infografis)
+  // Pages that need full width (like infografis) - POTENSI DESA DIHAPUS DARI SINI
   const fullWidthPages = [
-    '/potensi-desa', // Infografis halaman
+    // '/potensi-desa', // DIHAPUS - sekarang akan menampilkan PostTerbaru
     '/profil/profil-wilayah',
     '/informasi/data-desa'
   ]
@@ -46,7 +47,7 @@ export default function PageWrapper({ children }: PageWrapperProps) {
     )
   }
 
-  // Other pages - PostTerbaru dengan toggle
+  // Other pages - PostTerbaru dengan toggle (TERMASUK POTENSI DESA)
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
       {/* Toggle Button - Selalu terlihat di desktop */}

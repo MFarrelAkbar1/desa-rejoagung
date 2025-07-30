@@ -1,4 +1,5 @@
-// app/potensi-desa/page.tsx
+// app/potensi-desa/page.tsx - Original Version (tanpa PostTerbaru)
+
 'use client'
 
 import { useState } from 'react'
@@ -71,7 +72,7 @@ export default function PotensiDesaPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <Breadcrumb items={[{ label: 'Potensi Desa', href: '/potensi-desa' }]} />
-        
+       
         {/* Header */}
         <div className="mt-6 mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -88,16 +89,16 @@ export default function PotensiDesaPage() {
             {tabs.map((tab) => {
               const IconComponent = tab.icon
               const isActive = activeTab === tab.id
-              
+             
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
                     flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200
-                    ${isActive 
-                      ? `${tab.color} text-white shadow-lg transform scale-105` 
-                      : `bg-gray-100 text-gray-700 hover:bg-gray-200 ${tab.hoverColor} hover:text-white`
+                    ${isActive
+                      ? `${tab.color} text-white shadow-lg transform scale-105`
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }
                   `}
                 >
@@ -107,11 +108,11 @@ export default function PotensiDesaPage() {
               )
             })}
           </div>
-        </div>
-
-        {/* Tab Content */}
-        <div className="bg-white rounded-lg shadow-lg border border-gray-200">
-          {renderTabContent()}
+          
+          {/* Tab Content */}
+          <div className="bg-white rounded-b-lg border-t-0 min-h-[600px]">
+            {renderTabContent()}
+          </div>
         </div>
       </div>
     </div>

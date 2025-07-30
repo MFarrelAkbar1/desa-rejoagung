@@ -57,34 +57,42 @@ export function useAdminAuth() {
       setIsLoading(false)
     }
   }
+// Perbaikan untuk function loginAdmin di lib/auth.tsx
 
-  const loginAdmin = async (username: string, password: string): Promise<boolean> => {
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password })
-      })
+const loginAdmin = async (username: string, password: string): Promise<boolean> => {
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password })
+    })
 
-      if (response.ok) {
-        const data = await response.json()
-        localStorage.setItem('admin_token', data.token)
-        setIsAdmin(true)
-        setAdminUser(data.user)
-        return true
-      } else {
-        const error = await response.json()
-        console.error('Login error:', error.message)
+    if (response.ok) {
+      const data = await response.json()
+      localStorage.setItem('admin_token', data.token)
+      setIsAdmin(true)
+      setAdminUser(data.user)
+      return true
+    } else {
+      // Perbaikan error handling
+      try {
+        const errorData = await response.json()
+        console.error('Login error:', errorData.error || 'Authentication failed')
+        return false
+      } catch (parseError) {
+        // Jika response tidak bisa di-parse sebagai JSON
+        console.error('Login error: Failed to parse error response')
         return false
       }
-    } catch (error) {
-      console.error('Login error:', error)
-      return false
     }
+  } catch (error) {
+    // Network error atau error lainnya
+    console.error('Login error:', error instanceof Error ? error.message : 'Network error')
+    return false
   }
-
+}
   const logoutAdmin = async () => {
     try {
       const token = localStorage.getItem('admin_token')
