@@ -1,8 +1,9 @@
-// app/api/products/route.ts
+// app/api/products/route.ts - FIXED VERSION
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth-middleware'
 
-// GET - Ambil semua produk
+// GET - Ambil semua produk (tetap public)
 export async function GET() {
   try {
     const { data, error } = await supabase
@@ -16,17 +17,24 @@ export async function GET() {
     }
 
     return NextResponse.json({ data })
+
   } catch (error) {
     console.error('Error in GET /api/products:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// POST - Tambah produk baru
+// POST - Tambah produk baru (HANYA ADMIN)
 export async function POST(request: NextRequest) {
   try {
+    // ✅ VALIDASI AUTENTIKASI ADMIN
+    const authResult = await verifyAdminAuth(request)
+    if (!authResult.isValid) {
+      return createUnauthorizedResponse(authResult.error)
+    }
+
     const body = await request.json()
-    
+   
     // Validasi data required
     if (!body.name || !body.category || !body.description) {
       return NextResponse.json(
@@ -61,17 +69,24 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ data, success: true })
+
   } catch (error) {
     console.error('Error in POST /api/products:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// PUT - Update produk
+// PUT - Update produk (HANYA ADMIN)
 export async function PUT(request: NextRequest) {
   try {
+    // ✅ VALIDASI AUTENTIKASI ADMIN
+    const authResult = await verifyAdminAuth(request)
+    if (!authResult.isValid) {
+      return createUnauthorizedResponse(authResult.error)
+    }
+
     const body = await request.json()
-    
+   
     if (!body.id) {
       return NextResponse.json({ error: 'ID produk harus diisi' }, { status: 400 })
     }
@@ -114,15 +129,22 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json({ data, success: true })
+
   } catch (error) {
     console.error('Error in PUT /api/products:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// DELETE - Hapus produk
+// DELETE - Hapus produk (HANYA ADMIN)
 export async function DELETE(request: NextRequest) {
   try {
+    // ✅ VALIDASI AUTENTIKASI ADMIN
+    const authResult = await verifyAdminAuth(request)
+    if (!authResult.isValid) {
+      return createUnauthorizedResponse(authResult.error)
+    }
+
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
@@ -147,6 +169,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, message: 'Produk berhasil dihapus' })
+
   } catch (error) {
     console.error('Error in DELETE /api/products:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

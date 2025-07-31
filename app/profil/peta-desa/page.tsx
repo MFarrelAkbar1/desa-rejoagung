@@ -1,39 +1,78 @@
-// app/profil/peta-desa/page.tsx - Final Version with Toggleable Legend
+// app/profil/peta-desa/page.tsx - OPTIMIZED VERSION
+
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { MapPin, School, GraduationCap, Users, Building, Map } from 'lucide-react'
 import { schools, schoolsStatistics } from '@/data/schools'
 import Legend from '@/components/Legend'
 import ToggleableLegend from '@/components/ToggleableLegend'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 
-// Dynamic imports for maps to avoid SSR issues
+// Optimized dynamic imports with better loading states
 import dynamic from 'next/dynamic'
 
+// Pre-load components with optimized chunks
 const DesaMapContainer = dynamic(() => import('@/components/DesaMapContainer'), {
   ssr: false,
-  loading: () => <MapLoadingSpinner />
+  loading: () => <OptimizedMapLoadingSpinner mapType="desa" />
 })
 
 const SekolahMapContainer = dynamic(() => import('@/components/MapContainer'), {
   ssr: false,
-  loading: () => <MapLoadingSpinner />
+  loading: () => <OptimizedMapLoadingSpinner mapType="sekolah" />
 })
 
-function MapLoadingSpinner() {
+// Enhanced loading spinner with progress indication
+function OptimizedMapLoadingSpinner({ mapType }: { mapType: 'desa' | 'sekolah' }) {
+  const [loadingText, setLoadingText] = useState('Mempersiapkan peta...')
+  
+  useEffect(() => {
+    const messages = [
+      'Mempersiapkan peta...',
+      'Memuat data lokasi...',
+      'Menginisialisasi marker...',
+      'Hampir selesai...'
+    ]
+    
+    let index = 0
+    const interval = setInterval(() => {
+      index = (index + 1) % messages.length
+      setLoadingText(messages[index])
+    }, 800)
+    
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <div className="w-full h-[600px] bg-gray-100 rounded-lg flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Memuat peta...</p>
+    <div className="w-full h-[600px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+      <div className="text-center max-w-xs">
+        <div className="relative mb-6">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-emerald-200 border-t-emerald-600 mx-auto"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            {mapType === 'desa' ? (
+              <MapPin className="w-6 h-6 text-emerald-600" />
+            ) : (
+              <School className="w-6 h-6 text-blue-600" />
+            )}
+          </div>
+        </div>
+        
+        <p className="text-gray-700 font-medium mb-2">
+          {mapType === 'desa' ? 'Peta Desa Rejoagung' : 'Peta Sekolah'}
+        </p>
+        <p className="text-gray-500 text-sm animate-pulse">{loadingText}</p>
+        
+        <div className="mt-4 w-full bg-gray-200 rounded-full h-1.5">
+          <div className="bg-emerald-600 h-1.5 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+        </div>
       </div>
     </div>
   )
 }
 
-// Legend data for Desa Map
-const desaLegendItems = [
+// Memoized legend data to prevent re-creation
+const DESA_LEGEND_ITEMS = [
   { color: '#10b981', icon: '🏛️', label: 'Fasilitas Desa' },
   { color: '#3b82f6', icon: '🎓', label: 'Pendidikan' },
   { color: '#8b5cf6', icon: '🏢', label: 'Fasilitas Umum' },
@@ -43,29 +82,43 @@ const desaLegendItems = [
   { color: '#dc2626', icon: '🏪', label: 'Ekonomi' }
 ]
 
-const dusunAreas = [
+const DUSUN_AREAS = [
   { color: '#ef4444', name: 'Dusun Krajan' },
   { color: '#22c55e', name: 'Dusun Sumberagung' },
   { color: '#3b82f6', name: 'Dusun Sumbergroto' }
 ]
 
+// Optimized statistics calculation
+const getOptimizedStatistics = () => {
+  return {
+    totalSekolah: schools.length,
+    totalLokasi: 25
+  }
+}
+
 export default function PetaDesaPage() {
   const [activeMap, setActiveMap] = useState<'desa' | 'sekolah'>('desa')
-  const [isMapLoaded, setIsMapLoaded] = useState(false)
-
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+  
+  // Memoize statistics to prevent recalculation
+  const statistics = useMemo(() => getOptimizedStatistics(), [])
+  
+  // Remove artificial delay - let components load naturally
   useEffect(() => {
-    // Simulate map loading
-    const timer = setTimeout(() => {
-      setIsMapLoaded(true)
-    }, 1000)
-
-    return () => clearTimeout(timer)
+    // Mark initial load as complete immediately
+    setIsInitialLoad(false)
   }, [])
+
+  // Memoize map toggle handler
+  const handleMapToggle = useMemo(() => ({
+    toDesa: () => setActiveMap('desa'),
+    toSekolah: () => setActiveMap('sekolah')
+  }), [])
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12">
-        {/* Breadcrumb - Tambahkan di sini */}
+        {/* Breadcrumb */}
         <Breadcrumb
           items={[
             { label: 'Profil', href: '/profil' },
@@ -86,14 +139,14 @@ export default function PetaDesaPage() {
           </p>
         </div>
 
-        {/* Map Toggle Buttons */}
+        {/* Optimized Map Toggle Buttons */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button
-              onClick={() => setActiveMap('desa')}
+              onClick={handleMapToggle.toDesa}
               className={`
                 flex items-center justify-center space-x-3 px-6 py-4 rounded-lg font-semibold text-lg
-                transition-all duration-300 min-w-[200px]
+                transition-all duration-300 min-w-[200px] focus:outline-none focus:ring-2 focus:ring-emerald-500
                 ${activeMap === 'desa'
                   ? 'bg-emerald-600 text-white shadow-lg transform scale-105'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -103,280 +156,110 @@ export default function PetaDesaPage() {
               <MapPin className="w-6 h-6" />
               <span>Peta Desa</span>
             </button>
-            
+           
             <button
-              onClick={() => setActiveMap('sekolah')}
+              onClick={handleMapToggle.toSekolah}
               className={`
                 flex items-center justify-center space-x-3 px-6 py-4 rounded-lg font-semibold text-lg
-                transition-all duration-300 min-w-[200px]
+                transition-all duration-300 min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-500
                 ${activeMap === 'sekolah'
                   ? 'bg-blue-600 text-white shadow-lg transform scale-105'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }
               `}
             >
-              <GraduationCap className="w-6 h-6" />
+              <School className="w-6 h-6" />
               <span>Peta Sekolah</span>
             </button>
           </div>
         </div>
 
-        {/* Desa Information - Only show when desa map is active */}
-        {activeMap === 'desa' && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <Building className="w-6 h-6 mr-3 text-emerald-600" />
-              Informasi Umum Desa Rejoagung
-            </h2>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-lg text-center">
-                <div className="flex items-center justify-center">
-                  <Users className="w-8 h-8 text-emerald-600 mr-3" />
-                  <div>
-                    <div className="text-2xl font-bold text-emerald-600">8.574</div>
-                    <div className="text-emerald-700 text-sm">Jiwa</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center">
-                <div className="flex items-center justify-center">
-                  <Building className="w-8 h-8 text-blue-600 mr-3" />
-                  <div>
-                    <div className="text-2xl font-bold text-blue-600">2.886</div>
-                    <div className="text-blue-700 text-sm">KK</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-green-50 border border-green-200 p-4 rounded-lg text-center">
-                <div className="flex items-center justify-center">
-                  <MapPin className="w-8 h-8 text-green-600 mr-3" />
-                  <div>
-                    <div className="text-2xl font-bold text-green-600">668</div>
-                    <div className="text-green-700 text-sm">Hektare</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg text-center">
-                <div className="flex items-center justify-center">
-                  <School className="w-8 h-8 text-purple-600 mr-3" />
-                  <div>
-                    <div className="text-2xl font-bold text-purple-600">3</div>
-                    <div className="text-purple-700 text-sm">Dusun</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* School Statistics - Only show when sekolah map is active */}
-        {activeMap === 'sekolah' && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <School className="w-6 h-6 mr-3 text-blue-600" />
-              Statistik Pendidikan di Desa Rejoagung
-            </h2>
-            
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-              <div className="bg-red-50 border border-red-200 p-4 rounded-lg text-center">
-                <div className="flex items-center justify-center">
-                  <School className="w-8 h-8 text-red-600 mr-3" />
-                  <div>
-                    <div className="text-2xl font-bold text-red-600">{schoolsStatistics.byType.TK}</div>
-                    <div className="text-red-700 text-sm">TK/PAUD</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center">
-                <div className="flex items-center justify-center">
-                  <Users className="w-8 h-8 text-blue-600 mr-3" />
-                  <div>
-                    <div className="text-2xl font-bold text-blue-600">{schoolsStatistics.byType.SD}</div>
-                    <div className="text-blue-700 text-sm">SD</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-green-50 border border-green-200 p-4 rounded-lg text-center">
-                <div className="flex items-center justify-center">
-                  <Building className="w-8 h-8 text-green-600 mr-3" />
-                  <div>
-                    <div className="text-2xl font-bold text-green-600">{schoolsStatistics.byType.SMP}</div>
-                    <div className="text-green-700 text-sm">SMP</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg text-center">
-                <div className="flex items-center justify-center">
-                  <MapPin className="w-8 h-8 text-orange-600 mr-3" />
-                  <div>
-                    <div className="text-2xl font-bold text-orange-600">{schoolsStatistics.byType.SMK}</div>
-                    <div className="text-orange-700 text-sm">SMK</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg text-center">
-                <div className="flex items-center justify-center">
-                  <GraduationCap className="w-8 h-8 text-purple-600 mr-3" />
-                  <div>
-                    <div className="text-2xl font-bold text-purple-600">{schoolsStatistics.byType.SLB}</div>
-                    <div className="text-purple-700 text-sm">SLB</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Additional School Statistics */}
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-gray-800">{schoolsStatistics.totalStudents.toLocaleString()}</div>
-                <div className="text-gray-600 text-sm">Total Siswa</div>
-              </div>
-              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-gray-800">{schoolsStatistics.totalTeachers}</div>
-                <div className="text-gray-600 text-sm">Total Guru</div>
-              </div>
-              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-gray-800">{schoolsStatistics.averageRating.toFixed(1)}</div>
-                <div className="text-gray-600 text-sm">Rating Rata-rata</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Map Section */}
+        {/* Optimized Map Container */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-              {activeMap === 'desa' ? (
-                <>
-                  <MapPin className="w-6 h-6 mr-3 text-emerald-600" />
-                  Peta Wilayah Desa Rejoagung
-                </>
-              ) : (
-                <>
-                  <GraduationCap className="w-6 h-6 mr-3 text-blue-600" />
-                  Peta Lokasi Sekolah
-                </>
-              )}
-            </h2>
-          </div>
-          
-          {/* Map Container with Legend */}
           <div className="relative">
             {activeMap === 'desa' ? (
-              <>
+              <Suspense fallback={<OptimizedMapLoadingSpinner mapType="desa" />}>
                 <DesaMapContainer height="600px" />
-                <ToggleableLegend
-                  title="Legenda Peta Desa"
-                  items={desaLegendItems}
-                  extraInfo="Klik marker untuk melihat detail lokasi"
-                  dusunAreas={dusunAreas}
-                />
-              </>
+              </Suspense>
             ) : (
-              <>
+              <Suspense fallback={<OptimizedMapLoadingSpinner mapType="sekolah" />}>
                 <SekolahMapContainer height="600px" />
-                <Legend />
-              </>
+              </Suspense>
+            )}
+            
+            {/* Legend Overlay */}
+            {activeMap === 'desa' ? (
+              <ToggleableLegend 
+                items={DESA_LEGEND_ITEMS}
+                title="🗺️ Legenda Peta Desa"
+                extraInfo={
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">📍 Area Dusun:</h4>
+                    <div className="space-y-1">
+                      {DUSUN_AREAS.map((area, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <div
+                            className="w-3 h-3 rounded-sm border border-white shadow-sm"
+                            style={{ backgroundColor: area.color }}
+                          />
+                          <span className="text-xs text-gray-600">{area.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                }
+              />
+            ) : (
+              <Legend />
             )}
           </div>
         </div>
 
-        {/* School List - Only show when sekolah map is active */}
-        {activeMap === 'sekolah' && (
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <School className="w-6 h-6 mr-3 text-green-600" />
-              Daftar Lengkap Sekolah
-            </h2>
-            
-            {/* Group schools by type */}
-            {['TK', 'SD', 'SMP', 'SMK', 'SLB'].map(type => {
-              const schoolsByType = schools.filter(s => s.type === type)
-              if (schoolsByType.length === 0) return null
-              
-              return (
-                <div key={type} className="mb-8">
-                  <h3 className="text-xl font-semibold text-gray-700 mb-4 border-b-2 border-gray-200 pb-2">
-                    {type === 'TK' ? 'Taman Kanak-kanak & PAUD' : 
-                     type === 'SD' ? 'Sekolah Dasar' :
-                     type === 'SMP' ? 'Sekolah Menengah Pertama' :
-                     type === 'SMK' ? 'Sekolah Menengah Kejuruan' :
-                     'Sekolah Luar Biasa'}
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {schoolsByType.map((school) => (
-                      <div key={school.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className="text-lg font-semibold text-gray-800">{school.name}</h4>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            school.type === 'TK' ? 'bg-red-100 text-red-800' :
-                            school.type === 'SD' ? 'bg-blue-100 text-blue-800' :
-                            school.type === 'SMP' ? 'bg-green-100 text-green-800' :
-                            school.type === 'SMK' ? 'bg-orange-100 text-orange-800' :
-                            'bg-purple-100 text-purple-800'
-                          }`}>
-                            {school.type}
-                          </span>
-                        </div>
-                        <p className="text-gray-600 text-sm mb-2">{school.description}</p>
-                        <p className="text-gray-500 text-xs mb-3 line-clamp-2">{school.address}</p>
-                        
-                        {/* School Details */}
-                        <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-3">
-                          {school.students && (
-                            <div>👥 {school.students} siswa</div>
-                          )}
-                          {school.teachers && (
-                            <div>👨‍🏫 {school.teachers} guru</div>
-                          )}
-                          {school.rating && (
-                            <div>⭐ {school.rating}/5.0</div>
-                          )}
-                          {school.accreditation && (
-                            <div>🏆 Akreditasi {school.accreditation}</div>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center text-xs text-gray-400">
-                          <MapPin className="w-3 h-3 mr-1" />
-                          {school.coordinates[0].toFixed(6)}, {school.coordinates[1].toFixed(6)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-
-        {/* Info Section */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-blue-800 mb-3">ℹ️ Informasi Peta</h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm text-blue-700">
-            <div>
-              <h4 className="font-medium mb-2">Cara Menggunakan:</h4>
-              <ul className="space-y-1 text-blue-600">
-                <li>• Gunakan tombol toggle untuk beralih antar peta</li>
-                <li>• Klik marker untuk melihat detail lokasi</li>
-                <li>• Gunakan scroll mouse untuk zoom in/out</li>
-                <li>• Drag untuk menggeser peta</li>
-                <li>• Klik tombol ☰ di kanan atas untuk melihat legenda</li>
-              </ul>
+        {/* Statistics Cards - Memoized */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center border-l-4 border-emerald-600">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-full mb-4">
+              <MapPin className="w-6 h-6 text-emerald-600" />
             </div>
-            <div>
-              <h4 className="font-medium mb-2">Informasi:</h4>
-              <ul className="space-y-1 text-blue-600">
-                <li>• {activeMap === 'desa' ? '25+ lokasi penting di desa' : `${schools.length} sekolah dari TK sampai SMK`}</li>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">
+              {activeMap === 'desa' ? statistics.totalLokasi : statistics.totalSekolah}+
+            </h3>
+            <p className="text-gray-600">
+              {activeMap === 'desa' ? 'Lokasi Penting' : 'Sekolah Tersedia'}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center border-l-4 border-blue-600">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
+              <Users className="w-6 h-6 text-blue-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">3</h3>
+            <p className="text-gray-600">Dusun di Desa</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center border-l-4 border-purple-600">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mb-4">
+              <Building className="w-6 h-6 text-purple-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">7</h3>
+            <p className="text-gray-600">Kategori Fasilitas</p>
+          </div>
+        </div>
+
+        {/* Information Panel */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex items-start space-x-4">
+            <div className="flex-shrink-0">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                <GraduationCap className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                Informasi Peta
+              </h3>
+              <ul className="space-y-2 text-gray-600">
+                <li>• {activeMap === 'desa' ? `${statistics.totalLokasi}+ lokasi penting di desa` : `${statistics.totalSekolah} sekolah dari TK sampai SMK`}</li>
                 <li>• Data resmi Desa Rejoagung</li>
                 <li>• Peta dari OpenStreetMap</li>
                 <li>• Terakhir diperbarui: Juli 2025</li>

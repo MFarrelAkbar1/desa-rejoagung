@@ -70,19 +70,22 @@ export default function NewsForm({
     }
   }
 
-  const handleAddContentBlock = (type: 'text' | 'image') => {
-    const newBlock: ContentBlock = {
-      id: `temp_${Date.now()}`,
-      type,
-      content: type === 'text' ? '' : '',
-      order_index: formData.content_blocks.length
+const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
+  const newBlock: ContentBlock = {
+    id: `temp_${Date.now()}`,
+    type,
+    content: type === 'image' ? '' : '',
+    order_index: formData.content_blocks.length,
+    style: {
+      textAlign: 'left'
     }
-
-    setFormData({
-      ...formData,
-      content_blocks: [...formData.content_blocks, newBlock]
-    })
   }
+
+  setFormData({
+    ...formData,
+    content_blocks: [...formData.content_blocks, newBlock]
+  })
+}
 
   const handleEditContentBlock = (blockId: string, content: string) => {
     setFormData({

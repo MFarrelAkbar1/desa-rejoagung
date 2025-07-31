@@ -1,8 +1,9 @@
-// app/produk-kuliner/produk/components/CreateProductModal.tsx
+// app/produk-kuliner/produk/components/CreateProductModal.tsx - FIXED VERSION
 'use client'
 
 import { useState } from 'react'
 import { X, Upload, Star } from 'lucide-react'
+import { ApiHelper } from '@/lib/api-helper'
 
 interface CreateProductModalProps {
   onClose: () => void
@@ -12,18 +13,18 @@ interface CreateProductModalProps {
 // Utility function untuk format harga
 const formatPriceInput = (price: string): string => {
   if (!price) return ''
-  
+ 
   // Jika sudah ada "Rp" di awal, return as is
   if (price.toLowerCase().startsWith('rp')) {
     return price
   }
-  
+ 
   // Jika hanya angka atau angka dengan titik/koma, tambahkan Rp.
   const cleanPrice = price.trim()
   if (/^\d+[.,]?\d*$/.test(cleanPrice.replace(/\./g, ''))) {
     return `Rp. ${cleanPrice}`
   }
-  
+ 
   // Jika format lain, tambahkan Rp. di depan
   return `Rp. ${cleanPrice}`
 }
@@ -52,7 +53,7 @@ export default function CreateProductModal({ onClose, onSuccess }: CreateProduct
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
-    
+   
     if (name === 'price') {
       // Format harga otomatis
       setFormData(prev => ({ ...prev, [name]: formatPriceInput(value) }))
@@ -69,21 +70,20 @@ export default function CreateProductModal({ onClose, onSuccess }: CreateProduct
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Validate file type (same as kuliner)
+    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
     if (!allowedTypes.includes(file.type)) {
       alert('Hanya file gambar (JPG, PNG, WEBP) yang diperbolehkan')
       return
     }
 
-    // Validate file size (max 5MB, same as kuliner)
+    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert('Ukuran file maksimal 5MB')
       return
     }
 
     setUploadingImage(true)
-
     try {
       const formDataUpload = new FormData()
       formDataUpload.append('file', file)
@@ -114,26 +114,35 @@ export default function CreateProductModal({ onClose, onSuccess }: CreateProduct
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
+   
     try {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
+      // ✅ MENGGUNAKAN API HELPER DENGAN AUTENTIKASI
+      const result = await ApiHelper.createProduct(formData)
       
-      if (response.ok) {
+      if (result.success) {
         onSuccess()
+        // Auto refresh page setelah 500ms untuk smooth UX
         setTimeout(() => {
           window.location.reload()
         }, 500)
-      } else {
-        const errorData = await response.json()
-        alert(`Gagal menambahkan produk: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error) {
-      console.error('Error:', error)
-      alert('Terjadi kesalahan saat menyimpan produk')
+      console.error('Error creating product:', error)
+      
+      // Handle different error types
+      if (error instanceof Error) {
+        if (error.message.includes('Token tidak valid') || 
+            error.message.includes('Akses ditolak')) {
+          alert('Sesi Anda telah berakhir. Silakan login kembali.')
+          // Redirect to login
+          localStorage.removeItem('admin_token')
+          window.location.href = '/admin/login'
+        } else {
+          alert(`Gagal menambahkan produk: ${error.message}`)
+        }
+      } else {
+        alert('Terjadi kesalahan saat menyimpan produk')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -153,18 +162,18 @@ export default function CreateProductModal({ onClose, onSuccess }: CreateProduct
         </div>
 
         <form onSubmit={handleSubmit} className="p-6">
-          {/* Image Upload Section - Same as kuliner */}
+          {/* Image Upload Section */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Gambar Produk
             </label>
-            
+           
             {formData.image_url ? (
               <div className="relative">
                 <img 
                   src={formData.image_url} 
                   alt="Preview" 
-                  className="w-full h-48 object-cover rounded-lg border-2 border-gray-200"
+                  className="w-full h-48 object-cover rounded-lg border-2 border-dashed border-gray-300"
                 />
                 <button
                   type="button"
@@ -176,46 +185,37 @@ export default function CreateProductModal({ onClose, onSuccess }: CreateProduct
               </div>
             ) : (
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-emerald-400 transition-colors">
-                {uploadingImage ? (
-                  <div className="py-4">
-                    <div className="w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                    <p className="text-gray-600">Mengupload ke Cloudinary...</p>
-                  </div>
-                ) : (
-                  <>
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-600 mb-2">Upload gambar produk</p>
-                    <p className="text-xs text-gray-500 mb-3">JPG, PNG, atau WEBP (Maks. 5MB)</p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
-                      disabled={uploadingImage}
-                    />
-                  </>
-                )}
+                <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <div className="text-sm text-gray-600 mb-2">
+                  <label htmlFor="image-upload-product" className="cursor-pointer text-emerald-600 hover:text-emerald-700 font-medium">
+                    Klik untuk upload gambar
+                  </label>
+                  <span> atau drag & drop</span>
+                </div>
+                <p className="text-xs text-gray-500">PNG, JPG, WEBP hingga 5MB</p>
+                <input
+                  id="image-upload-product"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  disabled={uploadingImage}
+                />
               </div>
             )}
             
-            {/* URL Input Alternative - Same as kuliner */}
-            <div className="mt-2">
-              <label className="block text-xs text-gray-600 mb-1">Atau masukkan URL gambar:</label>
-              <input
-                type="url"
-                name="image_url"
-                value={formData.image_url}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
+            {uploadingImage && (
+              <div className="mt-2 flex items-center gap-2 text-sm text-blue-600">
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                Mengupload gambar...
+              </div>
+            )}
           </div>
 
-          {/* Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Nama Produk */}
-            <div className="md:col-span-2">
+          {/* Basic Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Name */}
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Nama Produk *
               </label>
@@ -225,12 +225,12 @@ export default function CreateProductModal({ onClose, onSuccess }: CreateProduct
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full text-black px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Contoh: Kerajinan Anyaman Bambu"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                placeholder="Contoh: Kerajinan Bambu Anyaman"
               />
             </div>
 
-            {/* Kategori */}
+            {/* Category */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Kategori *
@@ -240,66 +240,21 @@ export default function CreateProductModal({ onClose, onSuccess }: CreateProduct
                 value={formData.category}
                 onChange={handleInputChange}
                 required
-                className="w-full text-black px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
               >
-                {categories.map((cat) => (
+                {categories.map(cat => (
                   <option key={cat.value} value={cat.value}>
                     {cat.emoji} {cat.label}
                   </option>
                 ))}
               </select>
             </div>
-
-            {/* Harga */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Harga
-              </label>
-              <input
-                type="text"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                className="w-full text-black px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Contoh: 50000 atau Rp. 50.000"
-              />
-            </div>
-
-            {/* Lokasi */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Lokasi Produksi
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                className="w-full text-black px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Contoh: Dusun Krajan"
-              />
-            </div>
-
-            {/* Kontak */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kontak
-              </label>
-              <input
-                type="text"
-                name="contact"
-                value={formData.contact}
-                onChange={handleInputChange}
-                className="w-full text-black px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Contoh: 0812-3456-7890"
-              />
-            </div>
           </div>
 
-          {/* Deskripsi */}
-          <div className="mt-6">
+          {/* Description */}
+          <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Deskripsi Produk *
+              Deskripsi *
             </label>
             <textarea
               name="description"
@@ -307,63 +262,109 @@ export default function CreateProductModal({ onClose, onSuccess }: CreateProduct
               onChange={handleInputChange}
               required
               rows={4}
-              className="w-full text-black px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-vertical"
-              placeholder="Jelaskan detail produk, bahan, keunggulan, dll..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors resize-none"
+              placeholder="Jelaskan produk Anda secara detail..."
+            />
+          </div>
+
+          {/* Additional Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Price */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Harga (opsional)
+              </label>
+              <input
+                type="text"
+                name="price"
+                value={formData.price}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                placeholder="Contoh: 50000 atau Rp. 50.000"
+              />
+            </div>
+
+            {/* Location */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lokasi (opsional)
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                placeholder="Contoh: Dusun Krajan, RT 01"
+              />
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Kontak (opsional)
+            </label>
+            <input
+              type="text"
+              name="contact"
+              value={formData.contact}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              placeholder="Contoh: 0812-3456-7890 atau WhatsApp: 081234567890"
             />
           </div>
 
           {/* Featured Toggle */}
-          <div className="mt-6">
+          <div className="mb-6">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="is_featured"
                 checked={formData.is_featured}
                 onChange={handleInputChange}
-                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                className="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
               />
               <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 text-yellow-500" />
+                <Star className={`w-5 h-5 ${formData.is_featured ? 'text-yellow-500 fill-current' : 'text-gray-400'}`} />
                 <span className="text-sm font-medium text-gray-700">
-                  Jadikan sebagai produk unggulan
+                  Jadikan produk unggulan
                 </span>
               </div>
             </label>
-            <p className="text-xs text-gray-500 mt-1 ml-7">
-              Produk unggulan akan ditampilkan lebih menonjol
+            <p className="text-xs text-gray-500 ml-8 mt-1">
+              Produk unggulan akan ditampilkan di halaman utama
             </p>
           </div>
 
-          {/* Submit Button */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading || uploadingImage}
-                className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Menyimpan...
-                  </>
-                ) : uploadingImage ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Upload gambar...
-                  </>
-                ) : (
-                  'Simpan Produk'
-                )}
-              </button>
-            </div>
+          {/* Submit Buttons */}
+          <div className="flex gap-4 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading || uploadingImage}
+              className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Menyimpan...
+                </>
+              ) : uploadingImage ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Upload gambar...
+                </>
+              ) : (
+                'Tambah Produk'
+              )}
+            </button>
           </div>
         </form>
       </div>

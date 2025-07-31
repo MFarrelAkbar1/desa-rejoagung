@@ -1,9 +1,9 @@
-// app/api/products/[id]/route.ts
-
+// app/api/products/[id]/route.ts - FIXED VERSION
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth-middleware'
 
-// GET /api/products/[id] - Ambil satu produk
+// GET /api/products/[id] - Ambil satu produk (tetap public)
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -28,14 +28,28 @@ export async function GET(
   }
 }
 
-// PUT /api/products/[id] - Update produk
+// PUT /api/products/[id] - Update produk (HANYA ADMIN)
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    // ✅ VALIDASI AUTENTIKASI ADMIN
+    const authResult = await verifyAdminAuth(request)
+    if (!authResult.isValid) {
+      return createUnauthorizedResponse(authResult.error)
+    }
+
     const body = await request.json()
-    
+   
+    // Validasi data required
+    if (!body.name || !body.category || !body.description) {
+      return NextResponse.json(
+        { error: 'Nama, kategori, dan deskripsi harus diisi' },
+        { status: 400 }
+      )
+    }
+
     const { data, error } = await supabase
       .from('products')
       .update({
@@ -66,12 +80,30 @@ export async function PUT(
   }
 }
 
-// DELETE /api/products/[id] - Hapus produk
+// DELETE /api/products/[id] - Hapus produk (HANYA ADMIN)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    // ✅ VALIDASI AUTENTIKASI ADMIN
+    const authResult = await verifyAdminAuth(request)
+    if (!authResult.isValid) {
+      return createUnauthorizedResponse(authResult.error)
+    }
+
+    // Cek apakah produk ada
+    const { data: existingProduct, error: checkError } = await supabase
+      .from('products')
+      .select('id')
+      .eq('id', params.id)
+      .single()
+
+    if (checkError || !existingProduct) {
+      return NextResponse.json({ error: 'Produk tidak ditemukan' }, { status: 404 })
+    }
+
+    // Hapus produk
     const { error } = await supabase
       .from('products')
       .delete()

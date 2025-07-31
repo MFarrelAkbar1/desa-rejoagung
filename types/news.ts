@@ -1,9 +1,14 @@
 // types/news.ts
 export interface ContentBlock {
-  id: string
-  type: 'text' | 'image'
+  id?: string
+  type: 'text' | 'subtitle' | 'image'
   content: string
   order_index: number
+  style?: {
+    textAlign?: 'left' | 'center' | 'right' | 'justify'
+    fontSize?: 'small' | 'medium' | 'large'
+    caption?: string  // Added caption property
+  }
   created_at?: string
 }
 

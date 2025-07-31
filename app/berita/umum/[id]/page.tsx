@@ -1,20 +1,25 @@
-// app/berita/umum/[id]/page.tsx - BUAT BARU
+// app/berita/umum/[id]/page.tsx - Refactored version
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Edit3, Save, X, Plus, Type, Image, Calendar, User, ArrowLeft } from 'lucide-react'
+import { Edit3, Save, X, Plus, Type, ImageIcon, Calendar, User, ArrowLeft, Heading } from 'lucide-react'
 import Link from 'next/link'
 import { useAdminAuth } from '@/lib/auth'
 import Breadcrumb from '@/components/layout/Breadcrumb'
-import ContentBlock from '@/components/ContentBlock'
+import ContentBlockRenderer from '@/components/News/ContentBlockRenderer'
 import DeleteConfirmation from '@/components/DeleteConfirmation'
 
 interface ContentBlock {
   id?: string
-  type: 'text' | 'image'
+  type: 'text' | 'subtitle' | 'image'
   content: string
   order_index: number
+  style?: {
+    textAlign?: 'left' | 'center' | 'right' | 'justify'
+    fontSize?: 'small' | 'medium' | 'large'
+    caption?: string
+  }
   created_at?: string
 }
 
@@ -38,14 +43,12 @@ export default function BeritaDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { isAdmin } = useAdminAuth()
-  
+ 
   const [news, setNews] = useState<NewsDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  // Editing state
   const [editedNews, setEditedNews] = useState<NewsDetail | null>(null)
 
   useEffect(() => {
@@ -90,7 +93,6 @@ export default function BeritaDetailPage() {
         setNews(updatedNews)
         setIsEditing(false)
         setError(null)
-        // Refresh data to get content blocks
         await fetchNewsDetail()
       } else {
         setError('Gagal menyimpan perubahan')
@@ -109,57 +111,71 @@ export default function BeritaDetailPage() {
     setError(null)
   }
 
-  const handleAddContentBlock = (type: 'text' | 'image') => {
+  // Fixed: Properly handle adding content blocks
+  const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
     if (!editedNews) return
 
     const newBlock: ContentBlock = {
       id: `temp_${Date.now()}`,
       type,
-      content: type === 'text' ? 'Masukkan teks...' : '',
-      order_index: editedNews.content_blocks.length
+      content: '',
+      order_index: editedNews.content_blocks.length,
+      style: {
+        textAlign: type === 'text' ? 'left' : undefined  // Only text blocks have alignment
+      }
     }
 
-    setEditedNews({
+    const updatedNews = {
       ...editedNews,
       content_blocks: [...editedNews.content_blocks, newBlock]
-    })
+    }
+    
+    setEditedNews(updatedNews)
+    console.log('Added new content block:', newBlock)  // Debug log
   }
 
-  const handleEditContentBlock = (blockId: string, content: string) => {
+  const handleEditContentBlock = (blockId: string, content: string, style?: any) => {
     if (!editedNews) return
 
-    setEditedNews({
+    const updatedNews = {
       ...editedNews,
       content_blocks: editedNews.content_blocks.map(block =>
-        block.id === blockId ? { ...block, content } : block
+        block.id === blockId 
+          ? { ...block, content, style: { ...block.style, ...style } }
+          : block
       )
-    })
+    }
+    
+    setEditedNews(updatedNews)
   }
 
   const handleDeleteContentBlock = (blockId: string) => {
     if (!editedNews) return
 
-    setEditedNews({
+    const updatedNews = {
       ...editedNews,
       content_blocks: editedNews.content_blocks.filter(block => block.id !== blockId)
-    })
+    }
+    
+    setEditedNews(updatedNews)
   }
 
   const handleMoveContentBlock = (blockId: string, direction: 'up' | 'down') => {
     if (!editedNews) return
 
     const blocks = [...editedNews.content_blocks]
-    const index = blocks.findIndex(block => block.id === blockId)
+    const currentIndex = blocks.findIndex(block => block.id === blockId)
     
-    if (direction === 'up' && index > 0) {
-      [blocks[index], blocks[index - 1]] = [blocks[index - 1], blocks[index]]
-    } else if (direction === 'down' && index < blocks.length - 1) {
-      [blocks[index], blocks[index + 1]] = [blocks[index + 1], blocks[index]]
+    if (currentIndex === -1) return
+
+    if (direction === 'up' && currentIndex > 0) {
+      [blocks[currentIndex], blocks[currentIndex - 1]] = [blocks[currentIndex - 1], blocks[currentIndex]]
+    } else if (direction === 'down' && currentIndex < blocks.length - 1) {
+      [blocks[currentIndex], blocks[currentIndex + 1]] = [blocks[currentIndex + 1], blocks[currentIndex]]
     }
 
-    // Update order_index
-    blocks.forEach((block, idx) => {
-      block.order_index = idx
+    blocks.forEach((block, index) => {
+      block.order_index = index
     })
 
     setEditedNews({
@@ -173,6 +189,7 @@ export default function BeritaDetailPage() {
       const response = await fetch(`/api/news/${params.id}`, {
         method: 'DELETE'
       })
+
       if (response.ok) {
         router.push('/berita/umum')
       } else {
@@ -186,10 +203,9 @@ export default function BeritaDetailPage() {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('id-ID', {
-      weekday: 'long',
-      year: 'numeric',
+      day: 'numeric',
       month: 'long',
-      day: 'numeric'
+      year: 'numeric'
     })
   }
 
@@ -206,25 +222,26 @@ export default function BeritaDetailPage() {
     )
   }
 
-  if (error || !news) {
+  if (error && !news) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-6 py-8">
           <div className="text-center py-16">
-            <div className="text-red-500 text-xl font-semibold mb-4">
-              {error || 'Berita tidak ditemukan'}
-            </div>
-            <Link
-              href="/berita/umum"
-              className="text-emerald-600 hover:text-emerald-700 font-medium"
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">Berita Tidak Ditemukan</h1>
+            <p className="text-gray-600 mb-6">{error}</p>
+            <button
+              onClick={() => router.push('/berita/umum')}
+              className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors"
             >
-              ← Kembali ke Daftar Berita
-            </Link>
+              Kembali ke Berita
+            </button>
           </div>
         </div>
       </div>
     )
   }
+
+  if (!news) return null
 
   const currentNews = editedNews || news
 
@@ -236,43 +253,32 @@ export default function BeritaDetailPage() {
           <Breadcrumb
             items={[
               { label: 'Berita Umum', href: '/berita/umum' },
-              { label: currentNews.title, href: `/berita/umum/${currentNews.id}` }
+              { label: currentNews.title, href: '#' }
             ]}
           />
         </div>
 
-        {/* Back Button */}
-        <div className="mb-6">
-          <Link
-            href="/berita/umum"
-            className="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Kembali ke Berita
-          </Link>
-        </div>
-
-        {/* Error Display */}
+        {/* Error Message */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
 
         {/* Main Content */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          {/* Header Section */}
+          {/* Header */}
           <div className="p-8 border-b border-gray-200">
-            <div className="flex justify-between items-start mb-6">
+            <div className="flex items-start justify-between">
               {isEditing ? (
                 <div className="flex-1 mr-4">
                   <input
                     type="text"
                     value={currentNews.title}
-                    onChange={(e) => setEditedNews(prev => 
+                    onChange={(e) => setEditedNews(prev =>
                       prev ? { ...prev, title: e.target.value } : null
                     )}
-                    className="text-3xl md:text-4xl font-bold bg-transparent border-b-2 border-emerald-500 focus:outline-none w-full"
+                    className="text-3xl md:text-4xl font-bold bg-transparent border-b-2 border-emerald-500 focus:outline-none w-full text-gray-900"
                     placeholder="Judul berita..."
                   />
                 </div>
@@ -312,7 +318,7 @@ export default function BeritaDetailPage() {
                         <Edit3 className="w-4 h-4" />
                         Edit
                       </button>
-                      <DeleteConfirmation 
+                      <DeleteConfirmation
                         onConfirm={handleDelete}
                         title="Konfirmasi Hapus Berita"
                         description={`Apakah Anda yakin ingin menghapus berita "${currentNews.title}"? Tindakan ini tidak dapat dibatalkan.`}
@@ -331,18 +337,18 @@ export default function BeritaDetailPage() {
                   <input
                     type="text"
                     value={currentNews.author}
-                    onChange={(e) => setEditedNews(prev => 
+                    onChange={(e) => setEditedNews(prev =>
                       prev ? { ...prev, author: e.target.value } : null
                     )}
-                    className="bg-transparent border-b border-gray-300 focus:outline-none focus:border-emerald-500"
+                    className="bg-transparent border-b border-gray-300 focus:outline-none focus:border-emerald-500 text-gray-900"
                   />
                 ) : (
-                  <span>{currentNews.author}</span>
+                  <span className="text-gray-900">{currentNews.author}</span>
                 )}
               </div>
               <div className="flex items-center">
                 <Calendar className="w-5 h-5 mr-2" />
-                <span>{formatDate(currentNews.created_at)}</span>
+                <span className="text-gray-900">{formatDate(currentNews.created_at)}</span>
               </div>
               {currentNews.category && (
                 <span className="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-sm font-semibold">
@@ -366,10 +372,10 @@ export default function BeritaDetailPage() {
                   <input
                     type="text"
                     value={currentNews.category || ''}
-                    onChange={(e) => setEditedNews(prev => 
+                    onChange={(e) => setEditedNews(prev =>
                       prev ? { ...prev, category: e.target.value } : null
                     )}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
                     placeholder="Kategori berita"
                   />
                 </div>
@@ -380,50 +386,12 @@ export default function BeritaDetailPage() {
                   <input
                     type="url"
                     value={currentNews.image_url || ''}
-                    onChange={(e) => setEditedNews(prev => 
+                    onChange={(e) => setEditedNews(prev =>
                       prev ? { ...prev, image_url: e.target.value } : null
                     )}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
                     placeholder="https://example.com/image.jpg"
                   />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ringkasan (Excerpt)
-                  </label>
-                  <textarea
-                    value={currentNews.excerpt || ''}
-                    onChange={(e) => setEditedNews(prev => 
-                      prev ? { ...prev, excerpt: e.target.value } : null
-                    )}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    rows={3}
-                    placeholder="Ringkasan singkat berita"
-                  />
-                </div>
-                <div className="flex items-center space-x-4">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={currentNews.is_published}
-                      onChange={(e) => setEditedNews(prev => 
-                        prev ? { ...prev, is_published: e.target.checked } : null
-                      )}
-                      className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Publikasikan</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={currentNews.is_announcement}
-                      onChange={(e) => setEditedNews(prev => 
-                        prev ? { ...prev, is_announcement: e.target.checked } : null
-                      )}
-                      className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Pengumuman</span>
-                  </label>
                 </div>
               </div>
             )}
@@ -431,19 +399,20 @@ export default function BeritaDetailPage() {
 
           {/* Featured Image */}
           {currentNews.image_url && (
-            <div className="p-8 border-b border-gray-200">
-              <div className="relative rounded-xl overflow-hidden shadow-lg">
-                <img
-                  src={currentNews.image_url}
-                  alt={currentNews.title}
-                  className="w-full h-96 object-cover"
-                />
-              </div>
+            <div className="relative h-64 md:h-96">
+              <img
+                src={currentNews.image_url}
+                alt={currentNews.title}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
             </div>
           )}
 
           {/* Main Content */}
-          <div className="p-8 border-b border-gray-200">
+          <div className="p-8">
             {isEditing ? (
               <div className="space-y-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -451,17 +420,17 @@ export default function BeritaDetailPage() {
                 </label>
                 <textarea
                   value={currentNews.content}
-                  onChange={(e) => setEditedNews(prev => 
+                  onChange={(e) => setEditedNews(prev =>
                     prev ? { ...prev, content: e.target.value } : null
                   )}
-                  className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
                   rows={8}
                   placeholder="Tulis konten berita lengkap di sini..."
                 />
               </div>
             ) : (
               <div className="prose prose-lg max-w-none">
-                <div className="text-xl text-gray-800 leading-relaxed whitespace-pre-wrap">
+                <div className="text-lg text-gray-900 leading-relaxed whitespace-pre-wrap">
                   {currentNews.content}
                 </div>
               </div>
@@ -472,7 +441,7 @@ export default function BeritaDetailPage() {
           <div className="p-8">
             <div className="space-y-6">
               {currentNews.content_blocks.map((block, index) => (
-                <ContentBlock
+                <ContentBlockRenderer
                   key={block.id}
                   block={block}
                   onEdit={handleEditContentBlock}
@@ -480,39 +449,65 @@ export default function BeritaDetailPage() {
                   onMoveUp={(blockId) => handleMoveContentBlock(blockId, 'up')}
                   onMoveDown={(blockId) => handleMoveContentBlock(blockId, 'down')}
                   isEditing={isEditing}
-                  isAdmin={isAdmin}
                   isFirst={index === 0}
                   isLast={index === currentNews.content_blocks.length - 1}
+                  showControls={isEditing}
                 />
               ))}
 
-              {/* Add Content Block Buttons */}
+              {/* Add Content Block Buttons - Fixed functionality */}
               {isAdmin && isEditing && (
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
                   <div className="text-center">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">
                       Tambah Konten Baru
                     </h3>
-                    <div className="flex justify-center space-x-4">
+                    <div className="flex justify-center space-x-4 flex-wrap gap-2">
                       <button
                         onClick={() => handleAddContentBlock('text')}
                         className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                        type="button"
                       >
                         <Type className="w-5 h-5" />
-                        Tambah Teks
+                        Tambah Paragraf
                       </button>
+                      
+                      <button
+                        onClick={() => handleAddContentBlock('subtitle')}
+                        className="flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                        type="button"
+                      >
+                        <Heading className="w-5 h-5" />
+                        Tambah Sub Judul
+                      </button>
+                      
                       <button
                         onClick={() => handleAddContentBlock('image')}
                         className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                        type="button"
                       >
-                        <Image className="w-5 h-5" />
+                        <ImageIcon className="w-5 h-5" />
                         Tambah Gambar
                       </button>
                     </div>
+                    <p className="text-xs text-gray-500 mt-3">
+                      Klik tombol di atas untuk menambah konten baru. Paragraf mendukung pengaturan alignment.
+                    </p>
                   </div>
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Back Button */}
+          <div className="p-8 border-t border-gray-200 bg-gray-50">
+            <Link
+              href="/berita/umum"
+              className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Kembali ke Berita Umum
+            </Link>
           </div>
         </div>
       </div>

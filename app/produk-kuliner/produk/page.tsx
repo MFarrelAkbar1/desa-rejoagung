@@ -1,7 +1,9 @@
-// app/produk-kuliner/produk/page.tsx
+// app/produk-kuliner/produk/page.tsx - FIXED VERSION
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useAdminAuth } from '@/lib/auth'
+import { ApiHelper } from '@/lib/api-helper'
 import { ProductItem } from './types'
 import ProductPageHeader from './components/ProductPageHeader'
 import ProductFilter from './components/ProductFilter'
@@ -10,56 +12,51 @@ import CreateProductModal from './components/CreateProductModal'
 import EditProductModal from './components/EditProductModal'
 
 export default function ProductPage() {
+  // Auth state
+  const { isAdmin, isLoading: authLoading } = useAdminAuth()
+  
+  // Data states
   const [products, setProducts] = useState<ProductItem[]>([])
   const [loading, setLoading] = useState(true)
+  
+  // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingItem, setEditingItem] = useState<ProductItem | null>(null)
   const [deletingItem, setDeletingItem] = useState<ProductItem | null>(null)
-  
+ 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  
-  // Check if user is admin (simplified - you may want to implement proper auth)
-  const [isAdmin, setIsAdmin] = useState(false)
 
-  // Load products
+  // Load products on component mount
   useEffect(() => {
     loadProducts()
-    // Check admin status - replace with your auth logic
-    checkAdminStatus()
   }, [])
 
   const loadProducts = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/products')
-      if (response.ok) {
-        const result = await response.json()
-        setProducts(result.data || [])
-      } else {
-        console.error('Failed to load products')
-      }
+      // ✅ MENGGUNAKAN API HELPER (untuk GET tidak perlu auth)
+      const result = await ApiHelper.getProducts()
+      setProducts(result.data || [])
     } catch (error) {
       console.error('Error loading products:', error)
+      setProducts([])
     } finally {
       setLoading(false)
     }
   }
 
-  const checkAdminStatus = () => {
-    // Implement your admin check logic here
-    // For now, we'll assume user is admin if in development
-    setIsAdmin(process.env.NODE_ENV === 'development')
-  }
-
-  // Filter products (REMOVED search query filter since we removed search bar)
+  // Filter products
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory
     const matchesFeatured = !showFeaturedOnly || product.is_featured
-    
-    return matchesCategory && matchesFeatured
+    const matchesSearch = !searchQuery || 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase())
+   
+    return matchesCategory && matchesFeatured && matchesSearch
   })
 
   // Handle create success
@@ -77,26 +74,31 @@ export default function ProductPage() {
   // Handle delete confirm
   const handleDeleteConfirm = async () => {
     if (!deletingItem) return
-    
+   
     try {
-      const response = await fetch(`/api/products?id=${deletingItem.id}`, {
-        method: 'DELETE'
-      })
-      
-      if (response.ok) {
-        setDeletingItem(null)
-        loadProducts()
-      } else {
-        const errorData = await response.json()
-        alert(`Gagal menghapus produk: ${errorData.error}`)
-      }
+      // ✅ MENGGUNAKAN API HELPER DENGAN AUTENTIKASI
+      await ApiHelper.deleteProduct(deletingItem.id)
+      setDeletingItem(null)
+      loadProducts()
     } catch (error) {
       console.error('Error deleting product:', error)
-      alert('Terjadi kesalahan saat menghapus produk')
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Token tidak valid') || 
+            error.message.includes('Akses ditolak')) {
+          alert('Sesi Anda telah berakhir. Silakan login kembali.')
+          localStorage.removeItem('admin_token')
+          window.location.href = '/admin/login'
+        } else {
+          alert(`Gagal menghapus produk: ${error.message}`)
+        }
+      } else {
+        alert('Terjadi kesalahan saat menghapus produk')
+      }
     }
   }
 
-  // Simple Delete Modal Component
+  // Delete Modal Component
   const DeleteModal = ({ item, onConfirm, onCancel }: {
     item: ProductItem
     onConfirm: () => void
@@ -126,6 +128,18 @@ export default function ProductPage() {
       </div>
     </div>
   )
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600">Memuat halaman...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

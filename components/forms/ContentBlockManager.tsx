@@ -1,14 +1,14 @@
-// components/forms/ContentBlockManager.tsx
+// components/forms/ContentBlockManager.tsx - Fixed function signatures
 'use client'
 
-import { Type, Image, Plus } from 'lucide-react'
+import { Type, ImageIcon, Plus, Heading } from 'lucide-react'
 import ContentBlockEditor from './ContentBlockEditor'
 import { ContentBlock } from '@/types/news'
 
 interface ContentBlockManagerProps {
   contentBlocks: ContentBlock[]
-  onAddBlock: (type: 'text' | 'image') => void
-  onEditBlock: (blockId: string, content: string) => void
+  onAddBlock: (type: 'text' | 'subtitle' | 'image') => void
+  onEditBlock: (blockId: string, content: string, style?: any) => void
   onDeleteBlock: (blockId: string) => void
   onMoveBlock: (blockId: string, direction: 'up' | 'down') => void
   isEditing?: boolean
@@ -23,6 +23,15 @@ export default function ContentBlockManager({
   isEditing = true
 }: ContentBlockManagerProps) {
   
+  // Helper functions to handle move operations
+  const handleMoveUp = (blockId: string) => {
+    onMoveBlock(blockId, 'up')
+  }
+
+  const handleMoveDown = (blockId: string) => {
+    onMoveBlock(blockId, 'down')
+  }
+  
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -31,75 +40,75 @@ export default function ContentBlockManager({
           📝 Konten Tambahan
         </h3>
         <p className="text-gray-600 text-sm mb-6">
-          Tambahkan blok teks dan gambar untuk memperkaya konten berita Anda.
+          Tambahkan blok teks, sub judul, dan gambar untuk memperkaya konten berita Anda.
+          Gunakan opsi format untuk mengatur tata letak teks.
         </p>
       </div>
 
-      {/* Content Blocks List */}
+      {/* Content Blocks */}
       <div className="space-y-4">
-        {contentBlocks.map((block, index) => (
-          <ContentBlockEditor
-            key={block.id}
-            block={block}
-            onEdit={onEditBlock}
-            onDelete={onDeleteBlock}
-            onMoveUp={(blockId) => onMoveBlock(blockId, 'up')}
-            onMoveDown={(blockId) => onMoveBlock(blockId, 'down')}
-            isFirst={index === 0}
-            isLast={index === contentBlocks.length - 1}
-            isEditing={isEditing}
-            showControls={isEditing}
-          />
-        ))}
-
-        {/* Empty State */}
-        {contentBlocks.length === 0 && (
-          <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            <div className="text-gray-500">
-              <Type className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-              <p className="text-sm">Belum ada konten tambahan</p>
-              <p className="text-xs text-gray-400">
-                Tambahkan blok teks atau gambar untuk memperkaya berita
-              </p>
-            </div>
-          </div>
-        )}
+        {contentBlocks
+          .sort((a, b) => a.order_index - b.order_index)
+          .map((block, index) => (
+            <ContentBlockEditor
+              key={block.id || `block-${index}`}
+              block={block}
+              onEdit={onEditBlock}
+              onDelete={onDeleteBlock}
+              onMoveUp={handleMoveUp}  // Fixed: use wrapper function
+              onMoveDown={handleMoveDown}  // Fixed: use wrapper function
+              isFirst={index === 0}
+              isLast={index === contentBlocks.length - 1}
+              isEditing={isEditing}
+              showControls={isEditing}
+            />
+          ))}
       </div>
 
-      {/* Add Content Block Buttons */}
+      {/* Add Block Buttons - Enhanced */}
       {isEditing && (
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
           <div className="text-center">
             <h4 className="text-sm font-medium text-gray-700 mb-4">
               Tambah Konten Baru
             </h4>
-            <div className="flex justify-center space-x-3">
+            <div className="flex justify-center space-x-3 flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => onAddBlock('text')}
                 className="flex items-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-sm"
               >
                 <Type className="w-4 h-4" />
-                Tambah Teks
+                Tambah Paragraf
               </button>
+              
+              <button
+                type="button"
+                onClick={() => onAddBlock('subtitle')}
+                className="flex items-center gap-2 px-4 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors shadow-sm"
+              >
+                <Heading className="w-4 h-4" />
+                Tambah Sub Judul
+              </button>
+              
               <button
                 type="button"
                 onClick={() => onAddBlock('image')}
                 className="flex items-center gap-2 px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors shadow-sm"
               >
-                <Image className="w-4 h-4" />
+                <ImageIcon className="w-4 h-4" />
                 Tambah Gambar
               </button>
             </div>
             
             <p className="text-xs text-gray-500 mt-3">
-              Klik pada konten untuk mengedit secara langsung
+              Klik pada konten untuk mengedit secara langsung. Gunakan tombol format untuk mengatur tata letak teks.
             </p>
           </div>
         </div>
       )}
 
-      {/* Info Box */}
+      {/* Info Box - Enhanced */}
       {contentBlocks.length > 0 && isEditing && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start space-x-3">
@@ -111,7 +120,9 @@ export default function ContentBlockManager({
               <ul className="text-xs space-y-1 text-blue-600">
                 <li>• Gunakan tombol ↑↓ untuk mengatur urutan konten</li>
                 <li>• Klik pada konten untuk mengedit langsung</li>
-                <li>• Gambar akan diupload ke Cloudinary secara otomatis</li>
+                <li>• Pilih alignment (rata kiri/kanan/tengah/justify) untuk teks</li>
+                <li>• Sub judul akan tampil besar dan tebal</li>
+                <li>• Gambar akan mempertahankan rasio aslinya</li>
                 <li>• Konten tambahan akan muncul setelah konten utama</li>
               </ul>
             </div>
