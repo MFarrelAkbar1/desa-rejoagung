@@ -1,4 +1,5 @@
-// components/forms/NewsForm.tsx - LENGKAP dengan semua field
+// components/forms/NewsForm.tsx - Updated with rearranged layout and alignment options
+
 'use client'
 
 import { useState } from 'react'
@@ -30,6 +31,8 @@ interface NewsFormProps {
   title?: string
   description?: string
 }
+
+
 
 export default function NewsForm({
   initialData,
@@ -70,28 +73,28 @@ export default function NewsForm({
     }
   }
 
-const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
-  const newBlock: ContentBlock = {
-    id: `temp_${Date.now()}`,
-    type,
-    content: type === 'image' ? '' : '',
-    order_index: formData.content_blocks.length,
-    style: {
-      textAlign: 'left'
+  const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
+    const newBlock: ContentBlock = {
+      id: `temp_${Date.now()}`,
+      type,
+      content: type === 'image' ? '' : '',
+      order_index: formData.content_blocks.length,
+      style: {
+        textAlign: type === 'text' ? 'justify' : 'left'  // AUTO JUSTIFY untuk text blocks
+      }
     }
+
+    setFormData({
+      ...formData,
+      content_blocks: [...formData.content_blocks, newBlock]
+    })
   }
 
-  setFormData({
-    ...formData,
-    content_blocks: [...formData.content_blocks, newBlock]
-  })
-}
-
-  const handleEditContentBlock = (blockId: string, content: string) => {
+  const handleEditContentBlock = (blockId: string, content: string, style?: any) => {
     setFormData({
       ...formData,
       content_blocks: formData.content_blocks.map(block =>
-        block.id === blockId ? { ...block, content } : block
+        block.id === blockId ? { ...block, content, style: { ...block.style, ...style } } : block
       )
     })
   }
@@ -144,71 +147,8 @@ const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="p-8 space-y-8">
-        {/* Basic Information */}
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
-            📰 Informasi Dasar
-          </h2>
-          
-          <div className="grid grid-cols-1 gap-6">
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Judul Berita <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="title"
-                required
-                value={formData.title}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
-                placeholder="Masukkan judul berita yang menarik"
-              />
-            </div>
-
-            {/* Main Content */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Konten Utama <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                name="content"
-                required
-                rows={8}
-                value={formData.content}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
-                placeholder="Tulis konten berita lengkap di sini. Konten ini akan menjadi isi utama dari berita Anda."
-              />
-            </div>
-
-            {/* Excerpt */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ringkasan (Excerpt)
-              </label>
-              <textarea
-                name="excerpt"
-                rows={3}
-                value={formData.excerpt}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
-                placeholder="Ringkasan singkat yang akan muncul di daftar berita (opsional)"
-              />
-            </div>
-
-            {/* Main Image Upload */}
-            <ImageUpload
-              value={formData.image_url}
-              onChange={(url) => setFormData({ ...formData, image_url: url })}
-              label="Gambar Utama Berita"
-              className="col-span-full"
-            />
-          </div>
-        </div>
-
-        {/* Metadata */}
+        
+        {/* 1. INFORMASI TAMBAHAN (moved to top) */}
         <div className="space-y-6">
           <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
             🏷️ Informasi Tambahan
@@ -227,26 +167,24 @@ const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
               >
                 <option value="">Pilih Kategori</option>
-                <option value="berita">Berita</option>
-                <option value="pengumuman">Pengumuman</option>
-                <option value="kegiatan">Kegiatan</option>
-                <option value="ekonomi">Ekonomi</option>
-                <option value="kesehatan">Kesehatan</option>
-                <option value="pendidikan">Pendidikan</option>
-                <option value="infrastruktur">Infrastruktur</option>
-                <option value="budaya">Budaya</option>
+                <option value="Pembangunan">Pembangunan</option>
+                <option value="Budaya">Budaya</option>
+                <option value="Ekonomi">Ekonomi</option>
+                <option value="Kesehatan">Kesehatan</option>
+                <option value="Pertanian">Pertanian</option>
+                <option value="Teknologi">Teknologi</option>
+                <option value="Pengumuman">Pengumuman</option>
               </select>
             </div>
 
             {/* Author */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Penulis <span className="text-red-500">*</span>
+                Penulis
               </label>
               <input
                 type="text"
                 name="author"
-                required
                 value={formData.author}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
@@ -256,7 +194,7 @@ const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
           </div>
         </div>
 
-        {/* Publication Settings */}
+        {/* 2. PENGATURAN PUBLIKASI (moved to second) */}
         <div className="space-y-6">
           <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
             📤 Pengaturan Publikasi
@@ -295,7 +233,75 @@ const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
           </div>
         </div>
 
-        {/* Content Blocks */}
+        {/* 3. INFORMASI DASAR (moved to bottom) */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
+            📰 Informasi Dasar
+          </h2>
+          
+          <div className="grid grid-cols-1 gap-6">
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Judul Berita <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                required
+                value={formData.title}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
+                placeholder="Masukkan judul berita yang menarik"
+              />
+            </div>
+
+            {/* Main Content - AUTO JUSTIFY */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Konten Utama <span className="text-red-500">*</span>
+                <span className="text-emerald-600 text-xs ml-2">✨ Otomatis justify</span>
+              </label>
+              
+              <textarea
+                name="content"
+                required
+                rows={8}
+                value={formData.content}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 text-justify"
+                placeholder="Tulis konten berita lengkap di sini. Konten ini akan menjadi isi utama dari berita Anda."
+              />
+            </div>
+
+            {/* Excerpt - AUTO JUSTIFY */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ringkasan (Excerpt)
+                <span className="text-emerald-600 text-xs ml-2">✨ Otomatis justify</span>
+              </label>
+              
+              <textarea
+                name="excerpt"
+                rows={3}
+                value={formData.excerpt}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 text-justify"
+                placeholder="Ringkasan singkat yang akan muncul di daftar berita (opsional)"
+              />
+            </div>
+
+            {/* Main Image Upload */}
+            <ImageUpload
+              value={formData.image_url}
+              onChange={(url) => setFormData({ ...formData, image_url: url })}
+              label="Gambar Utama Berita"
+              className="col-span-full"
+            />
+          </div>
+        </div>
+
+        {/* Content Blocks Manager */}
         <ContentBlockManager
           contentBlocks={formData.content_blocks}
           onAddBlock={handleAddContentBlock}
@@ -306,34 +312,28 @@ const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
         />
 
         {/* Form Actions */}
-        <div className="flex justify-between items-center pt-6 border-t">
-          <Link
-            href="/berita/umum"
-            className="inline-flex items-center text-gray-600 hover:text-gray-800 font-medium transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Kembali ke Daftar Berita
-          </Link>
-          
-          <div className="flex space-x-4">
+        <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+          <div>
             {onCancel && (
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-6 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-700 font-medium"
               >
+                <ArrowLeft className="w-4 h-4" />
                 Batal
               </button>
             )}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              {isLoading ? "Menyimpan..." : submitLabel}
-            </button>
           </div>
+          
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-8 py-3 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          >
+            <Save className="w-4 h-4" />
+            {isLoading ? 'Menyimpan...' : submitLabel}
+          </button>
         </div>
       </form>
     </div>

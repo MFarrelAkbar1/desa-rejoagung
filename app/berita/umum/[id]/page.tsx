@@ -1,4 +1,5 @@
-// app/berita/umum/[id]/page.tsx - Refactored version
+// app/berita/umum/[id]/page.tsx - SIMPLIFIED dengan auto justify
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -9,6 +10,7 @@ import { useAdminAuth } from '@/lib/auth'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 import ContentBlockRenderer from '@/components/News/ContentBlockRenderer'
 import DeleteConfirmation from '@/components/DeleteConfirmation'
+import ImageUpload from '@/components/forms/ImageUpload'
 
 interface ContentBlock {
   id?: string
@@ -91,11 +93,13 @@ export default function BeritaDetailPage() {
       if (response.ok) {
         const updatedNews = await response.json()
         setNews(updatedNews)
+        setEditedNews(updatedNews)
         setIsEditing(false)
         setError(null)
         await fetchNewsDetail()
       } else {
-        setError('Gagal menyimpan perubahan')
+        const errorData = await response.json()
+        setError(errorData.error || 'Gagal menyimpan perubahan')
       }
     } catch (error) {
       setError('Terjadi kesalahan saat menyimpan')
@@ -111,7 +115,6 @@ export default function BeritaDetailPage() {
     setError(null)
   }
 
-  // Fixed: Properly handle adding content blocks
   const handleAddContentBlock = (type: 'text' | 'subtitle' | 'image') => {
     if (!editedNews) return
 
@@ -121,7 +124,7 @@ export default function BeritaDetailPage() {
       content: '',
       order_index: editedNews.content_blocks.length,
       style: {
-        textAlign: type === 'text' ? 'left' : undefined  // Only text blocks have alignment
+        textAlign: type === 'text' ? 'justify' : 'left'  // Auto justify untuk text blocks
       }
     }
 
@@ -129,9 +132,8 @@ export default function BeritaDetailPage() {
       ...editedNews,
       content_blocks: [...editedNews.content_blocks, newBlock]
     }
-    
+   
     setEditedNews(updatedNews)
-    console.log('Added new content block:', newBlock)  // Debug log
   }
 
   const handleEditContentBlock = (blockId: string, content: string, style?: any) => {
@@ -140,12 +142,12 @@ export default function BeritaDetailPage() {
     const updatedNews = {
       ...editedNews,
       content_blocks: editedNews.content_blocks.map(block =>
-        block.id === blockId 
+        block.id === blockId
           ? { ...block, content, style: { ...block.style, ...style } }
           : block
       )
     }
-    
+   
     setEditedNews(updatedNews)
   }
 
@@ -156,7 +158,7 @@ export default function BeritaDetailPage() {
       ...editedNews,
       content_blocks: editedNews.content_blocks.filter(block => block.id !== blockId)
     }
-    
+   
     setEditedNews(updatedNews)
   }
 
@@ -165,7 +167,7 @@ export default function BeritaDetailPage() {
 
     const blocks = [...editedNews.content_blocks]
     const currentIndex = blocks.findIndex(block => block.id === blockId)
-    
+   
     if (currentIndex === -1) return
 
     if (direction === 'up' && currentIndex > 0) {
@@ -189,7 +191,6 @@ export default function BeritaDetailPage() {
       const response = await fetch(`/api/news/${params.id}`, {
         method: 'DELETE'
       })
-
       if (response.ok) {
         router.push('/berita/umum')
       } else {
@@ -364,33 +365,55 @@ export default function BeritaDetailPage() {
 
             {/* Edit Fields */}
             {isEditing && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Kategori
-                  </label>
-                  <input
-                    type="text"
-                    value={currentNews.category || ''}
-                    onChange={(e) => setEditedNews(prev =>
-                      prev ? { ...prev, category: e.target.value } : null
-                    )}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
-                    placeholder="Kategori berita"
-                  />
+              <div className="space-y-6 p-6 bg-gray-50 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  📝 Edit Informasi Berita
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Kategori
+                    </label>
+                    <input
+                      type="text"
+                      value={currentNews.category || ''}
+                      onChange={(e) => setEditedNews(prev =>
+                        prev ? { ...prev, category: e.target.value } : null
+                      )}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
+                      placeholder="Kategori berita"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Excerpt/Ringkasan
+                    </label>
+                    <textarea
+                      value={currentNews.excerpt || ''}
+                      onChange={(e) => setEditedNews(prev =>
+                        prev ? { ...prev, excerpt: e.target.value } : null
+                      )}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
+                      rows={3}
+                      placeholder="Ringkasan berita..."
+                    />
+                  </div>
                 </div>
+
+                {/* Enhanced Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    URL Gambar
+                    Gambar Utama Berita
                   </label>
-                  <input
-                    type="url"
+                  <ImageUpload
                     value={currentNews.image_url || ''}
-                    onChange={(e) => setEditedNews(prev =>
-                      prev ? { ...prev, image_url: e.target.value } : null
+                    onChange={(url) => setEditedNews(prev =>
+                      prev ? { ...prev, image_url: url } : null
                     )}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
-                    placeholder="https://example.com/image.jpg"
+                    label=""
+                    className="w-full"
                   />
                 </div>
               </div>
@@ -405,32 +428,50 @@ export default function BeritaDetailPage() {
                 alt={currentNews.title}
                 className="w-full h-full object-cover"
                 onError={(e) => {
+                  console.error('Image failed to load:', currentNews.image_url)
                   e.currentTarget.style.display = 'none'
                 }}
               />
             </div>
           )}
 
-          {/* Main Content */}
+          {/* SIMPLIFIED: Main Content dengan AUTO JUSTIFY */}
           <div className="p-8">
             {isEditing ? (
-              <div className="space-y-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Konten Utama
-                </label>
-                <textarea
-                  value={currentNews.content}
-                  onChange={(e) => setEditedNews(prev =>
-                    prev ? { ...prev, content: e.target.value } : null
-                  )}
-                  className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
-                  rows={8}
-                  placeholder="Tulis konten berita lengkap di sini..."
-                />
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Konten Utama
+                  </label>
+                  
+                  {/* AUTO JUSTIFY - Simple! */}
+                  <textarea
+                    value={currentNews.content}
+                    onChange={(e) => setEditedNews(prev =>
+                      prev ? { ...prev, content: e.target.value } : null
+                    )}
+                    className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 text-justify"
+                    rows={12}
+                    placeholder="Tulis konten berita lengkap di sini..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    ✨ Teks akan otomatis rata kanan-kiri (justify) untuk hasil yang rapi
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="prose prose-lg max-w-none">
-                <div className="text-lg text-gray-900 leading-relaxed whitespace-pre-wrap">
+                {/* Display excerpt */}
+                {currentNews.excerpt && (
+                  <div className="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg">
+                    <p className="text-emerald-800 font-medium italic text-lg leading-relaxed m-0">
+                      {currentNews.excerpt}
+                    </p>
+                  </div>
+                )}
+                
+                {/* AUTO JUSTIFY - Simple display! */}
+                <div className="text-lg text-gray-900 leading-relaxed whitespace-pre-wrap text-justify">
                   {currentNews.content}
                 </div>
               </div>
@@ -455,7 +496,7 @@ export default function BeritaDetailPage() {
                 />
               ))}
 
-              {/* Add Content Block Buttons - Fixed functionality */}
+              {/* Add Content Block Buttons */}
               {isAdmin && isEditing && (
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
                   <div className="text-center">
@@ -471,7 +512,7 @@ export default function BeritaDetailPage() {
                         <Type className="w-5 h-5" />
                         Tambah Paragraf
                       </button>
-                      
+                     
                       <button
                         onClick={() => handleAddContentBlock('subtitle')}
                         className="flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
@@ -480,7 +521,7 @@ export default function BeritaDetailPage() {
                         <Heading className="w-5 h-5" />
                         Tambah Sub Judul
                       </button>
-                      
+                     
                       <button
                         onClick={() => handleAddContentBlock('image')}
                         className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
@@ -491,7 +532,7 @@ export default function BeritaDetailPage() {
                       </button>
                     </div>
                     <p className="text-xs text-gray-500 mt-3">
-                      Klik tombol di atas untuk menambah konten baru. Paragraf mendukung pengaturan alignment.
+                      ✨ Paragraf otomatis menggunakan justify alignment untuk hasil yang rapi
                     </p>
                   </div>
                 </div>

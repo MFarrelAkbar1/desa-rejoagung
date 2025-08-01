@@ -14,7 +14,9 @@ import {
   Facebook,
   Globe,
   UserCheck,
-  Award
+  Award,
+  BookOpen,  // Tambahan icon untuk Booklet
+  Leaf       // Tambahan icon untuk Flora
 } from 'lucide-react'
 
 export interface MenuItem {
@@ -81,6 +83,26 @@ export const menuItems: MenuItem[] = [
     label: 'Data Statistik Desa',
     icon: BarChart3,
     href: '/data-statistik'
+  },
+  // MENU BARU: Booklet
+  {
+    id: 'booklet',
+    label: 'Booklet',
+    icon: BookOpen,
+    submenu: [
+      {
+        id: 'booklet-statistik',
+        label: 'Statistik Desa',
+        icon: BarChart3,
+        href: '/booklet/statistik'
+      },
+      {
+        id: 'booklet-flora',
+        label: 'Arsip Flora',
+        icon: Leaf,
+        href: '/booklet/flora'
+      }
+    ]
   },
   {
     id: 'potensi-desa',

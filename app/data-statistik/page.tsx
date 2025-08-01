@@ -1,14 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { BarChart3, Users, GraduationCap, Heart, Music, Trophy, FileText } from 'lucide-react'
+import { BarChart3, Users, GraduationCap, Heart, Music, Trophy } from 'lucide-react'
 import { tabsConfig } from '@/data/dataDesaConstants'
 import KependudukanTab from '@/components/tabs/KependudukanTab'
 import PendidikanTab from '@/components/tabs/PendidikanTab'
 import KesehatanTab from '@/components/tabs/KesehatanTab'
 import SeniTab from '@/components/tabs/SeniTab'
 import OlahragaTab from '@/components/tabs/OlahragaTab'
-import BookletTab from '@/components/tabs/BookletTab'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 
 export default function DataDesaPage() {
@@ -20,8 +19,8 @@ export default function DataDesaPage() {
       pendidikan: GraduationCap,
       kesehatan: Heart,
       seni: Music,
-      olahraga: Trophy,
-      booklet: FileText
+      olahraga: Trophy
+      // DIHAPUS: booklet: FileText
     }
     return icons[tab as keyof typeof icons] || Users
   }
@@ -38,8 +37,7 @@ export default function DataDesaPage() {
         return <SeniTab />
       case 'olahraga':
         return <OlahragaTab />
-      case 'booklet':
-        return <BookletTab />
+      // DIHAPUS: case 'booklet': return <BookletTab />
       default:
         return <KependudukanTab />
     }
@@ -55,7 +53,7 @@ export default function DataDesaPage() {
             { label: 'Data Desa', href: '/informasi/data-desa' },
           ]}
         />
-
+        
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8 mt-6">
           <div className="flex items-center mb-6">
@@ -79,8 +77,8 @@ export default function DataDesaPage() {
                   className={`
                     flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200
                     ${activeTab === tab.id
-                      ? `${tab.color} text-white shadow-lg`
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? `${tab.color} text-white shadow-lg transform scale-105`
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }
                   `}
                 >
@@ -90,9 +88,9 @@ export default function DataDesaPage() {
               )
             })}
           </div>
-
-          {/* Content */}
-          <div className="bg-white rounded-lg p-6 border-2 border-gray-200">
+         
+          {/* Tab Content */}
+          <div className="bg-white rounded-b-lg border-t-0 min-h-[600px]">
             {renderTabContent()}
           </div>
         </div>

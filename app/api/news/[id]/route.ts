@@ -1,12 +1,6 @@
 // app/api/news/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { 
-  NewsRow, 
-  ContentBlockRow, 
-  NewsWithBlocks, 
-  UpdateNewsRequest 
-} from '@/types/news'
 
 // GET /api/news/[id] - Ambil berita berdasarkan ID dengan content blocks
 export async function GET(

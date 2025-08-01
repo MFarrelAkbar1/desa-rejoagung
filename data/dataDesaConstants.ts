@@ -93,7 +93,6 @@ export const olahragaData = {
 }
 
 export const tabsConfig = [
-  { id: 'booklet', label: 'Booklet Statistik', color: 'bg-indigo-600' },
   { id: 'kependudukan', label: 'Kependudukan', color: 'bg-blue-600' },
   { id: 'pendidikan', label: 'Pendidikan', color: 'bg-green-600' },
   { id: 'kesehatan', label: 'Kesehatan', color: 'bg-red-600' },

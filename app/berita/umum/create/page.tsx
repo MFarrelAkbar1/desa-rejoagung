@@ -1,9 +1,22 @@
-// app/berita/umum/create/page.tsx - MODULAR VERSION
+// app/berita/umum/create/page.tsx - Updated with new form structure
+
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import NewsForm from '@/components/forms/NewsForm'
+
+interface ContentBlock {
+  id?: string
+  type: 'text' | 'subtitle' | 'image'
+  content: string
+  order_index: number
+  style?: {
+    textAlign?: 'left' | 'center' | 'right' | 'justify'
+    fontSize?: 'small' | 'medium' | 'large'
+    caption?: string
+  }
+}
 
 interface NewsFormData {
   title: string
@@ -12,81 +25,84 @@ interface NewsFormData {
   image_url: string
   category: string
   is_published: boolean
-  is_announcement: boolean
+  is_announcement: boolean  
   author: string
-  content_blocks: any[]
+  content_blocks: ContentBlock[]
+  content_align?: 'left' | 'center' | 'right' | 'justify'
+  excerpt_align?: 'left' | 'center' | 'right' | 'justify'
 }
 
 export default function CreateBeritaPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
-  // Simple admin check - bisa diganti dengan useAdminAuth hook
-  const [isAdmin, setIsAdmin] = useState(true)
-  const [authLoading, setAuthLoading] = useState(false)
 
-  // Uncomment ini jika ingin pakai real auth check
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //     try {
-  //       const response = await fetch("/api/auth/check", {
-  //         credentials: 'include'
-  //       });
-  //       setIsAdmin(response.ok);
-  //     } catch (error) {
-  //       console.error("Auth check error:", error);
-  //       setIsAdmin(false);
-  //     } finally {
-  //       setAuthLoading(false);
-  //     }
-  //   };
-  //   checkAuth();
-  // }, []);
-
-  // Redirect non-admin
-  useEffect(() => {
-    if (!authLoading && !isAdmin) {
-      router.push('/berita/umum')
-    }
-  }, [isAdmin, authLoading, router])
-
-  const handleSubmit = async (formData: NewsFormData) => {
-    if (!formData.title.trim() || !formData.content.trim()) {
-      setError('Judul dan konten wajib diisi')
-      return
-    }
-
+  const handleSubmit = async (data: NewsFormData) => {
     setIsLoading(true)
     setError(null)
-    
+
     try {
-      console.log('📤 Submitting news data:', formData)
-      
+      console.log('Submitting news data:', data)
+
+      // Prepare the news data for submission
+      const newsData = {
+        title: data.title,
+        content: data.content,
+        excerpt: data.excerpt || '',
+        image_url: data.image_url || '',
+        category: data.category || '',
+        is_published: data.is_published,
+        is_announcement: data.is_announcement,
+        author: data.author,
+        content_align: data.content_align || 'left',
+        excerpt_align: data.excerpt_align || 'left'
+      }
+
       const response = await fetch('/api/news', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(newsData),
       })
 
-      console.log('📥 Response status:', response.status)
-      
-      if (response.ok) {
-        const newNews = await response.json()
-        console.log('✅ News created successfully:', newNews)
-        
-        // Redirect ke detail page
-        router.push(`/berita/umum/${newNews.id}`)
-      } else {
+      if (!response.ok) {
         const errorData = await response.json()
-        console.error('❌ API Error:', errorData)
-        setError(errorData.error || 'Gagal menyimpan berita')
+        throw new Error(errorData.error || 'Gagal menyimpan berita')
       }
-    } catch (error) {
-      console.error('❌ Network Error:', error)
-      setError('Terjadi kesalahan saat menyimpan. Periksa koneksi internet Anda.')
+
+      const result = await response.json()
+      console.log('News created successfully:', result)
+
+      // If content blocks exist, save them separately
+      if (data.content_blocks && data.content_blocks.length > 0) {
+        const blocksData = data.content_blocks.map(block => ({
+          news_id: result.id,
+          type: block.type,
+          content: block.content,
+          order_index: block.order_index,
+          style: block.style || {}
+        }))
+
+        const blocksResponse = await fetch('/api/news/content-blocks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ blocks: blocksData }),
+        })
+
+        if (!blocksResponse.ok) {
+          console.warn('Failed to save content blocks, but news was created')
+        }
+      }
+
+      // Redirect to news list or detail page
+      router.push('/berita/umum')
+      
+    } catch (err) {
+      console.error('Error creating news:', err)
+      setError(err instanceof Error ? err.message : 'Terjadi kesalahan')
     } finally {
       setIsLoading(false)
     }
@@ -96,38 +112,14 @@ export default function CreateBeritaPage() {
     router.push('/berita/umum')
   }
 
-  // Loading state
-  if (authLoading) {
+  // Show loading state while redirecting or during form submission
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-6 py-8">
           <div className="text-center py-16">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Memuat...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Non-admin access
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          <div className="text-center py-16">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Akses Terbatas
-            </h1>
-            <p className="text-gray-600 mb-6">
-              Anda tidak memiliki izin untuk mengakses halaman ini.
-            </p>
-            <button
-              onClick={() => router.push('/berita/umum')}
-              className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors"
-            >
-              Kembali ke Berita
-            </button>
+            <p className="mt-4 text-gray-600">Menyimpan berita...</p>
           </div>
         </div>
       </div>
@@ -156,7 +148,7 @@ export default function CreateBeritaPage() {
           error={error}
           submitLabel="Simpan Berita"
           title="Buat Berita Baru"
-          description="Buat berita dengan konten blok yang dapat dikustomisasi"
+          description="Buat berita dengan konten blok yang dapat dikustomisasi. Layout telah diperbarui: Informasi Tambahan dan Pengaturan Publikasi sekarang berada di atas Informasi Dasar."
         />
       </div>
     </div>
