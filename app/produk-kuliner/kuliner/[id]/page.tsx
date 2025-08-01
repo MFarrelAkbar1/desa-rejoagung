@@ -1,14 +1,14 @@
-// app/produk-kuliner/kuliner/[id]/page.tsx
+// app/produk-kuliner/kuliner/[id]/page.tsx - SIMPLE FIX (hanya hapus contact button + optimasi gambar)
+
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { 
-  ArrowLeft, Star, MapPin, Clock, Users, Crown, Edit, Trash2, 
-  Phone, Share2, Heart, ChefHat, Utensils, Leaf, Timer, 
-  ShoppingCart, MessageCircle 
+import {
+  ArrowLeft, Star, MapPin, Clock, Users, Crown, Edit, Trash2,
+  Share2, Heart, ChefHat, Utensils, Leaf, Timer
 } from 'lucide-react'
 import { useAdminAuth } from '@/lib/auth'
 import Breadcrumb from '@/components/layout/Breadcrumb'
@@ -32,14 +32,11 @@ interface CulinaryItem {
   updated_at: string
 }
 
-// Category configurations
+// Category configuration
 const categoryConfig = {
   makanan: {
     color: 'from-red-500 to-pink-500',
     bgColor: 'bg-red-500',
-    lightBg: 'bg-red-50',
-    lightText: 'text-red-700',
-    darkBg: 'bg-red-100',
     icon: ChefHat,
     label: 'Makanan',
     emoji: '🍽️'
@@ -47,9 +44,6 @@ const categoryConfig = {
   minuman: {
     color: 'from-blue-500 to-cyan-500',
     bgColor: 'bg-blue-500',
-    lightBg: 'bg-blue-50',
-    lightText: 'text-blue-700',
-    darkBg: 'bg-blue-100',
     icon: Users,
     label: 'Minuman',
     emoji: '🥤'
@@ -57,9 +51,6 @@ const categoryConfig = {
   camilan: {
     color: 'from-yellow-500 to-orange-500',
     bgColor: 'bg-yellow-500',
-    lightBg: 'bg-yellow-50',
-    lightText: 'text-yellow-700',
-    darkBg: 'bg-yellow-100',
     icon: Star,
     label: 'Camilan',
     emoji: '🍪'
@@ -76,6 +67,7 @@ export default function KulinerDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [relatedItems, setRelatedItems] = useState<CulinaryItem[]>([])
   const [isFavorite, setIsFavorite] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   // Fetch culinary item detail
   const fetchCulinaryDetail = async () => {
@@ -90,12 +82,12 @@ export default function KulinerDetailPage() {
       const data = await response.json()
       setItem(data)
       
-      // Fetch related items (same category, exclude current)
+      // Fetch related items
       const relatedResponse = await fetch('/api/culinary')
       if (relatedResponse.ok) {
         const allItems = await relatedResponse.json()
         const related = allItems
-          .filter((relatedItem: CulinaryItem) => 
+          .filter((relatedItem: CulinaryItem) =>
             relatedItem.category === data.category && relatedItem.id !== data.id
           )
           .slice(0, 3)
@@ -125,7 +117,6 @@ export default function KulinerDetailPage() {
           url: window.location.href,
         })
       } catch (err) {
-        // Fallback to clipboard
         navigator.clipboard.writeText(window.location.href)
         alert('Link berhasil disalin!')
       }
@@ -135,7 +126,7 @@ export default function KulinerDetailPage() {
     }
   }
 
-  // Handle admin actions
+  // Admin actions
   const handleEdit = () => {
     router.push(`/produk-kuliner/kuliner?edit=${item?.id}`)
   }
@@ -190,11 +181,12 @@ export default function KulinerDetailPage() {
           <p className="text-gray-600 mb-8">
             Menu kuliner yang Anda cari tidak tersedia atau telah dihapus.
           </p>
-          <Link href="/produk-kuliner/kuliner">
-            <button className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors">
-              Kembali ke Daftar Menu
-            </button>
-          </Link>
+          <button
+            onClick={() => router.push('/produk-kuliner/kuliner')}
+            className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            Kembali ke Kuliner
+          </button>
         </div>
       </div>
     )
@@ -212,7 +204,7 @@ export default function KulinerDetailPage() {
             items={[
               { label: 'Produk & Kuliner', href: '/produk-kuliner' },
               { label: 'Kuliner', href: '/produk-kuliner/kuliner' },
-              { label: item.name, href: `#` },
+              { label: item.name, href: `/produk-kuliner/kuliner/${item.id}` },
             ]}
           />
         </div>
@@ -220,231 +212,279 @@ export default function KulinerDetailPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Back Button */}
-        <Link href="/produk-kuliner/kuliner">
-          <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-8 transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-            Kembali ke Daftar Menu
-          </button>
+        <Link 
+          href="/produk-kuliner/kuliner"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-8 transition-colors group"
+        >
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          <span>Kembali ke Kuliner</span>
         </Link>
 
-        {/* Hero Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
-          {/* Image */}
-          <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
-            {item.image_url ? (
-              <Image
-                src={item.image_url}
-                alt={item.name}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className={`w-full h-full bg-gradient-to-br ${categoryInfo.color} flex items-center justify-center`}>
-                <div className="text-white text-8xl">{categoryInfo.emoji}</div>
-              </div>
-            )}
-            
-            {/* Badges on Image */}
-            <div className="absolute top-6 left-6">
-              <div className={`bg-gradient-to-r ${categoryInfo.color} text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 shadow-lg`}>
-                <span className="text-xl">{categoryInfo.emoji}</span>
-                {categoryInfo.label}
-              </div>
-            </div>
-            
-            {item.is_signature && (
-              <div className="absolute top-6 right-6">
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 shadow-lg">
-                  <Crown className="w-5 h-5" />
-                  SIGNATURE
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Info */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Image Section - SIMPLE OPTIMIZATION */}
           <div className="space-y-6">
-            {/* Title & Rating */}
-            <div>
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-4 leading-tight">
-                {item.name}
-              </h1>
-              {item.rating && (
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-6 h-6 ${
-                          i < Math.floor(item.rating!) 
-                            ? 'text-yellow-400 fill-current' 
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
+            <div className="relative h-96 lg:h-[500px] bg-gray-100 rounded-2xl overflow-hidden shadow-lg">
+              {item.image_url && !imageError ? (
+                <Image
+                  src={item.image_url}
+                  alt={item.name}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="transition-transform duration-500 hover:scale-105"
+                  onError={() => setImageError(true)}
+                  onLoad={(e) => {
+                    // SIMPLE: Auto-detect jika gambar terlalu tinggi/vertikal
+                    const img = e.target as HTMLImageElement
+                    const ratio = img.naturalWidth / img.naturalHeight
+                    
+                    if (ratio < 0.8) {
+                      // Gambar vertikal - gunakan contain + background putih
+                      img.style.objectFit = 'contain'
+                      img.style.backgroundColor = '#f9fafb'
+                    } else {
+                      // Gambar normal/horizontal - gunakan cover
+                      img.style.objectFit = 'cover'
+                      img.style.objectPosition = 'center'
+                    }
+                  }}
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">{categoryInfo.emoji}</div>
+                    <p className="text-gray-500 text-lg font-medium">
+                      {categoryInfo.label}
+                    </p>
                   </div>
-                  <span className="text-2xl font-bold text-gray-800">{item.rating}</span>
-                  <span className="text-gray-600">rating</span>
                 </div>
               )}
-            </div>
 
-            {/* Price */}
-            {item.price && (
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
-                <div className="text-emerald-600 text-sm font-medium mb-1">HARGA</div>
-                <div className="text-3xl font-bold text-emerald-700">{item.price}</div>
-                <div className="text-emerald-600 text-sm">per porsi</div>
+              {/* Signature Badge */}
+              {item.is_signature && (
+                <div className="absolute top-4 right-4">
+                  <div className="bg-yellow-500 text-white px-3 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg">
+                    <Crown className="w-4 h-4" />
+                    Menu Signature
+                  </div>
+                </div>
+              )}
+
+              {/* Category Badge */}
+              <div className="absolute bottom-4 left-4">
+                <div className={`${categoryInfo.bgColor} text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-lg`}>
+                  <IconComponent className="w-4 h-4" />
+                  {categoryInfo.label}
+                </div>
               </div>
-            )}
-
-            {/* Quick Info Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {item.location && (
-                <div className={`${categoryInfo.lightBg} ${categoryInfo.lightText} p-4 rounded-xl`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="w-5 h-5" />
-                    <span className="font-medium text-sm uppercase tracking-wide">Lokasi</span>
-                  </div>
-                  <div className="font-bold">{item.location}</div>
-                </div>
-              )}
-              
-              {item.cooking_time && (
-                <div className={`${categoryInfo.lightBg} ${categoryInfo.lightText} p-4 rounded-xl`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="w-5 h-5" />
-                    <span className="font-medium text-sm uppercase tracking-wide">Waktu</span>
-                  </div>
-                  <div className="font-bold">{item.cooking_time}</div>
-                </div>
-              )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-4">
-              {item.contact && (
-                <button
-                  onClick={() => window.open(`tel:${item.contact}`, '_self')}
-                  className="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white py-4 px-6 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
-                >
-                  <Phone className="w-5 h-5" />
-                  Hubungi Penjual
-                </button>
-              )}
-              
-              <button
-                onClick={handleShare}
-                className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-xl transition-all duration-300 shadow-lg"
-                title="Bagikan"
-              >
-                <Share2 className="w-5 h-5" />
-              </button>
-              
+            {/* Action Buttons - REMOVED CONTACT BUTTON */}
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsFavorite(!isFavorite)}
-                className={`p-4 rounded-xl transition-all duration-300 shadow-lg ${
+                className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
                   isFavorite 
-                    ? 'bg-red-500 hover:bg-red-600 text-white' 
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
+                    ? 'bg-red-500 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
-                title="Favorit"
               >
                 <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+                <span>{isFavorite ? 'Favorit' : 'Tambah Favorit'}</span>
               </button>
+
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <Share2 className="w-5 h-5" />
+                <span>Bagikan</span>
+              </button>
+
+              {/* Admin Actions */}
+              {isAdmin && (
+                <>
+                  <button
+                    onClick={handleEdit}
+                    className="flex items-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    <Edit className="w-5 h-5" />
+                    <span>Edit</span>
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="flex items-center gap-2 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                    <span>Hapus</span>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Content Section */}
+          <div className="space-y-8">
+            {/* Header */}
+            <div>
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+                {item.name}
+              </h1>
+              
+              {/* Rating & Info */}
+              <div className="flex items-center gap-6 mb-6">
+                {item.rating && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-5 h-5 ${
+                            i < Math.floor(item.rating!)
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-lg font-semibold text-gray-700">
+                      {item.rating.toFixed(1)}
+                    </span>
+                  </div>
+                )}
+
+                {item.location && (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <MapPin className="w-5 h-5" />
+                    <span>{item.location}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Price */}
+              {item.price && (
+                <div className="mb-6">
+                  <div className="inline-block bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2">
+                    <span className="text-2xl font-bold text-emerald-600">
+                      {item.price.startsWith('Rp') ? item.price : `Rp. ${item.price}`}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              <p className="text-gray-700 text-lg leading-relaxed">
+                {item.description}
+              </p>
             </div>
 
-            {/* Admin Actions */}
-            {isAdmin && (
-              <div className="flex gap-3 pt-4 border-t border-gray-200">
-                <button
-                  onClick={handleEdit}
-                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
-                >
-                  <Edit className="w-5 h-5" />
-                  Edit Menu
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-xl font-medium transition-colors flex items-center gap-2"
-                >
-                  <Trash2 className="w-5 h-5" />
-                  Hapus
-                </button>
+            {/* Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Cooking Time */}
+              {item.cooking_time && (
+                <div className="bg-white rounded-lg p-6 border border-gray-200">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Timer className="w-6 h-6 text-orange-500" />
+                    <h3 className="font-semibold text-gray-800">Waktu Masak</h3>
+                  </div>
+                  <p className="text-gray-600">{item.cooking_time}</p>
+                </div>
+              )}
+
+              {/* Serving Size */}
+              {item.serving_size && (
+                <div className="bg-white rounded-lg p-6 border border-gray-200">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Users className="w-6 h-6 text-blue-500" />
+                    <h3 className="font-semibold text-gray-800">Porsi</h3>
+                  </div>
+                  <p className="text-gray-600">{item.serving_size}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Ingredients */}
+            {item.ingredients && item.ingredients.length > 0 && (
+              <div className="bg-white rounded-lg p-6 border border-gray-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <Leaf className="w-6 h-6 text-green-500" />
+                  <h3 className="text-xl font-semibold text-gray-800">Bahan-bahan</h3>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {item.ingredients.map((ingredient, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 px-3 py-2 rounded-lg text-sm text-gray-700"
+                    >
+                      {ingredient}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Benefits */}
+            {item.benefits && item.benefits.length > 0 && (
+              <div className="bg-white rounded-lg p-6 border border-gray-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <Heart className="w-6 h-6 text-red-500" />
+                  <h3 className="text-xl font-semibold text-gray-800">Manfaat</h3>
+                </div>
+                <ul className="space-y-2">
+                  {item.benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-2 text-gray-700">
+                      <span className="text-green-500 mt-1">•</span>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
-        </div>
-
-        {/* Description */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-            <Utensils className="w-6 h-6 text-emerald-500" />
-            Deskripsi
-          </h2>
-          <p className="text-gray-700 text-lg leading-relaxed">{item.description}</p>
-        </div>
-
-        {/* Details Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          {/* Ingredients */}
-          {item.ingredients && item.ingredients.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                <Leaf className="w-6 h-6 text-green-500" />
-                Bahan-bahan
-              </h2>
-              <div className="space-y-3">
-                {item.ingredients.map((ingredient, index) => (
-                  <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                    <span className="text-gray-700 font-medium">{ingredient}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Benefits */}
-          {item.benefits && item.benefits.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                <Heart className="w-6 h-6 text-red-500" />
-                Manfaat
-              </h2>
-              <div className="space-y-3">
-                {item.benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-gray-700 font-medium">{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Related Items */}
         {relatedItems.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-3">
-              <ChefHat className="w-6 h-6 text-emerald-500" />
-              Menu {categoryInfo.label} Lainnya
-            </h2>
+          <div className="mt-16">
+            <h2 className="text-2xl font-bold text-gray-800 mb-8">Menu Serupa</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {relatedItems.map((relatedItem) => (
-                <Link key={relatedItem.id} href={`/produk-kuliner/kuliner/${relatedItem.id}`}>
-                  <div className="group cursor-pointer bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors">
-                    <div className="text-3xl mb-3">{categoryConfig[relatedItem.category].emoji}</div>
-                    <h3 className="font-bold text-gray-800 group-hover:text-emerald-600 transition-colors mb-2">
-                      {relatedItem.name}
-                    </h3>
-                    <p className="text-gray-600 text-sm line-clamp-2">{relatedItem.description}</p>
-                    {relatedItem.price && (
-                      <div className="text-emerald-600 font-bold mt-3">{relatedItem.price}</div>
-                    )}
+                <Link
+                  key={relatedItem.id}
+                  href={`/produk-kuliner/kuliner/${relatedItem.id}`}
+                  className="block group"
+                >
+                  <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+                    <div className="relative h-48 bg-gray-100">
+                      {relatedItem.image_url ? (
+                        <Image
+                          src={relatedItem.image_url}
+                          alt={relatedItem.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                          <div className="text-3xl">{categoryConfig[relatedItem.category].emoji}</div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-bold text-lg text-gray-800 mb-2 group-hover:text-emerald-600 transition-colors">
+                        {relatedItem.name}
+                      </h3>
+                      <p className="text-gray-600 text-sm line-clamp-2">
+                        {relatedItem.description}
+                      </p>
+                      {relatedItem.price && (
+                        <div className="mt-3">
+                          <span className="text-emerald-600 font-bold">
+                            {relatedItem.price.startsWith('Rp') ? relatedItem.price : `Rp. ${relatedItem.price}`}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </Link>
               ))}

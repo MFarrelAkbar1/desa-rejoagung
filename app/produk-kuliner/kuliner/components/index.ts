@@ -2,7 +2,7 @@
 
 // Main components (REMOVED KulinerInfo export)
 export { default as KulinerPageHeader } from './KulinerPageHeader'
-export { default as KulinerGrid } from './KulinerGrid'
+export { default as KulinerGrid } from './OptimizedKulinerGrid'
 export { default as KulinerStats } from './KulinerStats'
 export { default as KulinerFilter } from './KulinerFilter'
 

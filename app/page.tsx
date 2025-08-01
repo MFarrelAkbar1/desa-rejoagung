@@ -1,97 +1,70 @@
 'use client'
 
-import { Users, MapPin, Package, Calendar, TrendingUp, Star } from 'lucide-react'
+import { Users, MapPin } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import NewsSection from '@/components/News/NewsSection'
+import LocalHeroes from '@/components/Home/LocalHeroes'
+import LatestNews from '@/components/Home/LatestNews'
+import LatestProducts from '@/components/Home/LatestProducts'
+import LatestCulinary from '@/components/Home/LatestCulinary'
 
 export default function Home() {
-  const router = useRouter()
+ const router = useRouter()
 
-  const handleExploreClick = () => {
-    router.push('/profil/tentang-desa')
-  }
+ const handleExploreClick = () => {
+   router.push('/profil/tentang-desa')
+ }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Dipertahankan dari kode asli */}
-      <div
-        className="relative h-[70vh] bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/foto-beranda.jpg')`
-        }}
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center text-white px-4">
-            {/* Main Title */}
-            <h1 className="text-6xl md:text-8xl font-bold mb-6 text-shadow-lg">
-              Desa Rejoagung
-            </h1>
-            
-            {/* Subtitle */}
-            <p className="text-xl md:text-2xl font-medium mb-8 text-gray-100">
-              Kecamatan Srono, Kabupaten Banyuwangi, Jawa Timur
-            </p>
-            
-            {/* CTA Button */}
-            <button
-              onClick={handleExploreClick}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
-              Jelajahi Desa
-            </button>
-          </div>
-        </div>
-      </div>
+ return (
+   <div className="min-h-screen bg-gray-50">
+     {/* Hero Section - Mobile Optimized */}
+     <div
+       className="relative h-[60vh] sm:h-[70vh] bg-cover bg-center bg-no-repeat flex items-center justify-center overflow-hidden"
+       style={{
+         backgroundImage: 'url(/foto-beranda.jpg)'
+       }}
+     >
+       <div className="absolute inset-0 bg-black/20"></div> {/* Subtle black overlay */}
+       
+       <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-4 sm:px-6">
+         <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
+           Selamat Datang di
+           <span className="block text-green-300 mt-2">Desa Rejoagung</span>
+         </h1>
+         <p className="text-sm sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-emerald-100 max-w-3xl mx-auto px-2" style={{ textShadow: '0.5px 0.5px 1px rgba(0, 0, 0, 0.8)' }}>
+           Portal resmi informasi, layanan, dan produk unggulan Desa Rejoagung
+         </p>
+         
+         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+           <button
+             onClick={handleExploreClick}
+             className="bg-white text-emerald-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold hover:bg-emerald-50 transition-colors shadow-lg w-full sm:w-auto"
+           >
+             Jelajahi Desa
+           </button>
+           <button
+             onClick={() => router.push('/berita/umum')}
+             className="bg-emerald-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold hover:bg-emerald-600 transition-colors shadow-lg w-full sm:w-auto"
+           >
+             Berita Terbaru
+           </button>
+         </div>
+       </div>
+     </div>
 
-      {/* Stats Section - Data asli yang dipertahankan */}
-      <div className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {/* Jumlah Penduduk */}
-            <div className="text-center">
-              <div className="bg-blue-100 rounded-xl p-4 mb-4 mx-auto w-16 h-16 flex items-center justify-center">
-                <Users className="w-8 h-8 text-blue-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-800 mb-2">2,847</div>
-              <p className="text-gray-600 font-medium">Jiwa</p>
-              <p className="text-sm text-gray-500">Total Penduduk</p>
-            </div>
+     {/* Content Sections - Mobile Optimized */}
+     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16">
+       {/* Local Heroes Section */}
+       <LocalHeroes />
 
-            {/* Luas Wilayah */}
-            <div className="text-center">
-              <div className="bg-green-100 rounded-xl p-4 mb-4 mx-auto w-16 h-16 flex items-center justify-center">
-                <MapPin className="w-8 h-8 text-green-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-800 mb-2">485</div>
-              <p className="text-gray-600 font-medium">Hektar</p>
-              <p className="text-sm text-gray-500">Luas Wilayah</p>
-            </div>
+       {/* Berita Terbaru Section */}
+       <LatestNews />
 
-            {/* Produk UMKM */}
-            <div className="text-center">
-              <div className="bg-yellow-100 rounded-xl p-4 mb-4 mx-auto w-16 h-16 flex items-center justify-center">
-                <Package className="w-8 h-8 text-yellow-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-800 mb-2">127</div>
-              <p className="text-gray-600 font-medium">Produk</p>
-              <p className="text-sm text-gray-500">UMKM Unggulan</p>
-            </div>
+       {/* Produk Terbaru Section */}
+       <LatestProducts />
 
-            {/* Program Aktif */}
-            <div className="text-center">
-              <div className="bg-purple-100 rounded-xl p-4 mb-4 mx-auto w-16 h-16 flex items-center justify-center">
-                <Calendar className="w-8 h-8 text-purple-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-800 mb-2">15</div>
-              <p className="text-gray-600 font-medium">Program</p>
-              <p className="text-sm text-gray-500">Sedang Berjalan</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Section Berita - Komponen baru */}
-      <NewsSection />
-    </div>
-  )
+       {/* Kuliner Terbaru Section */}
+       <LatestCulinary />
+     </div>
+   </div>
+ )
 }

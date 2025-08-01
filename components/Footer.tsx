@@ -83,8 +83,8 @@ export default function Footer() {
                 <div className="flex items-center space-x-2">
                   <TreePine className="w-4 h-4 text-emerald-400" />
                   <div>
-                    <div className="text-lg font-bold text-white">1,850</div>
-                    <div className="text-xs text-gray-300">Ha Luas</div>
+                    <div className="text-lg font-bold text-white">6,777.6</div>
+                    <div className="text-xs text-gray-300">km²</div>
                   </div>
                 </div>
               </div>

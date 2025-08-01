@@ -1,4 +1,5 @@
-// app/layout.tsx
+// app/layout.tsx - Updated with NotificationProvider
+
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -6,6 +7,7 @@ import { NavbarProvider } from '@/components/navbar/NavbarContext'
 import TopNavbar from '@/components/navbar/TopNavbar'
 import PageWrapper from '@/components/PageWrapper'
 import Footer from '@/components/Footer'
+import { NotificationProvider } from '@/components/notifications/NotificationSystem'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,15 +24,18 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={`${inter.className} bg-gray-50 text-gray-800 antialiased`}>
-        <NavbarProvider>
-          <TopNavbar />
-          <main className="pt-16 min-h-screen">
-            <PageWrapper>
-              {children}
-            </PageWrapper>
-          </main>
-          <Footer />
-        </NavbarProvider>
+        {/* Wrap everything with NotificationProvider */}
+        <NotificationProvider>
+          <NavbarProvider>
+            <TopNavbar />
+            <main className="pt-16 min-h-screen">
+              <PageWrapper>
+                {children}
+              </PageWrapper>
+            </main>
+            <Footer />
+          </NavbarProvider>
+        </NotificationProvider>
       </body>
     </html>
   )

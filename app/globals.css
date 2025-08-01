@@ -24,3 +24,127 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+/* Notification slide-in animation */
+@keyframes slide-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Modal scale-in animation */
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Pulse animation for loading */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Bounce for success notifications */
+@keyframes bounce-gentle {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -4px, 0);
+  }
+  70% {
+    transform: translate3d(0, -2px, 0);
+  }
+  90% {
+    transform: translate3d(0, -1px, 0);
+  }
+}
+
+/* Shake for error notifications */
+@keyframes shake-gentle {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* Apply animations */
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 0.6s ease-out;
+}
+
+.animate-shake-gentle {
+  animation: shake-gentle 0.5s ease-in-out;
+}
+
+/* Notification specific styles */
+.notification-success {
+  animation: slide-in-right 0.3s ease-out, bounce-gentle 0.6s ease-out 0.3s;
+}
+
+.notification-error {
+  animation: slide-in-right 0.3s ease-out, shake-gentle 0.5s ease-in-out 0.3s;
+}
+
+.notification-warning,
+.notification-info {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+/* Modal backdrop blur effect */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Progress bar animation for file uploads */
+@keyframes progress-bar {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.progress-animate {
+  animation: progress-bar 2s ease-in-out;
+}
+
+/* Improved focus styles for accessibility */
+.notification-focus:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .animate-slide-in-right {
+    animation: slide-in-right 0.2s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scale-in 0.15s ease-out;
+  }
+}

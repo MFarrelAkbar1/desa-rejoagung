@@ -1,4 +1,5 @@
-// app/api/products/[id]/route.ts - FIXED VERSION
+// app/api/products/[id]/route.ts - FIXED VERSION with await params
+
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth-middleware'
@@ -6,13 +7,16 @@ import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth-middlewa
 // GET /api/products/[id] - Ambil satu produk (tetap public)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // ✅ AWAIT params before using
+    const { id } = await params
+    
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) {
@@ -31,9 +35,12 @@ export async function GET(
 // PUT /api/products/[id] - Update produk (HANYA ADMIN)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // ✅ AWAIT params before using
+    const { id } = await params
+    
     // ✅ VALIDASI AUTENTIKASI ADMIN
     const authResult = await verifyAdminAuth(request)
     if (!authResult.isValid) {
@@ -63,7 +70,7 @@ export async function PUT(
         location: body.location,
         updated_at: new Date().toISOString()
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
 
     if (error) {
@@ -83,9 +90,12 @@ export async function PUT(
 // DELETE /api/products/[id] - Hapus produk (HANYA ADMIN)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // ✅ AWAIT params before using
+    const { id } = await params
+    
     // ✅ VALIDASI AUTENTIKASI ADMIN
     const authResult = await verifyAdminAuth(request)
     if (!authResult.isValid) {
@@ -96,7 +106,7 @@ export async function DELETE(
     const { data: existingProduct, error: checkError } = await supabase
       .from('products')
       .select('id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (checkError || !existingProduct) {
@@ -107,7 +117,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('products')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })

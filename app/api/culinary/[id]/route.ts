@@ -1,4 +1,5 @@
 // app/api/culinary/[id]/route.ts - FIXED VERSION
+
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth-middleware'
@@ -6,13 +7,16 @@ import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth-middlewa
 // GET /api/culinary/[id] - Ambil detail menu kuliner (tetap public)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // ✅ AWAIT params sebelum digunakan (Next.js 15 requirement)
+    const { id } = await params
+
     const { data, error } = await supabase
       .from('culinary_items')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) {
@@ -24,6 +28,7 @@ export async function GET(
 
     return NextResponse.json(data)
   } catch (error) {
+    console.error('Error in GET /api/culinary/[id]:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -31,7 +36,7 @@ export async function GET(
 // PUT /api/culinary/[id] - Update menu kuliner (HANYA ADMIN)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // ✅ VALIDASI AUTENTIKASI ADMIN
@@ -40,6 +45,8 @@ export async function PUT(
       return createUnauthorizedResponse(authResult.error)
     }
 
+    // ✅ AWAIT params sebelum digunakan
+    const { id } = await params
     const body = await request.json()
 
     // Validasi data required
@@ -77,7 +84,7 @@ export async function PUT(
         contact: body.contact,
         updated_at: new Date().toISOString()
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
 
     if (error) {
@@ -90,6 +97,7 @@ export async function PUT(
 
     return NextResponse.json(data[0])
   } catch (error) {
+    console.error('Error in PUT /api/culinary/[id]:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -97,7 +105,7 @@ export async function PUT(
 // DELETE /api/culinary/[id] - Hapus menu kuliner (HANYA ADMIN)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // ✅ VALIDASI AUTENTIKASI ADMIN
@@ -106,11 +114,14 @@ export async function DELETE(
       return createUnauthorizedResponse(authResult.error)
     }
 
+    // ✅ AWAIT params sebelum digunakan
+    const { id } = await params
+
     // Cek apakah menu ada
     const { data: existingItem, error: checkError } = await supabase
       .from('culinary_items')
       .select('id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (checkError || !existingItem) {
@@ -121,7 +132,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('culinary_items')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
@@ -129,6 +140,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Menu berhasil dihapus' })
   } catch (error) {
+    console.error('Error in DELETE /api/culinary/[id]:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
