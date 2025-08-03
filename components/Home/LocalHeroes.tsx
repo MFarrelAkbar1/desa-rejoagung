@@ -5,7 +5,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Star, Calendar } from 'lucide-react'
-import { useLocalHeroes } from '../../hooks/useNewsData'
+import { useLocalHeroes } from '@/hooks/useNewsData'
 
 interface News {
   id: string
