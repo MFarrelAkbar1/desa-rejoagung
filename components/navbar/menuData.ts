@@ -16,7 +16,8 @@ import {
   UserCheck,
   Award,
   BookOpen,  // Tambahan icon untuk Booklet
-  Leaf       // Tambahan icon untuk Flora
+  Leaf,      // Tambahan icon untuk Flora
+  GraduationCap  // Tambahan icon untuk GuideBook UGM
 } from 'lucide-react'
 
 export interface MenuItem {
@@ -90,6 +91,12 @@ export const menuItems: MenuItem[] = [
     label: 'Booklet',
     icon: BookOpen,
     submenu: [
+      {
+        id: 'booklet-guidebook',
+        label: 'E-GuideBook Desa UGM',
+        icon: GraduationCap,
+        href: '/booklet/guidebook'
+      },
       {
         id: 'booklet-statistik',
         label: 'Statistik Desa',

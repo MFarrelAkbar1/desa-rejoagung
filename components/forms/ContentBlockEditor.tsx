@@ -1,4 +1,4 @@
-// components/forms/ContentBlockEditor.tsx - SIMPLIFIED dengan auto justify paragraf
+// components/forms/ContentBlockEditor.tsx - FIXED with NotificationSystem
 
 'use client'
 
@@ -15,8 +15,8 @@ import {
   ImageIcon,
   Link as LinkIcon
 } from 'lucide-react'
-
 import { ContentBlock } from '@/types/news'
+import { useNotifications } from '@/components/notifications/NotificationSystem'
 
 interface ContentBlockEditorProps {
   block: ContentBlock
@@ -41,6 +41,8 @@ export default function ContentBlockEditor({
   isEditing = true,
   showControls = true
 }: ContentBlockEditorProps) {
+  const { confirm } = useNotifications()
+  
   const [editingContent, setEditingContent] = useState(block.content)
   const [localEditing, setLocalEditing] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
@@ -63,14 +65,17 @@ export default function ContentBlockEditor({
     setLocalEditing(false)
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const confirmMessage = block.type === 'text' 
       ? 'Apakah Anda yakin ingin menghapus paragraf ini?'
       : block.type === 'subtitle' 
       ? 'Apakah Anda yakin ingin menghapus sub judul ini?'
       : 'Apakah Anda yakin ingin menghapus gambar ini?'
     
-    if (window.confirm(confirmMessage)) {
+    // FIXED: Replace window.confirm with confirm from useNotifications
+    const confirmed = await confirm(confirmMessage, 'Konfirmasi Hapus')
+    
+    if (confirmed) {
       onDelete(block.id || '')
     }
   }
@@ -136,7 +141,7 @@ export default function ContentBlockEditor({
               <textarea
                 value={editingContent}
                 onChange={(e) => setEditingContent(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 resize-none text-justify"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-black placeholder-gray-500 resize-none text-justify"
                 rows={4}
                 placeholder="Tulis paragraf di sini..."
               />
@@ -193,7 +198,7 @@ export default function ContentBlockEditor({
                 type="text"
                 value={editingContent}
                 onChange={(e) => setEditingContent(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 font-semibold text-lg"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-black placeholder-gray-500 font-semibold text-lg"
                 placeholder="Masukkan sub judul..."
               />
               
@@ -240,42 +245,39 @@ export default function ContentBlockEditor({
                 <span>Edit Gambar</span>
               </div>
               
-              <div className="space-y-3">
+                <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-700">
-                  URL Gambar
+                  Upload Gambar
                 </label>
-                <div className="flex space-x-2">
-                  <input
-                    type="url"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setImageUrl(imageUrl)}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                    title="Preview gambar"
-                  >
-                    <LinkIcon className="w-4 h-4" />
-                  </button>
-                </div>
-                
-                {/* Preview gambar jika URL valid */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    const reader = new FileReader()
+                    reader.onload = (ev) => {
+                    setImageUrl(ev.target?.result as string)
+                    }
+                    reader.readAsDataURL(file)
+                  }
+                  }}
+                  className="block w-full text-sm text-black border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+                />
+                {/* Preview gambar jika file dipilih */}
                 {imageUrl && (
                   <div className="mt-3">
-                    <img
-                      src={imageUrl}
-                      alt="Preview"
-                      className="max-w-full h-auto max-h-48 rounded-lg border"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none'
-                      }}
-                    />
+                  <img
+                    src={imageUrl}
+                    alt="Preview"
+                    className="max-w-full h-auto max-h-48 rounded-lg border"
+                    onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none'
+                    }}
+                  />
                   </div>
                 )}
-              </div>
+                </div>
               
               <div className="flex space-x-2">
                 <button

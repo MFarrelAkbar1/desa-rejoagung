@@ -1,10 +1,11 @@
-// app/berita/umum/create/page.tsx - Updated with new form structure
+// app/berita/umum/create/page.tsx - FIXED with NotificationSystem
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import NewsForm from '@/components/forms/NewsForm'
+import { useNotifications } from '@/components/notifications/NotificationSystem'
 
 interface ContentBlock {
   id?: string
@@ -28,21 +29,31 @@ interface NewsFormData {
   is_announcement: boolean  
   author: string
   content_blocks: ContentBlock[]
-  content_align?: 'left' | 'center' | 'right' | 'justify'
-  excerpt_align?: 'left' | 'center' | 'right' | 'justify'
 }
 
 export default function CreateBeritaPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { showSuccess, showError, confirm } = useNotifications()
 
   const handleSubmit = async (data: NewsFormData) => {
     setIsLoading(true)
     setError(null)
 
     try {
-      console.log('Submitting news data:', data)
+      console.log('=== CREATE BERITA DEBUG ===')
+      console.log('Form data received:', data)
+      console.log('Content blocks count:', data.content_blocks?.length || 0)
+      console.log('Content blocks detail:', data.content_blocks)
+
+      // Prepare content blocks dengan clean temp IDs
+      const cleanedContentBlocks = (data.content_blocks || []).map((block, index) => ({
+        type: block.type,
+        content: block.content,
+        order_index: index,
+        style: block.style || (block.type === 'text' ? { textAlign: 'justify' } : { textAlign: 'left' })
+      }))
 
       // Prepare the news data for submission
       const newsData = {
@@ -51,12 +62,14 @@ export default function CreateBeritaPage() {
         excerpt: data.excerpt || '',
         image_url: data.image_url || '',
         category: data.category || '',
-        is_published: data.is_published,
-        is_announcement: data.is_announcement,
-        author: data.author,
-        content_align: data.content_align || 'left',
-        excerpt_align: data.excerpt_align || 'left'
+        is_published: data.is_published || false,
+        is_announcement: data.is_announcement || false,
+        author: data.author || 'Admin Desa',
+        // CRITICAL: Include content_blocks in main request
+        content_blocks: cleanedContentBlocks
       }
+
+      console.log('Sending to API:', newsData)
 
       const response = await fetch('/api/news', {
         method: 'POST',
@@ -66,64 +79,46 @@ export default function CreateBeritaPage() {
         body: JSON.stringify(newsData),
       })
 
+      console.log('API Response status:', response.status)
+
       if (!response.ok) {
         const errorData = await response.json()
+        console.error('API Error:', errorData)
         throw new Error(errorData.error || 'Gagal menyimpan berita')
       }
 
       const result = await response.json()
-      console.log('News created successfully:', result)
+      console.log('Success result:', result)
 
-      // If content blocks exist, save them separately
-      if (data.content_blocks && data.content_blocks.length > 0) {
-        const blocksData = data.content_blocks.map(block => ({
-          news_id: result.id,
-          type: block.type,
-          content: block.content,
-          order_index: block.order_index,
-          style: block.style || {}
-        }))
-
-        const blocksResponse = await fetch('/api/news/content-blocks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ blocks: blocksData }),
-        })
-
-        if (!blocksResponse.ok) {
-          console.warn('Failed to save content blocks, but news was created')
-        }
-      }
-
-      // Redirect to news list or detail page
-      router.push('/berita/umum')
+      // FIXED: Replace alert with showSuccess notification
+      showSuccess(
+        `Berita "${data.title}" berhasil dibuat dengan ${cleanedContentBlocks.length} content blocks!`,
+        'Berhasil Membuat Berita'
+      )
+      
+      // Redirect to news detail or list
+      router.push(`/berita/umum/${result.id}`)
       
     } catch (err) {
       console.error('Error creating news:', err)
-      setError(err instanceof Error ? err.message : 'Terjadi kesalahan')
+      const errorMessage = err instanceof Error ? err.message : 'Terjadi kesalahan'
+      setError(errorMessage)
+      showError(errorMessage, 'Gagal Membuat Berita')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleCancel = () => {
-    router.push('/berita/umum')
-  }
-
-  // Show loading state while redirecting or during form submission
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          <div className="text-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Menyimpan berita...</p>
-          </div>
-        </div>
-      </div>
+  const handleCancel = async () => {
+    // FIXED: Replace window.confirm with confirm from useNotifications
+    const confirmed = await confirm(
+      'Apakah Anda yakin ingin membatalkan? Data yang belum disimpan akan hilang.',
+      'Konfirmasi Pembatalan'
     )
+    
+    if (confirmed) {
+      router.push('/berita/umum')
+    }
   }
 
   return (
@@ -140,6 +135,17 @@ export default function CreateBeritaPage() {
           </nav>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-8 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+              <p className="text-gray-700 font-medium">Menyimpan berita dan konten blok...</p>
+              <p className="text-gray-500 text-sm mt-2">Mohon tunggu, jangan tutup halaman ini</p>
+            </div>
+          </div>
+        )}
+
         {/* Main Form */}
         <NewsForm
           onSubmit={handleSubmit}
@@ -147,8 +153,8 @@ export default function CreateBeritaPage() {
           isLoading={isLoading}
           error={error}
           submitLabel="Simpan Berita"
-          title="Buat Berita Baru"
-          description="Buat berita dengan konten blok yang dapat dikustomisasi. Layout telah diperbarui: Informasi Tambahan dan Pengaturan Publikasi sekarang berada di atas Informasi Dasar."
+          title="🆕 Buat Berita Baru"
+          description="Buat berita dengan konten blok yang dapat dikustomisasi. Semua content blocks akan otomatis tersimpan bersama dengan berita."
         />
       </div>
     </div>

@@ -1,10 +1,11 @@
-// components/Home/LatestNews.tsx
+// components/Home/LatestNews.tsx - OPTIMIZED VERSION
+
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Newspaper, ChevronRight, Calendar } from 'lucide-react'
+import { useLatestNews } from '../hooks/useNewsData'
 
 interface News {
   id: string
@@ -85,34 +86,12 @@ const NewsCard = ({ news }: { news: News }) => {
 }
 
 export default function LatestNews() {
-  const [latestNews, setLatestNews] = useState<News[]>([])
-  const [loading, setLoading] = useState(true)
+  // OPTIMIZED: Menggunakan custom hook yang di-cache
+  const { latestNews, loading, error } = useLatestNews()
 
-  useEffect(() => {
-    const fetchLatestNews = async () => {
-      try {
-        // Menggunakan endpoint yang benar dari database
-        const response = await fetch('/api/news?published=true')
-        if (response.ok) {
-          const allNews = await response.json()
-          console.log('Latest News fetched:', allNews.length)
-          
-          // Tampilkan semua berita tanpa filter, ambil 6 terbaru untuk grid 3 kolom
-          const latestNews = allNews.slice(0, 6)
-          
-          setLatestNews(latestNews)
-        } else {
-          console.error('Failed to fetch news:', response.status)
-        }
-      } catch (error) {
-        console.error('Error fetching latest news:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchLatestNews()
-  }, [])
+  if (error) {
+    console.error('Latest News Error:', error)
+  }
 
   return (
     <section>
@@ -133,12 +112,21 @@ export default function LatestNews() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl shadow-md p-6 animate-pulse">
-              <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+            <div key={i} className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+              <div className="h-48 bg-gray-200"></div>
+              <div className="p-4">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-3"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              </div>
             </div>
           ))}
+        </div>
+      ) : error ? (
+        <div className="text-center py-12 bg-red-50 rounded-xl border border-red-200">
+          <Newspaper className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <p className="text-red-600 font-medium mb-2">Gagal memuat berita</p>
+          <p className="text-red-500 text-sm">{error}</p>
         </div>
       ) : latestNews.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

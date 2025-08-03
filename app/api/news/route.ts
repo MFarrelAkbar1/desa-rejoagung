@@ -1,4 +1,4 @@
-// app/api/news/route.ts
+// app/api/news/route.ts - FIXED VERSION
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
         newsData.map(async (newsItem) => {
           const { data: blocks, error: blocksError } = await supabase
             .from('news_content_blocks')
-            .select('id, type, content, order_index, created_at')
+            .select('id, type, content, order_index, style, created_at')
             .eq('news_id', newsItem.id)
             .order('order_index', { ascending: true })
 
@@ -89,6 +89,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { content_blocks = [], ...newsData } = body
 
+    console.log('Received news data:', newsData)
+    console.log('Received content blocks:', content_blocks)
+
     // Validate required fields
     if (!newsData.title || !newsData.content) {
       return NextResponse.json(
@@ -130,22 +133,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: newsError.message }, { status: 500 })
     }
 
-    // Insert content blocks if any
+    console.log('News created successfully:', newNews)
+
+    // FIXED: Insert content blocks if any with proper style handling
     if (content_blocks.length > 0) {
       const blocksToInsert = content_blocks.map((block: any, index: number) => ({
         news_id: newNews.id,
         type: block.type,
         content: block.content,
-        order_index: index
+        order_index: block.order_index || index,
+        // FIXED: Properly handle style field as JSONB
+        style: block.style ? JSON.stringify(block.style) : null
       }))
 
-      const { error: blocksError } = await supabase
+      console.log('Inserting content blocks:', blocksToInsert)
+
+      const { data: insertedBlocks, error: blocksError } = await supabase
         .from('news_content_blocks')
         .insert(blocksToInsert)
+        .select()
 
       if (blocksError) {
         console.error('Error inserting content blocks:', blocksError)
         // Don't return error here, news creation was successful
+        console.warn('Content blocks failed to save, but news was created successfully')
+      } else {
+        console.log('Content blocks inserted successfully:', insertedBlocks)
       }
     }
 

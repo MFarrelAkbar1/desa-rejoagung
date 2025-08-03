@@ -1,10 +1,11 @@
-// components/Home/LocalHeroes.tsx
+// components/Home/LocalHeroes.tsx - OPTIMIZED VERSION
+
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Star, Calendar } from 'lucide-react'
+import { useLocalHeroes } from '../hooks/useNewsData'
 
 interface News {
   id: string
@@ -84,44 +85,12 @@ const LocalHeroCard = ({ news }: { news: News }) => {
 }
 
 export default function LocalHeroes() {
-  const [localHeroes, setLocalHeroes] = useState<News[]>([])
-  const [loading, setLoading] = useState(true)
+  // OPTIMIZED: Menggunakan custom hook yang di-cache
+  const { localHeroes, loading, error } = useLocalHeroes()
 
-  // Local Heroes IDs yang dipilih
-  const localHeroIds = [
-    'b9525f47-3bf7-4486-abcf-e2e00f0dd19a',
-    'bb8104fd-09ac-4aab-99b7-83a99d82932e', 
-    '1559b53d-24f9-4a8c-8af3-a83560b16fc1'
-  ]
-
-  useEffect(() => {
-    const fetchLocalHeroes = async () => {
-      try {
-        // Menggunakan endpoint yang benar dari database
-        const response = await fetch('/api/news?published=true')
-        if (response.ok) {
-          const allNews = await response.json()
-          console.log('All news fetched for heroes:', allNews.length)
-          
-          // Filter berita berdasarkan ID yang diinginkan dan urutkan sesuai array
-          const heroes = localHeroIds
-            .map(id => allNews.find((news: News) => news.id === id))
-            .filter(hero => hero !== undefined)
-          
-          console.log('Local heroes found:', heroes.length)
-          setLocalHeroes(heroes)
-        } else {
-          console.error('Failed to fetch news:', response.status)
-        }
-      } catch (error) {
-        console.error('Error fetching local heroes:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchLocalHeroes()
-  }, [])
+  if (error) {
+    console.error('Local Heroes Error:', error)
+  }
 
   return (
     <section>
@@ -139,12 +108,21 @@ export default function LocalHeroes() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl shadow-md p-6 animate-pulse">
-              <div className="h-40 bg-gray-200 rounded-lg mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div key={i} className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+              <div className="h-40 bg-gray-200"></div>
+              <div className="p-4">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              </div>
             </div>
           ))}
+        </div>
+      ) : error ? (
+        <div className="text-center py-8 bg-yellow-50 rounded-xl border border-yellow-200">
+          <Star className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+          <p className="text-yellow-700 font-medium mb-2">Gagal memuat Local Heroes</p>
+          <p className="text-yellow-600 text-sm">{error}</p>
         </div>
       ) : localHeroes.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -154,6 +132,7 @@ export default function LocalHeroes() {
         </div>
       ) : (
         <div className="text-center py-8">
+          <Star className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-500">Local Heroes belum tersedia</p>
         </div>
       )}

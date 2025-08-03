@@ -1,4 +1,4 @@
-// app/produk-kuliner/produk/components/EditProductModal.tsx - OPTIMIZED VERSION
+// app/produk-kuliner/produk/components/EditProductModal.tsx - FIXED VERSION
 
 'use client'
 
@@ -26,18 +26,34 @@ interface EditProductModalProps {
   onSuccess: () => void
 }
 
+// Helper function to ensure all form fields have proper default values
+const initializeFormData = (item: ProductItem) => {
+  return {
+    ...item,
+    name: item.name || '',
+    description: item.description || '',
+    price: item.price || '',
+    image_url: item.image_url || '',
+    contact: item.contact || '',
+    location: item.location || '',
+    category: item.category || 'kerajinan',
+    is_featured: Boolean(item.is_featured) // Ensure boolean
+  }
+}
+
 export default function EditProductModal({ item, onClose, onSuccess }: EditProductModalProps) {
-  // Use the elegant notification system
   const { showSuccess, showError, showFileError, showWarning } = useNotifications()
-
-  const [formData, setFormData] = useState<ProductItem>({
-    ...item
-  })
-
+  
+  // ✅ FIX: Initialize formData with proper default values to prevent null/undefined
+  const [formData, setFormData] = useState<ProductItem>(() => initializeFormData(item))
   const [isLoading, setIsLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
 
-  // Elegant image upload with proper error handling
+  // ✅ FIX: Update formData when item prop changes
+  useEffect(() => {
+    setFormData(initializeFormData(item))
+  }, [item])
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -59,19 +75,12 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
       return
     }
 
-    // Additional check for extremely large files
-    if (file.size > 10 * 1024 * 1024) { // 10MB
-      showError('File terlalu besar dan dapat menyebabkan error sistem. Gunakan gambar maksimal 5MB.', 'File Terlalu Besar')
-      e.target.value = '' // Reset input
-      return
-    }
-
     setUploadingImage(true)
-    
+
     try {
       const formDataUpload = new FormData()
       formDataUpload.append('file', file)
-      formDataUpload.append('folder', 'produk') // Folder for products
+      formDataUpload.append('folder', 'produk')
 
       const response = await fetch('/api/upload', {
         method: 'POST',
@@ -85,7 +94,6 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
       } else {
         const error = await response.json()
         
-        // Handle specific API errors
         if (response.status === 413) {
           showFileError('size', 'File terlalu besar untuk server. Maksimal 5MB.')
         } else if (response.status === 400) {
@@ -97,7 +105,6 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
     } catch (error) {
       console.error('Upload error:', error)
       
-      // Handle network errors elegantly
       if (error instanceof TypeError && error.message.includes('fetch')) {
         showFileError('network', 'Periksa koneksi internet dan coba lagi')
       } else {
@@ -114,32 +121,36 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
     showSuccess('Foto berhasil dihapus')
   }
 
+  // ✅ FIX: Improved handleInputChange with proper type checking and null safety
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
-    
+
     if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked
       setFormData(prev => ({
         ...prev,
-        [name]: (e.target as HTMLInputElement).checked
+        [name]: checked
       }))
     } else {
+      // ✅ FIX: Ensure value is never null or undefined
+      const safeValue = value ?? ''
       setFormData(prev => ({
         ...prev,
-        [name]: value
+        [name]: safeValue
       }))
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Form validation
-    if (!formData.name.trim()) {
+    if (!formData.name?.trim()) {
       showError('Nama produk harus diisi', 'Validasi Form')
       return
     }
-    
-    if (!formData.description.trim()) {
+
+    if (!formData.description?.trim()) {
       showError('Deskripsi produk harus diisi', 'Validasi Form')
       return
     }
@@ -150,53 +161,52 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
     }
 
     setIsLoading(true)
-
     try {
+      // ✅ FIX: Clean form data before submission
       const submitData = {
         ...formData,
-        price: formData.price ? 
-          (formData.price.startsWith('Rp') ? formData.price : `Rp. ${formData.price}`) 
-          : undefined,
-        updated_at: new Date().toISOString()
+        // Ensure all string fields are properly formatted
+        name: formData.name?.trim() || '',
+        description: formData.description?.trim() || '',
+        contact: formData.contact?.trim() || '',
+        location: formData.location?.trim() || '',
+        // Handle price formatting
+        price: formData.price?.trim() 
+          ? (formData.price.startsWith('Rp') ? formData.price : `Rp. ${formData.price}`)
+          : '',
+        // Ensure image_url is string, not null
+        image_url: formData.image_url || '',
+        // Ensure boolean
+        is_featured: Boolean(formData.is_featured)
       }
 
       const response = await fetch(`/api/products/${item.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('admin_token')}` // Add auth
+          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
         },
         body: JSON.stringify(submitData)
       })
 
       if (response.ok) {
-        showSuccess('Produk berhasil diperbarui!', 'Update Berhasil')
+        showSuccess('Produk unggulan berhasil diperbarui!', 'Berhasil')
         onSuccess()
         onClose()
       } else {
         const error = await response.json()
         
-        // Handle specific API errors
         if (response.status === 401) {
-          showError('Sesi Anda telah berakhir. Silakan login kembali.', 'Session Expired')
-          localStorage.removeItem('admin_token')
-          setTimeout(() => window.location.href = '/admin/login', 2000)
+          showError('Sesi Anda telah berakhir. Silakan login kembali.', 'Auth Error')
         } else if (response.status === 400) {
-          showError(`Validasi gagal: ${error.error}`, 'Data Invalid')
-        } else if (response.status === 404) {
-          showError('Produk tidak ditemukan. Mungkin sudah dihapus.', 'Not Found')
+          showError(error.error || 'Data yang dimasukkan tidak valid', 'Validasi Error')
         } else {
-          showError(`Gagal memperbarui produk: ${error.error || 'Server error'}`, 'Update Error')
+          showError('Gagal memperbarui produk. Coba lagi.', 'Server Error')
         }
       }
     } catch (error) {
       console.error('Submit error:', error)
-      
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        showError('Koneksi terputus. Periksa internet dan coba lagi.', 'Network Error')
-      } else {
-        showError('Terjadi kesalahan sistem. Coba refresh halaman.', 'System Error')
-      }
+      showError('Terjadi kesalahan jaringan. Periksa koneksi internet Anda.', 'Network Error')
     } finally {
       setIsLoading(false)
     }
@@ -204,27 +214,31 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-xl">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <Edit className="w-6 h-6" />
-              <h2 className="text-2xl font-bold">Edit Produk: {item.name}</h2>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <Edit className="w-5 h-5 text-emerald-600" />
             </div>
-            <button 
-              onClick={onClose} 
-              className="text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
-              disabled={isLoading}
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div>
+              <h2 className="text-xl font-bold text-gray-800">Edit Produk Unggulan</h2>
+              <p className="text-gray-600 text-sm">Perbarui informasi produk unggulan desa</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            disabled={isLoading}
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+          >
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Basic Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Nama Produk *
@@ -232,29 +246,32 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
               <input
                 type="text"
                 name="name"
-                value={formData.name}
+                value={formData.name || ''} // ✅ FIX: Ensure never null
                 onChange={handleInputChange}
-                className="w-full p-3 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Contoh: Gula Merah Premium"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500 bg-white"
+                placeholder="Contoh: Kerajinan Bambu Cantik"
+                style={{ color: '#111827' }}
                 required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kategori
+                Kategori *
               </label>
               <select
                 name="category"
-                value={formData.category}
+                value={formData.category || 'kerajinan'} // ✅ FIX: Ensure default value
                 onChange={handleInputChange}
-                className="w-full p-3 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 bg-white"
+                style={{ color: '#111827' }}
+                required
               >
-                <option value="kerajinan">🎨 Kerajinan</option>
-                <option value="makanan">🍘 Makanan Kering</option>
-                <option value="pertanian">🌾 Hasil Pertanian</option>
-                <option value="olahan">🥫 Produk Olahan</option>
-                <option value="lainnya">📋 Lainnya</option>
+                <option value="kerajinan" style={{ color: '#111827' }}>🎨 Kerajinan</option>
+                <option value="makanan" style={{ color: '#111827' }}>🍘 Makanan Kering</option>
+                <option value="pertanian" style={{ color: '#111827' }}>🌾 Hasil Pertanian</option>
+                <option value="olahan" style={{ color: '#111827' }}>🥫 Produk Olahan</option>
+                <option value="lainnya" style={{ color: '#111827' }}>📋 Lainnya</option>
               </select>
             </div>
           </div>
@@ -266,134 +283,128 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
             </label>
             <textarea
               name="description"
-              value={formData.description}
+              value={formData.description || ''} // ✅ FIX: Ensure never null
               onChange={handleInputChange}
               rows={4}
-              className="w-full p-3 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Jelaskan keunggulan dan keunikan produk Anda..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500 bg-white"
+              placeholder="Jelaskan keunggulan dan detail produk..."
+              style={{ color: '#111827' }}
               required
             />
             <p className="text-xs text-gray-500 mt-1">
-              {formData.description.length}/500 karakter (minimal 10)
+              Minimal 10 karakter untuk deskripsi yang menarik
             </p>
           </div>
 
-          {/* Image Upload - ENHANCED */}
+          {/* Price and Contact */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Harga
+              </label>
+              <input
+                type="text"
+                name="price"
+                value={formData.price || ''} // ✅ FIX: Ensure never null
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500 bg-white"
+                placeholder="Contoh: 50000 atau Rp. 50.000"
+                style={{ color: '#111827' }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kontak
+              </label>
+              <input
+                type="text"
+                name="contact"
+                value={formData.contact || ''} // ✅ FIX: Ensure never null
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500 bg-white"
+                placeholder="WhatsApp: 08123456789"
+                style={{ color: '#111827' }}
+              />
+            </div>
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Lokasi/Alamat
+            </label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location || ''} // ✅ FIX: Ensure never null
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500 bg-white"
+              placeholder="Contoh: Dusun Krajan, RT 01/RW 02"
+              style={{ color: '#111827' }}
+            />
+          </div>
+
+          {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Foto Produk
             </label>
             
             {formData.image_url ? (
-              <div className="relative inline-block">
+              <div className="relative">
                 <img
                   src={formData.image_url}
                   alt="Preview"
-                  className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                  className="w-full h-48 object-cover rounded-lg border border-gray-300"
                 />
                 <button
                   type="button"
                   onClick={removeImage}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                  className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
-                <input
-                  type="file"
-                  onChange={handleImageUpload}
-                  accept="image/jpeg,image/png,image/jpg,image/webp"
-                  className="hidden"
-                  id="image-upload-edit"
-                  disabled={uploadingImage}
-                />
-                <label htmlFor="image-upload-edit" className="cursor-pointer">
-                  {uploadingImage ? (
-                    <div className="flex flex-col items-center">
-                      <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
-                      <p className="text-sm text-gray-600">Mengupload foto...</p>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center">
-                      <ImageIcon className="w-8 h-8 text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-600 mb-1">
-                        Klik untuk upload foto produk baru
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        JPG, PNG, WEBP • Max 5MB • Foto berkualitas tinggi untuk daya tarik maksimal
-                      </p>
-                    </div>
-                  )}
-                </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-emerald-500 transition-colors">
+                <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <div className="space-y-2">
+                  <p className="text-gray-600">Pilih foto produk</p>
+                  <p className="text-xs text-gray-500">JPG, PNG, WEBP hingga 5MB</p>
+                </div>
+              </div>
+            )}
+
+            <input
+              type="file"
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+              disabled={uploadingImage}
+            />
+            
+            {uploadingImage && (
+              <div className="mt-2 flex items-center gap-2 text-sm text-emerald-600">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Mengupload foto...
               </div>
             )}
           </div>
 
-          {/* Price & Location */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-              Harga
-              </label>
-              <div className="flex">
-              <span className="inline-flex items-center px-1 rounded-l-lg bo</div>rder border-r-0 border-gray-300 bg-gray-100 text-gray-700 font-semibold">
-                Rp.
-              </span>
+          {/* Featured Toggle */}
+          <div>
+            <div className="flex items-center">
               <input
-                type="text"
-                name="price"
-                value={formData.price}
+                type="checkbox"
+                name="is_featured"
+                checked={Boolean(formData.is_featured)} // ✅ FIX: Ensure boolean
                 onChange={handleInputChange}
-                className="w-full p-2 border text-black border-gray-300 rounded-r-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="25000"
+                className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
               />
-              </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Lokasi Penjual
+              <label className="ml-2 text-sm text-gray-700">
+                Produk Unggulan (Featured)
               </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                className="w-full p-3 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Dusun/alamat lengkap"
-              />
-            </div>
-          </div>
-
-          {/* Contact & Featured */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kontak Penjual
-              </label>
-              <input
-                type="text"
-                name="contact"
-                value={formData.contact}
-                onChange={handleInputChange}
-                className="w-full p-3 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="08123456789"
-              />
-            </div>
-
-            <div className="flex items-center justify-center">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="is_featured"
-                  checked={formData.is_featured}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label className="ml-2 text-sm text-gray-700">
-                  Produk Unggulan (Featured)
-                </label>
-              </div>
             </div>
           </div>
 
@@ -410,7 +421,7 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
             <button
               type="submit"
               disabled={isLoading || uploadingImage}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -419,7 +430,7 @@ export default function EditProductModal({ item, onClose, onSuccess }: EditProdu
                 </>
               ) : (
                 <>
-                  <Edit className="w-4 h-4" />
+                  <Upload className="w-4 h-4" />
                   Update Produk
                 </>
               )}

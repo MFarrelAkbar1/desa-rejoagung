@@ -6,7 +6,6 @@ import { LogIn, User } from 'lucide-react'
 import NavbarLogo from './NavbarLogo'
 import NavbarMenu from './NavbarMenu'
 import MobileMenu from './MobileMenu'
-// import GlobalSearchBar from '../SearchBar/GlobalSearchBar' // Commented out
 import { useAdminAuth } from '@/lib/auth'
 
 export default function TopNavbar() {
@@ -49,15 +48,6 @@ export default function TopNavbar() {
           <div className="flex-1 flex justify-center">
             <NavbarMenu isScrolled={isScrolled} />
           </div>
-         
-          {/* Search Bar - REMOVED */}
-          {/* <div className="hidden lg:block flex-1 max-w-xs mx-6">
-            <GlobalSearchBar
-              placeholder="Cari berita, kuliner..."
-              className="w-full text-black placeholder:text-black"
-            />
-          </div> */}
-
           {/* Right Side - Admin Profile or Login Button */}
           <div className="flex items-center space-x-3">
             {/* Admin Profile Icon atau Login Button */}

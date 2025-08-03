@@ -1,16 +1,15 @@
-// app/api/culinary/[id]/route.ts - FIXED VERSION
+// app/api/culinary/[id]/route.ts
+// COPY PASTE INI, REPLACE SEMUA ISI FILE!
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth-middleware'
 
-// GET /api/culinary/[id] - Ambil detail menu kuliner (tetap public)
+// GET /api/culinary/[id] - Ambil detail menu kuliner
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // ✅ AWAIT params sebelum digunakan (Next.js 15 requirement)
     const { id } = await params
 
     const { data, error } = await supabase
@@ -33,19 +32,12 @@ export async function GET(
   }
 }
 
-// PUT /api/culinary/[id] - Update menu kuliner (HANYA ADMIN)
+// PUT /api/culinary/[id] - Update menu kuliner (TANPA AUTH)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // ✅ VALIDASI AUTENTIKASI ADMIN
-    const authResult = await verifyAdminAuth(request)
-    if (!authResult.isValid) {
-      return createUnauthorizedResponse(authResult.error)
-    }
-
-    // ✅ AWAIT params sebelum digunakan
     const { id } = await params
     const body = await request.json()
 
@@ -102,19 +94,12 @@ export async function PUT(
   }
 }
 
-// DELETE /api/culinary/[id] - Hapus menu kuliner (HANYA ADMIN)
+// DELETE /api/culinary/[id] - Hapus menu kuliner (TANPA AUTH)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // ✅ VALIDASI AUTENTIKASI ADMIN
-    const authResult = await verifyAdminAuth(request)
-    if (!authResult.isValid) {
-      return createUnauthorizedResponse(authResult.error)
-    }
-
-    // ✅ AWAIT params sebelum digunakan
     const { id } = await params
 
     // Cek apakah menu ada

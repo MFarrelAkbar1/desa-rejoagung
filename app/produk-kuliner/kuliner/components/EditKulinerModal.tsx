@@ -271,8 +271,9 @@ export default function EditKulinerModal({ item, onClose, onSuccess }: EditKulin
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                 placeholder="Contoh: Rendang Sapi Asli"
+                style={{ color: '#111827' }}
                 required
               />
             </div>
@@ -285,11 +286,12 @@ export default function EditKulinerModal({ item, onClose, onSuccess }: EditKulin
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+                style={{ color: '#111827' }}
               >
-                <option value="makanan">🍽️ Makanan</option>
-                <option value="minuman">🥤 Minuman</option>
-                <option value="camilan">🍪 Camilan</option>
+                <option value="makanan" style={{ color: '#111827' }}>🍽️ Makanan</option>
+                <option value="minuman" style={{ color: '#111827' }}>🥤 Minuman</option>
+                <option value="camilan" style={{ color: '#111827' }}>🍪 Camilan</option>
               </select>
             </div>
           </div>
@@ -304,8 +306,9 @@ export default function EditKulinerModal({ item, onClose, onSuccess }: EditKulin
               value={formData.description}
               onChange={handleInputChange}
               rows={4}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
               placeholder="Deskripsikan kelezatan menu ini..."
+              style={{ color: '#111827' }}
               required
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -377,8 +380,9 @@ export default function EditKulinerModal({ item, onClose, onSuccess }: EditKulin
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                 placeholder="15000"
+                style={{ color: '#111827' }}
               />
             </div>
 
@@ -391,8 +395,9 @@ export default function EditKulinerModal({ item, onClose, onSuccess }: EditKulin
                 name="cooking_time"
                 value={formData.cooking_time}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                 placeholder="30 menit"
+                style={{ color: '#111827' }}
               />
             </div>
 
@@ -405,8 +410,9 @@ export default function EditKulinerModal({ item, onClose, onSuccess }: EditKulin
                 name="serving_size"
                 value={formData.serving_size}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                 placeholder="2-3 orang"
+                style={{ color: '#111827' }}
               />
             </div>
           </div>
@@ -432,8 +438,9 @@ export default function EditKulinerModal({ item, onClose, onSuccess }: EditKulin
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                 placeholder="Lokasi penjual"
+                style={{ color: '#111827' }}
               />
             </div>
           </div>
@@ -450,8 +457,9 @@ export default function EditKulinerModal({ item, onClose, onSuccess }: EditKulin
                     type="text"
                     value={ingredient}
                     onChange={(e) => updateIngredient(index, e.target.value)}
-                    className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                     placeholder={`Bahan ${index + 1}`}
+                    style={{ color: '#111827' }}
                   />
                   {ingredients.length > 1 && (
                     <button
@@ -487,8 +495,9 @@ export default function EditKulinerModal({ item, onClose, onSuccess }: EditKulin
                     type="text"
                     value={benefit}
                     onChange={(e) => updateBenefit(index, e.target.value)}
-                    className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                     placeholder={`Manfaat ${index + 1}`}
+                    style={{ color: '#111827' }}
                   />
                   {benefits.length > 1 && (
                     <button

@@ -1,11 +1,10 @@
-// app/potensi-desa/page.tsx - Original Version (tanpa PostTerbaru)
-
+// app/potensi-desa/page.tsx - Updated Version (tanpa PotensiUnggulanTab)
 'use client'
 
 import { useState } from 'react'
-import { MapPin, Users, Trees, Building } from 'lucide-react'
+import { Users, Trees, Building } from 'lucide-react'
 import Breadcrumb from '@/components/layout/Breadcrumb'
-import PotensiUnggulanTab from './components/PotensiUnggulanTab'
+// DIHAPUS: import PotensiUnggulanTab from './components/PotensiUnggulanTab'
 import GeografiPendudukTab from './components/GeografiPendudukTab'
 import SumberDayaAlamTab from './components/SumberDayaAlamTab'
 import SaranaPrasaranaTab from './components/SaranaPrasaranaTab'
@@ -18,14 +17,8 @@ export interface TabConfig {
   hoverColor: string
 }
 
+// UPDATED: Hapus tab "unggulan"
 const tabs: TabConfig[] = [
-  {
-    id: 'unggulan',
-    label: 'Potensi Unggulan',
-    icon: MapPin,
-    color: 'bg-purple-600',
-    hoverColor: 'hover:bg-purple-700'
-  },
   {
     id: 'geografi',
     label: 'Geografi dan Penduduk',
@@ -50,12 +43,12 @@ const tabs: TabConfig[] = [
 ]
 
 export default function PotensiDesaPage() {
-  const [activeTab, setActiveTab] = useState('unggulan')
+  // UPDATED: Ganti default tab dari 'unggulan' ke 'geografi'
+  const [activeTab, setActiveTab] = useState('geografi')
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'unggulan':
-        return <PotensiUnggulanTab />
+      // DIHAPUS: case 'unggulan': return <PotensiUnggulanTab />
       case 'geografi':
         return <GeografiPendudukTab />
       case 'sda':
@@ -63,7 +56,8 @@ export default function PotensiDesaPage() {
       case 'sarana':
         return <SaranaPrasaranaTab />
       default:
-        return <PotensiUnggulanTab />
+        // UPDATED: Ganti default dari PotensiUnggulanTab ke GeografiPendudukTab
+        return <GeografiPendudukTab />
     }
   }
 
@@ -97,8 +91,8 @@ export default function PotensiDesaPage() {
                   className={`
                     flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200
                     ${isActive
-                      ? `${tab.color} text-white shadow-lg transform scale-105`
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? `${tab.color} text-white shadow-lg transform -translate-y-0.5`
+                      : `text-gray-600 hover:text-gray-900 ${tab.hoverColor} hover:text-white hover:shadow-md`
                     }
                   `}
                 >
@@ -108,11 +102,11 @@ export default function PotensiDesaPage() {
               )
             })}
           </div>
-          
-          {/* Tab Content */}
-          <div className="bg-white rounded-b-lg border-t-0 min-h-[600px]">
-            {renderTabContent()}
-          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 min-h-[600px]">
+          {renderTabContent()}
         </div>
       </div>
     </div>

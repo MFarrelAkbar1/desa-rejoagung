@@ -1,9 +1,9 @@
-// components/forms/ContentBlockManager.tsx - SIMPLIFIED dengan auto justify
+// components/forms/ContentBlockManager.tsx - FIXED dengan ImageUpload yang benar
 
 'use client'
 
 import { Type, ImageIcon, Plus, Heading, Info } from 'lucide-react'
-import ContentBlockEditor from './ContentBlockEditor'
+import ContentBlockRenderer from '@/components/News/ContentBlockRenderer'
 import { ContentBlock } from '@/types/news'
 
 interface ContentBlockManagerProps {
@@ -23,7 +23,7 @@ export default function ContentBlockManager({
   onMoveBlock,
   isEditing = true
 }: ContentBlockManagerProps) {
-  
+
   // Helper functions to handle move operations
   const handleMoveUp = (blockId: string) => {
     onMoveBlock(blockId, 'up')
@@ -46,12 +46,62 @@ export default function ContentBlockManager({
         </p>
       </div>
 
+      {/* Add Block Buttons */}
+      {isEditing && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+          <h4 className="text-sm font-medium text-gray-700 mb-4">Tambah Konten Baru</h4>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => onAddBlock('text')}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Type className="w-4 h-4" />
+              Tambah Paragraf
+            </button>
+            <button
+              type="button"
+              onClick={() => onAddBlock('subtitle')}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <Heading className="w-4 h-4" />
+              Tambah Sub Judul
+            </button>
+            {/* FIXED: Tambah Gambar - akan menggunakan ImageUpload component */}
+            <button
+              type="button"
+              onClick={() => onAddBlock('image')}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <ImageIcon className="w-4 h-4" />
+              Tambah Gambar (JPG/PNG/WEBP)
+            </button>
+          </div>
+          
+          {/* Informational Box */}
+          <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+            <div className="flex items-start space-x-3">
+              <Info className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <h5 className="text-sm font-medium text-emerald-800 mb-1">Jenis Konten Tersedia:</h5>
+                <ul className="text-xs text-emerald-700 space-y-1">
+                  <li>• <strong>Paragraf</strong>: Otomatis rata kanan-kiri (justify) untuk hasil rapi</li>
+                  <li>• <strong>Sub Judul</strong>: Judul bagian dengan formatting tebal</li>
+                  <li>• <strong>Gambar</strong>: Upload file atau URL yang akan dikonversi ke JPG/PNG/WEBP</li>
+                  <li>• Gunakan tombol panah untuk mengatur urutan konten</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Content Blocks */}
       <div className="space-y-4">
         {contentBlocks
           .sort((a, b) => a.order_index - b.order_index)
           .map((block, index) => (
-            <ContentBlockEditor
+            <ContentBlockRenderer
               key={block.id || `block-${index}`}
               block={block}
               onEdit={onEditBlock}
@@ -77,88 +127,47 @@ export default function ContentBlockManager({
           </h4>
           <p className="text-gray-600 mb-6 max-w-sm mx-auto">
             Mulai menambahkan paragraf, sub judul, atau gambar untuk memperkaya artikel Anda.
-            <span className="text-emerald-600 font-medium block mt-1">✨ Paragraf otomatis rata kanan-kiri!</span>
           </p>
-        </div>
-      )}
-
-      {/* Add Block Buttons - Enhanced */}
-      {isEditing && (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
-          <div className="text-center">
-            <h4 className="text-sm font-medium text-gray-700 mb-4">
-              Tambah Konten Baru
-            </h4>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-2xl mx-auto">
-              {/* Add Paragraph Button */}
+          
+          {isEditing && (
+            <div className="flex justify-center space-x-3">
               <button
                 type="button"
                 onClick={() => onAddBlock('text')}
-                className="group flex flex-col items-center gap-3 p-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                <div className="p-2 bg-blue-400 rounded-full group-hover:bg-blue-300 transition-colors">
-                  <Type className="w-5 h-5" />
-                </div>
-                <div className="text-center">
-                  <div className="font-medium">Tambah Paragraf</div>
-                  <div className="text-xs opacity-90 mt-1">
-                    ✨ Otomatis justify
-                  </div>
-                </div>
+                <Type className="w-4 h-4" />
+                Tambah Paragraf
               </button>
-
-              {/* Add Subtitle Button */}
               <button
                 type="button"
                 onClick={() => onAddBlock('subtitle')}
-                className="group flex flex-col items-center gap-3 p-4 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                <div className="p-2 bg-purple-400 rounded-full group-hover:bg-purple-300 transition-colors">
-                  <Heading className="w-5 h-5" />
-                </div>
-                <div className="text-center">
-                  <div className="font-medium">Tambah Sub Judul</div>
-                  <div className="text-xs opacity-90 mt-1">
-                    Judul bagian
-                  </div>
-                </div>
+                <Heading className="w-4 h-4" />
+                Tambah Sub Judul
               </button>
-
-              {/* Add Image Button */}
               <button
                 type="button"
                 onClick={() => onAddBlock('image')}
-                className="group flex flex-col items-center gap-3 p-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
-                <div className="p-2 bg-green-400 rounded-full group-hover:bg-green-300 transition-colors">
-                  <ImageIcon className="w-5 h-5" />
-                </div>
-                <div className="text-center">
-                  <div className="font-medium">Tambah Gambar</div>
-                  <div className="text-xs opacity-90 mt-1">
-                    Gambar dari URL
-                  </div>
-                </div>
+                <ImageIcon className="w-4 h-4" />
+                Tambah Gambar
               </button>
             </div>
+          )}
 
-            {/* SIMPLIFIED Info Box */}
-            <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-              <div className="flex items-start space-x-2">
-                <Info className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-                <div className="text-left">
-                  <h5 className="text-sm font-medium text-emerald-800 mb-1">
-                    ✨ Auto Justify Content:
-                  </h5>
-                  <ul className="text-xs text-emerald-700 space-y-1">
-                    <li>• <strong>Paragraf</strong>: Otomatis rata kanan-kiri (justify) untuk hasil rapi</li>
-                    <li>• <strong>Sub Judul</strong>: Judul bagian dengan formatting tebal</li>
-                    <li>• <strong>Gambar</strong>: Upload dari URL dengan preview</li>
-                    <li>• Gunakan tombol panah untuk mengatur urutan konten</li>
-                  </ul>
-                </div>
-              </div>
+          {/* Quick Tips for Empty State */}
+          <div className="mt-6 max-w-md mx-auto">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h5 className="text-sm font-medium text-blue-800 mb-2">💡 Tips Konten Tambahan:</h5>
+              <ul className="text-xs text-blue-700 space-y-1 text-left">
+                <li>• Gunakan sub judul untuk membagi topik</li>
+                <li>• Paragraf akan otomatis ter-justify untuk tampilan rapi</li>
+                <li>• Tambahkan gambar untuk memperkaya visual</li>
+                <li>• Atur urutan dengan tombol panah ↑↓</li>
+              </ul>
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@
 import { Users, MapPin } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import LocalHeroes from '@/components/Home/LocalHeroes'
+import Booklet from '@/components/Home/Booklet'
 import LatestNews from '@/components/Home/LatestNews'
 import LatestProducts from '@/components/Home/LatestProducts'
 import LatestCulinary from '@/components/Home/LatestCulinary'
@@ -31,38 +32,54 @@ export default function Home() {
            <span className="block text-green-300 mt-2">Desa Rejoagung</span>
          </h1>
          <p className="text-sm sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-emerald-100 max-w-3xl mx-auto px-2" style={{ textShadow: '0.5px 0.5px 1px rgba(0, 0, 0, 0.8)' }}>
-           Portal resmi informasi, layanan, dan produk unggulan Desa Rejoagung
+           Portal resmi informasi dan layanan digital untuk masyarakat Desa Rejoagung
          </p>
-         
-         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-           <button
-             onClick={handleExploreClick}
-             className="bg-white text-emerald-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold hover:bg-emerald-50 transition-colors shadow-lg w-full sm:w-auto"
-           >
-             Jelajahi Desa
-           </button>
-           <button
-             onClick={() => router.push('/berita/umum')}
-             className="bg-emerald-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold hover:bg-emerald-600 transition-colors shadow-lg w-full sm:w-auto"
-           >
-             Berita Terbaru
-           </button>
+         <button 
+           onClick={handleExploreClick}
+           className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+         >
+           Jelajahi Desa Kami
+         </button>
+       </div>
+     </div>
+
+     {/* Quick Stats */}
+     <div className="relative -mt-16 z-20 max-w-4xl mx-auto px-4 sm:px-6">
+       <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+           <div className="text-center">
+             <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+               <Users className="w-8 h-8 text-emerald-600" />
+             </div>
+             <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">2,547</h3>
+             <p className="text-gray-600">Total Penduduk</p>
+           </div>
+           <div className="text-center">
+             <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+               <MapPin className="w-8 h-8 text-blue-600" />
+             </div>
+             <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">12.5 km²</h3>
+             <p className="text-gray-600">Luas Wilayah</p>
+           </div>
          </div>
        </div>
      </div>
 
-     {/* Content Sections - Mobile Optimized */}
-     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16">
+     {/* Main Content */}
+     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
        {/* Local Heroes Section */}
        <LocalHeroes />
 
-       {/* Berita Terbaru Section */}
+       {/* Booklet Section */}
+       <Booklet />
+
+       {/* Latest News Section */}
        <LatestNews />
 
-       {/* Produk Terbaru Section */}
+       {/* Latest Products Section */}
        <LatestProducts />
 
-       {/* Kuliner Terbaru Section */}
+       {/* Latest Culinary Section */}
        <LatestCulinary />
      </div>
    </div>
