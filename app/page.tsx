@@ -51,14 +51,14 @@ export default function Home() {
              <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                <Users className="w-8 h-8 text-emerald-600" />
              </div>
-             <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">2,547</h3>
+             <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">10.715</h3>
              <p className="text-gray-600">Total Penduduk</p>
            </div>
            <div className="text-center">
              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                <MapPin className="w-8 h-8 text-blue-600" />
              </div>
-             <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">12.5 km²</h3>
+             <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">6,7776 km²</h3>
              <p className="text-gray-600">Luas Wilayah</p>
            </div>
          </div>

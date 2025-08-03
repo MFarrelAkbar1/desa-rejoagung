@@ -13,7 +13,8 @@ import {
   Package,
   ExternalLink,
   Heart,
-  Home
+  Home,
+  Instagram
 } from 'lucide-react'
 
 export default function Footer() {
@@ -74,7 +75,7 @@ export default function Footer() {
                 <div className="flex items-center space-x-2">
                   <Users className="w-4 h-4 text-emerald-400" />
                   <div>
-                    <div className="text-lg font-bold text-white">2,547</div>
+                    <div className="text-lg font-bold text-white">10.715</div>
                     <div className="text-xs text-gray-300">Penduduk</div>
                   </div>
                 </div>
@@ -151,17 +152,29 @@ export default function Footer() {
                     Jawa Timur 68471
                   </div>
                 </div>
+
+                <div className="flex items-start space-x-3">
+                  <Phone className="w-4 h-4 text-emerald-400 mt-1 flex-shrink-0" />
+                  <div className="text-sm text-gray-300">
+                    <div className="font-medium text-white">Call Center:</div>
+                    <a href="tel:+6282343357999" className="hover:text-emerald-400 transition-colors">
+                      +62 823-4335-7999
+                    </a>
+                  </div>
+                </div>
                 
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <div className="flex items-start space-x-3">
+                  <Mail className="w-4 h-4 text-emerald-400 mt-1 flex-shrink-0" />
                   <div className="text-sm text-gray-300">
                     <div className="font-medium text-white">Email:</div>
-                    info@rejoagung-desa.id
+                    <a href="mailto:info@rejoagung-desa.id" className="hover:text-emerald-400 transition-colors">
+                      info@rejoagung-desa.id
+                    </a>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3">
-                  <Clock className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <div className="flex items-start space-x-3">
+                  <Clock className="w-4 h-4 text-emerald-400 mt-1 flex-shrink-0" />
                   <div className="text-sm text-gray-300">
                     <div className="font-medium text-white">Jam Pelayanan:</div>
                     Senin - Jumat: 08:00 - 16:00
@@ -205,12 +218,26 @@ export default function Footer() {
               >
                 <Facebook className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
               </a>
-              <div className="bg-emerald-600 hover:bg-emerald-700 p-2 rounded-lg transition-colors duration-200 group cursor-pointer">
+              <a
+                href="https://www.instagram.com/pemdesrejoagung"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 p-2 rounded-lg transition-colors duration-200 group"
+              >
+                <Instagram className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
+              </a>
+              <a
+                href="tel:+6282343357999"
+                className="bg-emerald-600 hover:bg-emerald-700 p-2 rounded-lg transition-colors duration-200 group"
+              >
                 <Phone className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
-              </div>
-              <div className="bg-gray-600 hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200 group cursor-pointer">
+              </a>
+              <a
+                href="mailto:info@rejoagung-desa.id"
+                className="bg-gray-600 hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200 group"
+              >
                 <Mail className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
-              </div>
+              </a>
             </div>
 
             {/* Copyright */}
