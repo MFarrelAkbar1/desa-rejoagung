@@ -4,7 +4,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Clock, TrendingUp } from 'lucide-react'
-import { useNewsData } from '../hooks/useNewsData'
+import { useNewsData } from '../../hooks/useNewsData'
 import { NewsCard, NewsListItem } from './NewsComponents'
 
 export default function NewsSection() {

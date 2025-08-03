@@ -1,78 +1,40 @@
-// app/profil/peta-desa/page.tsx - OPTIMIZED VERSION
+// app/profil/peta-desa/page.tsx - FIXED: Tetap ada toggle, perbaikan hanya di peta sekolah
 
 'use client'
 
-import { useState, useEffect, useMemo, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import { MapPin, School, GraduationCap, Users, Building, Map } from 'lucide-react'
-import { schools, schoolsStatistics } from '@/data/schools'
-import Legend from '@/components/Legend'
 import ToggleableLegend from '@/components/ToggleableLegend'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 
-// Optimized dynamic imports with better loading states
+// Dynamic imports untuk menghindari SSR issues
 import dynamic from 'next/dynamic'
 
-// Pre-load components with optimized chunks
+// Peta Desa tetap menggunakan komponen yang sudah ada (AMAN)
 const DesaMapContainer = dynamic(() => import('@/components/DesaMapContainer'), {
   ssr: false,
-  loading: () => <OptimizedMapLoadingSpinner mapType="desa" />
+  loading: () => <MapLoadingSpinner />
 })
 
+// Peta Sekolah menggunakan komponen yang sudah diperbaiki
 const SekolahMapContainer = dynamic(() => import('@/components/MapContainer'), {
   ssr: false,
-  loading: () => <OptimizedMapLoadingSpinner mapType="sekolah" />
+  loading: () => <MapLoadingSpinner />
 })
 
-// Enhanced loading spinner with progress indication
-function OptimizedMapLoadingSpinner({ mapType }: { mapType: 'desa' | 'sekolah' }) {
-  const [loadingText, setLoadingText] = useState('Mempersiapkan peta...')
-  
-  useEffect(() => {
-    const messages = [
-      'Mempersiapkan peta...',
-      'Memuat data lokasi...',
-      'Menginisialisasi marker...',
-      'Hampir selesai...'
-    ]
-    
-    let index = 0
-    const interval = setInterval(() => {
-      index = (index + 1) % messages.length
-      setLoadingText(messages[index])
-    }, 800)
-    
-    return () => clearInterval(interval)
-  }, [])
-
+function MapLoadingSpinner() {
   return (
-    <div className="w-full h-[600px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
-      <div className="text-center max-w-xs">
-        <div className="relative mb-6">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-emerald-200 border-t-emerald-600 mx-auto"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            {mapType === 'desa' ? (
-              <MapPin className="w-6 h-6 text-emerald-600" />
-            ) : (
-              <School className="w-6 h-6 text-blue-600" />
-            )}
-          </div>
-        </div>
-        
-        <p className="text-gray-700 font-medium mb-2">
-          {mapType === 'desa' ? 'Peta Desa Rejoagung' : 'Peta Sekolah'}
-        </p>
-        <p className="text-gray-500 text-sm animate-pulse">{loadingText}</p>
-        
-        <div className="mt-4 w-full bg-gray-200 rounded-full h-1.5">
-          <div className="bg-emerald-600 h-1.5 rounded-full animate-pulse" style={{ width: '60%' }}></div>
-        </div>
+    <div className="w-full h-[600px] bg-gray-100 rounded-lg flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Memuat peta...</p>
       </div>
     </div>
   )
 }
 
-// Memoized legend data to prevent re-creation
-const DESA_LEGEND_ITEMS = [
+// Legend data untuk Peta Desa (TETAP SAMA)
+const desaLegendItems = [
   { color: '#10b981', icon: '🏛️', label: 'Fasilitas Desa' },
   { color: '#3b82f6', icon: '🎓', label: 'Pendidikan' },
   { color: '#8b5cf6', icon: '🏢', label: 'Fasilitas Umum' },
@@ -82,38 +44,31 @@ const DESA_LEGEND_ITEMS = [
   { color: '#dc2626', icon: '🏪', label: 'Ekonomi' }
 ]
 
-const DUSUN_AREAS = [
+const dusunAreas = [
   { color: '#ef4444', name: 'Dusun Krajan' },
   { color: '#22c55e', name: 'Dusun Sumberagung' },
   { color: '#3b82f6', name: 'Dusun Sumbergroto' }
 ]
 
-// Optimized statistics calculation
-const getOptimizedStatistics = () => {
-  return {
-    totalSekolah: schools.length,
-    totalLokasi: 25
-  }
+// Statistik sekolah yang disederhanakan
+const schoolStats = {
+  total: 9,
+  byType: { TK: 3, SD: 3, SMP: 1, SMK: 1, SLB: 1 },
+  totalStudents: 1450,
+  totalTeachers: 87
 }
 
 export default function PetaDesaPage() {
   const [activeMap, setActiveMap] = useState<'desa' | 'sekolah'>('desa')
-  const [isInitialLoad, setIsInitialLoad] = useState(true)
-  
-  // Memoize statistics to prevent recalculation
-  const statistics = useMemo(() => getOptimizedStatistics(), [])
-  
-  // Remove artificial delay - let components load naturally
-  useEffect(() => {
-    // Mark initial load as complete immediately
-    setIsInitialLoad(false)
-  }, [])
+  const [isMapLoaded, setIsMapLoaded] = useState(false)
 
-  // Memoize map toggle handler
-  const handleMapToggle = useMemo(() => ({
-    toDesa: () => setActiveMap('desa'),
-    toSekolah: () => setActiveMap('sekolah')
-  }), [])
+  useEffect(() => {
+    // Simulate map loading
+    const timer = setTimeout(() => {
+      setIsMapLoaded(true)
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -125,7 +80,7 @@ export default function PetaDesaPage() {
             { label: 'Peta Desa', href: '/profil/peta-desa' },
           ]}
         />
-
+        
         {/* Header */}
         <div className="text-center mb-12 mt-6">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
@@ -139,14 +94,14 @@ export default function PetaDesaPage() {
           </p>
         </div>
 
-        {/* Optimized Map Toggle Buttons */}
+        {/* Map Toggle Buttons */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button
-              onClick={handleMapToggle.toDesa}
+              onClick={() => setActiveMap('desa')}
               className={`
                 flex items-center justify-center space-x-3 px-6 py-4 rounded-lg font-semibold text-lg
-                transition-all duration-300 min-w-[200px] focus:outline-none focus:ring-2 focus:ring-emerald-500
+                transition-all duration-300 min-w-[200px]
                 ${activeMap === 'desa'
                   ? 'bg-emerald-600 text-white shadow-lg transform scale-105'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -158,111 +113,131 @@ export default function PetaDesaPage() {
             </button>
            
             <button
-              onClick={handleMapToggle.toSekolah}
+              onClick={() => setActiveMap('sekolah')}
               className={`
                 flex items-center justify-center space-x-3 px-6 py-4 rounded-lg font-semibold text-lg
-                transition-all duration-300 min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-500
+                transition-all duration-300 min-w-[200px]
                 ${activeMap === 'sekolah'
                   ? 'bg-blue-600 text-white shadow-lg transform scale-105'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }
               `}
             >
-              <School className="w-6 h-6" />
+              <GraduationCap className="w-6 h-6" />
               <span>Peta Sekolah</span>
             </button>
           </div>
         </div>
 
-        {/* Optimized Map Container */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="relative">
-            {activeMap === 'desa' ? (
-              <Suspense fallback={<OptimizedMapLoadingSpinner mapType="desa" />}>
-                <DesaMapContainer height="600px" />
-              </Suspense>
-            ) : (
-              <Suspense fallback={<OptimizedMapLoadingSpinner mapType="sekolah" />}>
-                <SekolahMapContainer height="600px" />
-              </Suspense>
-            )}
-            
-            {/* Legend Overlay */}
-            {activeMap === 'desa' ? (
-              <ToggleableLegend 
-                items={DESA_LEGEND_ITEMS}
-                title="🗺️ Legenda Peta Desa"
-                extraInfo={
-                  <div className="mt-3 pt-3 border-t border-gray-200">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">📍 Area Dusun:</h4>
-                    <div className="space-y-1">
-                      {DUSUN_AREAS.map((area, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <div
-                            className="w-3 h-3 rounded-sm border border-white shadow-sm"
-                            style={{ backgroundColor: area.color }}
-                          />
-                          <span className="text-xs text-gray-600">{area.name}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                }
-              />
-            ) : (
-              <Legend />
-            )}
-          </div>
-        </div>
-
-        {/* Statistics Cards - Memoized */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6 text-center border-l-4 border-emerald-600">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-full mb-4">
-              <MapPin className="w-6 h-6 text-emerald-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">
-              {activeMap === 'desa' ? statistics.totalLokasi : statistics.totalSekolah}+
-            </h3>
-            <p className="text-gray-600">
-              {activeMap === 'desa' ? 'Lokasi Penting' : 'Sekolah Tersedia'}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 text-center border-l-4 border-blue-600">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">3</h3>
-            <p className="text-gray-600">Dusun di Desa</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 text-center border-l-4 border-purple-600">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mb-4">
-              <Building className="w-6 h-6 text-purple-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">7</h3>
-            <p className="text-gray-600">Kategori Fasilitas</p>
-          </div>
-        </div>
-
-        {/* Information Panel */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <div className="flex items-start space-x-4">
-            <div className="flex-shrink-0">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                <GraduationCap className="w-6 h-6 text-blue-600" />
+        {/* School Statistics - Simple version, hanya tampil saat tab sekolah aktif */}
+        {activeMap === 'sekolah' && (
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <School className="w-6 h-6 mr-3 text-green-600" />
+              Statistik Sekolah
+            </h2>
+           
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+              <div className="bg-red-50 border border-red-200 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-red-600">{schoolStats.byType.TK}</div>
+                <div className="text-red-700 text-sm">TK/PAUD</div>
+              </div>
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-blue-600">{schoolStats.byType.SD}</div>
+                <div className="text-blue-700 text-sm">SD</div>
+              </div>
+              <div className="bg-green-50 border border-green-200 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-green-600">{schoolStats.byType.SMP}</div>
+                <div className="text-green-700 text-sm">SMP</div>
+              </div>
+              <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-orange-600">{schoolStats.byType.SMK}</div>
+                <div className="text-orange-700 text-sm">SMK</div>
+              </div>
+              <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-purple-600">{schoolStats.byType.SLB}</div>
+                <div className="text-purple-700 text-sm">SLB</div>
               </div>
             </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">
-                Informasi Peta
-              </h3>
-              <ul className="space-y-2 text-gray-600">
-                <li>• {activeMap === 'desa' ? `${statistics.totalLokasi}+ lokasi penting di desa` : `${statistics.totalSekolah} sekolah dari TK sampai SMK`}</li>
-                <li>• Data resmi Desa Rejoagung</li>
-                <li>• Peta dari OpenStreetMap</li>
-                <li>• Terakhir diperbarui: Juli 2025</li>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-gray-800">{schoolStats.totalStudents.toLocaleString()}</div>
+                <div className="text-gray-600 text-sm">Total Siswa</div>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-gray-800">{schoolStats.totalTeachers}</div>
+                <div className="text-gray-600 text-sm">Total Guru</div>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-gray-800">{schoolStats.total}</div>
+                <div className="text-gray-600 text-sm">Total Sekolah</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Map Section */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+              {activeMap === 'desa' ? (
+                <>
+                  <MapPin className="w-6 h-6 mr-3 text-emerald-600" />
+                  Peta Wilayah Desa Rejoagung
+                </>
+              ) : (
+                <>
+                  <GraduationCap className="w-6 h-6 mr-3 text-blue-600" />
+                  Peta Lokasi Sekolah
+                </>
+              )}
+            </h2>
+          </div>
+         
+          {/* Map Container */}
+          <div className="relative">
+            {activeMap === 'desa' ? (
+              <>
+                {/* PETA DESA - TETAP MENGGUNAKAN KOMPONEN LAMA */}
+                <DesaMapContainer height="600px" />
+                <ToggleableLegend
+                  title="Legenda Peta Desa"
+                  items={desaLegendItems}
+                  extraInfo="Klik marker untuk melihat detail lokasi"
+                  dusunAreas={dusunAreas}
+                />
+              </>
+            ) : (
+              <>
+                {/* PETA SEKOLAH - MENGGUNAKAN KOMPONEN YANG SUDAH DIPERBAIKI */}
+                <SekolahMapContainer height="600px" />
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Info Section */}
+        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-blue-800 mb-3">ℹ️ Informasi Peta</h3>
+          <div className="grid md:grid-cols-2 gap-4 text-sm text-blue-700">
+            <div>
+              <h4 className="font-medium mb-2">Cara Menggunakan:</h4>
+              <ul className="space-y-1 text-blue-600">
+                <li>• Gunakan tombol toggle untuk beralih antar peta</li>
+                <li>• Klik marker untuk melihat detail lokasi</li>
+                <li>• Gunakan scroll mouse untuk zoom in/out</li>
+                <li>• Drag untuk menggeser peta</li>
+                {activeMap === 'desa' && <li>• Klik tombol ☰ di kanan atas untuk melihat legenda</li>}
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Informasi:</h4>
+              <ul className="space-y-1 text-blue-600">
+                <li>• {activeMap === 'desa' ? 'Peta desa menampilkan wilayah dan fasilitas' : 'Peta sekolah menampilkan 9 lokasi pendidikan'}</li>
+                <li>• Data diperbarui secara berkala</li>
+                <li>• Koordinat menggunakan sistem GPS</li>
+                <li>• Peta dapat di-zoom hingga level detail</li>
               </ul>
             </div>
           </div>

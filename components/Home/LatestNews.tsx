@@ -5,7 +5,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Newspaper, ChevronRight, Calendar } from 'lucide-react'
-import { useLatestNews } from '../hooks/useNewsData'
+import { useLatestNews } from '../../hooks/useNewsData'
 
 interface News {
   id: string
