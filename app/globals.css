@@ -3,6 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Base scaling variables - ACTUAL content scaling */
+  --mobile-base-font: 16px;
+  --mobile-scale-factor: 1;
+  --mobile-spacing-scale: 1;
 }
 
 @theme inline {
@@ -24,7 +28,392 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
-/* Notification slide-in animation */
+
+/* ========== REAL MOBILE CONTENT SCALING ========== */
+
+/* Base mobile - semua ukuran dikecilkan secara ACTUAL */
+@media (max-width: 767px) {
+  
+  /* NORMAL MODE - 100% */
+  .mobile-scale-normal {
+    --mobile-base-font: 16px;
+    --mobile-scale-factor: 1;
+    --mobile-spacing-scale: 1;
+  }
+  
+  /* COMPACT MODE - 85% (lebih banyak konten masuk layar) */
+  .mobile-scale-compact {
+    --mobile-base-font: 13.6px;  /* 16px * 0.85 */
+    --mobile-scale-factor: 0.85;
+    --mobile-spacing-scale: 0.85;
+  }
+  
+  /* DENSE MODE - 75% (konten sangat padat) */
+  .mobile-scale-dense {
+    --mobile-base-font: 12px;    /* 16px * 0.75 */
+    --mobile-scale-factor: 0.75;
+    --mobile-spacing-scale: 0.75;
+  }
+  
+  /* ULTRA DENSE - 65% (untuk infografis/tabel besar) */
+  .mobile-scale-ultra {
+    --mobile-base-font: 10.4px;  /* 16px * 0.65 */
+    --mobile-scale-factor: 0.65;
+    --mobile-spacing-scale: 0.65;
+  }
+
+  /* Specific Tailwind class overrides untuk scaling */
+  .mobile-scale-compact .text-xs { font-size: calc(0.75rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-compact .text-sm { font-size: calc(0.875rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-compact .text-base { font-size: calc(1rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-compact .text-lg { font-size: calc(1.125rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-compact .text-xl { font-size: calc(1.25rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-compact .text-2xl { font-size: calc(1.5rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-compact .text-3xl { font-size: calc(1.875rem * var(--mobile-scale-factor)) !important; }
+
+  .mobile-scale-dense .text-xs { font-size: calc(0.75rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-dense .text-sm { font-size: calc(0.875rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-dense .text-base { font-size: calc(1rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-dense .text-lg { font-size: calc(1.125rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-dense .text-xl { font-size: calc(1.25rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-dense .text-2xl { font-size: calc(1.5rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-dense .text-3xl { font-size: calc(1.875rem * var(--mobile-scale-factor)) !important; }
+
+  .mobile-scale-ultra .text-xs { font-size: calc(0.75rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-ultra .text-sm { font-size: calc(0.875rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-ultra .text-base { font-size: calc(1rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-ultra .text-lg { font-size: calc(1.125rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-ultra .text-xl { font-size: calc(1.25rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-ultra .text-2xl { font-size: calc(1.5rem * var(--mobile-scale-factor)) !important; }
+  .mobile-scale-ultra .text-3xl { font-size: calc(1.875rem * var(--mobile-scale-factor)) !important; }
+
+  /* Padding scaling */
+  .mobile-scale-compact .p-1 { padding: calc(0.25rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-compact .p-2 { padding: calc(0.5rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-compact .p-3 { padding: calc(0.75rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-compact .p-4 { padding: calc(1rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-compact .p-6 { padding: calc(1.5rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-compact .p-8 { padding: calc(2rem * var(--mobile-spacing-scale)) !important; }
+
+  .mobile-scale-dense .p-1 { padding: calc(0.25rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-dense .p-2 { padding: calc(0.5rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-dense .p-3 { padding: calc(0.75rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-dense .p-4 { padding: calc(1rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-dense .p-6 { padding: calc(1.5rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-dense .p-8 { padding: calc(2rem * var(--mobile-spacing-scale)) !important; }
+
+  .mobile-scale-ultra .p-1 { padding: calc(0.25rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-ultra .p-2 { padding: calc(0.5rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-ultra .p-3 { padding: calc(0.75rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-ultra .p-4 { padding: calc(1rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-ultra .p-6 { padding: calc(1.5rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-ultra .p-8 { padding: calc(2rem * var(--mobile-spacing-scale)) !important; }
+
+  /* Gap scaling untuk flexbox/grid */
+  .mobile-scale-compact .gap-2 { gap: calc(0.5rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-compact .gap-4 { gap: calc(1rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-compact .gap-6 { gap: calc(1.5rem * var(--mobile-spacing-scale)) !important; }
+
+  .mobile-scale-dense .gap-2 { gap: calc(0.5rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-dense .gap-4 { gap: calc(1rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-dense .gap-6 { gap: calc(1.5rem * var(--mobile-spacing-scale)) !important; }
+
+  .mobile-scale-ultra .gap-2 { gap: calc(0.5rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-ultra .gap-4 { gap: calc(1rem * var(--mobile-spacing-scale)) !important; }
+  .mobile-scale-ultra .gap-6 { gap: calc(1.5rem * var(--mobile-spacing-scale)) !important; }
+}
+
+/* Reset scaling pada desktop */
+@media (min-width: 768px) {
+  .mobile-scale-normal,
+  .mobile-scale-compact,
+  .mobile-scale-dense,
+  .mobile-scale-ultra {
+    --mobile-base-font: 16px;
+    --mobile-scale-factor: 1;
+    --mobile-spacing-scale: 1;
+  }
+  
+  .mobile-scale-compact *,
+  .mobile-scale-dense *,
+  .mobile-scale-ultra * {
+    font-size: revert !important;
+    padding: revert !important;
+    margin: revert !important;
+  }
+}
+
+/* ========== CSS KHUSUS UNTUK PAGE DATA-STATISTIK ========== */
+
+/* Target khusus halaman data-statistik */
+[data-page="data-statistik"] {
+  --mobile-table-scale: 0.8;
+  --mobile-text-scale: 0.85;
+}
+
+/* Mobile table optimization khusus data-statistik */
+@media (max-width: 767px) {
+  
+  /* Container khusus untuk page data-statistik */
+  [data-page="data-statistik"] .max-w-6xl {
+    max-width: 100vw;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  /* Enhanced table wrapper untuk mobile */
+  [data-page="data-statistik"] .overflow-x-auto {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin: 0.75rem 0;
+  }
+
+  /* Table scaling yang lebih halus */
+  [data-page="data-statistik"] table {
+    font-size: calc(0.75rem * var(--mobile-text-scale, 0.85));
+    min-width: 100%;
+    width: max-content;
+  }
+
+  /* Cell padding yang proporsional */
+  [data-page="data-statistik"] td,
+  [data-page="data-statistik"] th {
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+    min-width: 60px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Header row khusus */
+  [data-page="data-statistik"] tr:first-child td,
+  [data-page="data-statistik"] th {
+    font-size: calc(0.7rem * var(--mobile-text-scale, 0.85));
+    font-weight: 700;
+    background-color: #f3f4f6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  /* First column sticky untuk mobile */
+  [data-page="data-statistik"] td:first-child,
+  [data-page="data-statistik"] th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: white;
+    z-index: 11;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    min-width: 100px;
+    max-width: 140px;
+  }
+
+  [data-page="data-statistik"] th:first-child {
+    background-color: #f3f4f6;
+  }
+
+  /* Zebra striping yang lebih subtle */
+  [data-page="data-statistik"] tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  [data-page="data-statistik"] tr:nth-child(even) td:first-child {
+    background-color: #fafafa;
+  }
+
+  /* Tab navigation yang lebih mobile-friendly */
+  [data-page="data-statistik"] .flex.flex-wrap.gap-2 {
+    gap: 0.25rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 0.5rem;
+  }
+
+  [data-page="data-statistik"] .flex.flex-wrap.gap-2::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Tab buttons yang lebih compact */
+  [data-page="data-statistik"] .flex.flex-wrap.gap-2 button {
+    flex-shrink: 0;
+    min-width: fit-content;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Image containers dalam tabs */
+  [data-page="data-statistik"] .flex.justify-center img {
+    max-width: 95vw;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Content spacing yang lebih tight */
+  [data-page="data-statistik"] .mb-6 {
+    margin-bottom: 1rem;
+  }
+
+  [data-page="data-statistik"] .mt-8 {
+    margin-top: 1.5rem;
+  }
+
+  [data-page="data-statistik"] .py-8 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Tablet optimization untuk data-statistik */
+@media (min-width: 768px) and (max-width: 1023px) {
+  [data-page="data-statistik"] table {
+    font-size: 0.875rem;
+  }
+
+  [data-page="data-statistik"] td,
+  [data-page="data-statistik"] th {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Desktop - reset semua override untuk data-statistik */
+@media (min-width: 1024px) {
+  [data-page="data-statistik"] .max-w-6xl {
+    max-width: 72rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  [data-page="data-statistik"] td:first-child,
+  [data-page="data-statistik"] th:first-child {
+    position: static;
+    background-color: inherit;
+    box-shadow: none;
+    min-width: auto;
+    max-width: none;
+  }
+
+  [data-page="data-statistik"] th:first-child {
+    background-color: #f3f4f6;
+  }
+}
+
+/* ========== MOBILE OPTIMIZED COMPONENTS ========== */
+
+/* Table yang responsive dengan scaling */
+.mobile-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+  background: white;
+  border-radius: calc(0.5rem * var(--mobile-spacing-scale, 1));
+  margin: calc(0.5rem * var(--mobile-spacing-scale, 1)) 0;
+}
+
+.mobile-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.mobile-table-wrapper::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 3px;
+}
+
+.mobile-table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+/* Card yang responsive dengan scaling */
+.mobile-card {
+  background: white;
+  border-radius: calc(0.75rem * var(--mobile-spacing-scale, 1));
+  padding: calc(1rem * var(--mobile-spacing-scale, 1));
+  margin-bottom: calc(1rem * var(--mobile-spacing-scale, 1));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Button dengan scaling */
+.mobile-button {
+  min-height: calc(44px * var(--mobile-spacing-scale, 1));
+  min-width: calc(44px * var(--mobile-spacing-scale, 1));
+  padding: calc(0.75rem * var(--mobile-spacing-scale, 1)) calc(1rem * var(--mobile-spacing-scale, 1));
+  border-radius: calc(0.5rem * var(--mobile-spacing-scale, 1));
+  font-weight: 500;
+  font-size: calc(1rem * var(--mobile-scale-factor, 1));
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ========== ZOOM CONTROLS ========== */
+
+.mobile-zoom-controls {
+  position: fixed;
+  bottom: 5rem;
+  left: 1rem;
+  background: white;
+  border-radius: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  z-index: 50;
+  overflow: hidden;
+}
+
+.mobile-zoom-controls button {
+  padding: 0.5rem;
+  background: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.mobile-zoom-controls button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.mobile-zoom-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mobile-zoom-level {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  background-color: #f9fafb;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  min-width: 4rem;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .mobile-zoom-controls {
+    display: none;
+  }
+}
+
+/* ========== EXISTING ANIMATIONS (PRESERVED) ========== */
+
 @keyframes slide-in-right {
   0% {
     opacity: 0;
@@ -36,7 +425,6 @@ body {
   }
 }
 
-/* Modal scale-in animation */
 @keyframes scale-in {
   0% {
     opacity: 0;
@@ -48,7 +436,6 @@ body {
   }
 }
 
-/* Pulse animation for loading */
 @keyframes pulse-subtle {
   0%, 100% {
     opacity: 1;
@@ -58,7 +445,6 @@ body {
   }
 }
 
-/* Bounce for success notifications */
 @keyframes bounce-gentle {
   0%, 20%, 53%, 80%, 100% {
     transform: translate3d(0, 0, 0);
@@ -74,14 +460,12 @@ body {
   }
 }
 
-/* Shake for error notifications */
 @keyframes shake-gentle {
   0%, 100% { transform: translateX(0); }
   10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
   20%, 40%, 60%, 80% { transform: translateX(2px); }
 }
 
-/* Apply animations */
 .animate-slide-in-right {
   animation: slide-in-right 0.3s ease-out;
 }
@@ -102,7 +486,6 @@ body {
   animation: shake-gentle 0.5s ease-in-out;
 }
 
-/* Notification specific styles */
 .notification-success {
   animation: slide-in-right 0.3s ease-out, bounce-gentle 0.6s ease-out 0.3s;
 }
@@ -116,13 +499,11 @@ body {
   animation: slide-in-right 0.3s ease-out;
 }
 
-/* Modal backdrop blur effect */
 .modal-backdrop {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
 
-/* Progress bar animation for file uploads */
 @keyframes progress-bar {
   0% { width: 0%; }
   100% { width: 100%; }
@@ -132,13 +513,11 @@ body {
   animation: progress-bar 2s ease-in-out;
 }
 
-/* Improved focus styles for accessibility */
 .notification-focus:focus {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 640px) {
   .animate-slide-in-right {
     animation: slide-in-right 0.2s ease-out;

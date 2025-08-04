@@ -1,5 +1,4 @@
-// app/layout.tsx - Updated with NotificationProvider
-
+// app/layout.tsx - Final dengan Real Content Scaling
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -14,6 +13,13 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Desa Rejoagung - Portal Resmi',
   description: 'Website resmi Desa Rejoagung - Pusat informasi, layanan, dan produk unggulan kelapa sawit',
+  // Viewport settings untuk mobile optimization yang proper
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
 }
 
 export default function RootLayout({
@@ -29,6 +35,13 @@ export default function RootLayout({
           <NavbarProvider>
             <TopNavbar />
             <main className="pt-16 min-h-screen">
+              {/* 
+                PageWrapper dengan Real Content Scaling:
+                - Auto-detect berdasarkan jenis halaman
+                - Real font/spacing scaling bukan visual transform
+                - User controls untuk manual adjustment
+                - Works dengan semua Tailwind classes
+              */}
               <PageWrapper>
                 {children}
               </PageWrapper>

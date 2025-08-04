@@ -1,7 +1,7 @@
 // data/dataDesaConstants.ts
 
 export const kependudukanData = {
-  deskripsi: "Desa Rejoagung terdiri dari 5 Dusun yaitu Dusun Krajan, Dusun Sumberagung, Dusun Rejoharjo, Dusun Purwosari, dan Dusun Mekarjaya, dengan 14 RT dan 5 RW. Jumlah penduduk Desa Rejoagung akhir Januari 2025 sebanyak 8451 jiwa yang terdiri dari 4247 laki-laki dan 4204 perempuan dengan jumlah Kepala Keluarga sebanyak 2886 KK.",
+  deskripsi: "Desa Rejoagung terdiri dari 4 Dusun yaitu Dusun Sumberagung, Dusun Sumberagung Kidul, Dusun Sumbergroto, dan Dusun Sumbergroto Kidul, dengan 14 RT dan 5 RW. Jumlah penduduk Desa Rejoagung akhir Januari 2025 sebanyak 8451 jiwa yang terdiri dari 4247 laki-laki dan 4204 perempuan dengan jumlah Kepala Keluarga sebanyak 2886 KK.",
 
   table: [
     ["LAKI-LAKI", "PEREMPUAN", "TOTAL"],
