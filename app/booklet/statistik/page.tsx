@@ -204,7 +204,7 @@ export default function BookletGuidebookPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h1 className="mobile-heading text-gray-800">E-GuideBook Desa UGM</h1>
-                  <p className="mobile-text">Panduan lengkap hasil kerja Tim KKN-PPM UGM</p>
+                  <p className="mobile-text text-black">Panduan lengkap hasil kerja Tim KKN-PPM UGM</p>
                 </div>
               </div>
             </div>

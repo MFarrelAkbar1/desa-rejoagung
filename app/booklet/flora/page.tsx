@@ -303,7 +303,7 @@ export default function BookletFloraPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h1 className="mobile-heading text-gray-800">Arsip Flora Desa</h1>
-                  <p className="mobile-text">Dokumentasi keanekaragaman flora di Desa Rejoagung</p>
+                  <p className="mobile-text text-black">Dokumentasi keanekaragaman flora di Desa Rejoagung</p>
                 </div>
               </div>
             </div>

@@ -1,17 +1,17 @@
-// components/News/ContentBlockRenderer.tsx - FIXED with NotificationSystem
+// components/News/ContentBlockRenderer.tsx - FIXED ALIGN BUTTON POSITION
 
 'use client'
 
 import { useState } from 'react'
-import { 
-  Edit3, 
-  Save, 
-  X, 
-  Type, 
-  Heading, 
-  ImageIcon, 
-  ChevronUp, 
-  ChevronDown, 
+import {
+  Edit3,
+  Save,
+  X,
+  Type,
+  Heading,
+  ImageIcon,
+  ChevronUp,
+  ChevronDown,
   Trash2,
   AlignLeft,
   AlignCenter,
@@ -19,8 +19,20 @@ import {
   AlignJustify
 } from 'lucide-react'
 import ImageUpload from '@/components/forms/ImageUpload'
-import { ContentBlock } from '@/types/news'
 import { useNotifications } from '@/components/notifications/NotificationSystem'
+
+interface ContentBlock {
+  id?: string
+  type: 'text' | 'subtitle' | 'image'
+  content: string
+  order_index: number
+  style?: {
+    textAlign?: 'left' | 'center' | 'right' | 'justify'
+    fontSize?: 'small' | 'medium' | 'large'
+    caption?: string
+  }
+  created_at?: string
+}
 
 interface ContentBlockRendererProps {
   block: ContentBlock
@@ -50,22 +62,29 @@ export default function ContentBlockRenderer({
   const [editingContent, setEditingContent] = useState(block.content)
   const [localEditing, setLocalEditing] = useState(false)
   const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right' | 'justify'>(
-    (block.style?.textAlign as 'left' | 'center' | 'right' | 'justify') || 'left'
+    (block.style?.textAlign as 'left' | 'center' | 'right' | 'justify') || 
+    (block.type === 'text' ? 'justify' : block.type === 'subtitle' ? 'center' : 'left')
   )
 
   const handleSave = () => {
     if (!onEdit) return
     
-    onEdit(block.id || '', editingContent, {
+    const newStyle = {
       ...block.style,
-      textAlign: block.type !== 'image' ? textAlign : undefined
-    })
+      textAlign: block.type === 'text' ? textAlign : (block.type === 'subtitle' ? textAlign : undefined)
+    }
+    
+    console.log('Saving content block with style:', newStyle)
+    onEdit(block.id || '', editingContent, newStyle)
     setLocalEditing(false)
   }
 
   const handleCancel = () => {
     setEditingContent(block.content)
-    setTextAlign((block.style?.textAlign as 'left' | 'center' | 'right' | 'justify') || 'left')
+    setTextAlign(
+      (block.style?.textAlign as 'left' | 'center' | 'right' | 'justify') || 
+      (block.type === 'text' ? 'justify' : block.type === 'subtitle' ? 'center' : 'left')
+    )
     setLocalEditing(false)
   }
 
@@ -78,7 +97,6 @@ export default function ContentBlockRenderer({
       ? 'Apakah Anda yakin ingin menghapus sub judul ini?'
       : 'Apakah Anda yakin ingin menghapus gambar ini?'
     
-    // FIXED: Replace window.confirm with confirm from useNotifications
     const confirmed = await confirm(confirmMessage, 'Konfirmasi Hapus')
     
     if (confirmed) {
@@ -87,12 +105,18 @@ export default function ContentBlockRenderer({
   }
 
   const getTextAlignmentClass = (align: string) => {
-    switch (align) {
-      case 'center': return 'text-center'
-      case 'right': return 'text-right'
-      case 'justify': return 'text-justify'
-      default: return 'text-left'
-    }
+    const alignmentClass = (() => {
+      switch (align) {
+        case 'center': return 'text-center'
+        case 'right': return 'text-right'
+        case 'justify': return 'text-justify'
+        default: return 'text-left'
+      }
+    })()
+    
+    // Debug log
+    console.log(`Text alignment for ${block.type}:`, align, '→', alignmentClass)
+    return alignmentClass
   }
 
   const getAlignmentIcon = (align: string) => {
@@ -104,12 +128,12 @@ export default function ContentBlockRenderer({
     }
   }
 
-  // Admin Controls Component
+  // 🚀 FIXED: Admin Controls Component - positioned relative to parent
   const AdminControls = () => {
     if (!showControls) return null
 
     return (
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white rounded-lg shadow-lg border border-gray-200 p-1 flex space-x-1">
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white rounded-lg shadow-lg border border-gray-200 p-1 flex space-x-1">
         {/* Move Up */}
         {!isFirst && onMoveUp && (
           <button
@@ -157,62 +181,81 @@ export default function ContentBlockRenderer({
     )
   }
 
+  // 🆕 FIXED: Separate Alignment Controls - moved to top, always visible in edit mode
+  const AlignmentControls = () => {
+    if (!showControls || !localEditing || block.type === 'image') return null
+
+    return (
+      <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-gray-700">
+            Perataan {block.type === 'text' ? 'Paragraf' : 'Sub Judul'}:
+          </span>
+          <div className="flex space-x-1 bg-white rounded-lg p-1 border border-gray-300">
+            {['left', 'center', 'right', 'justify'].map((align) => {
+              const IconComponent = getAlignmentIcon(align)
+              return (
+                <button
+                  key={align}
+                  onClick={() => setTextAlign(align as any)}
+                  className={`p-2 rounded transition-colors ${
+                    textAlign === align
+                      ? 'bg-emerald-100 text-emerald-700 shadow-sm border border-emerald-200'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                  title={`Rata ${align === 'left' ? 'kiri' : align === 'center' ? 'tengah' : align === 'right' ? 'kanan' : 'justify'}`}
+                >
+                  <IconComponent className="w-4 h-4" />
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // TEXT BLOCK
   if (block.type === 'text') {
     // If editing mode and local editing is active
     if (showControls && isEditing && localEditing && onEdit) {
       return (
         <div className="relative group bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
-          <AdminControls />
+          {/* Header with controls */}
+          <div className="flex justify-between items-center p-4 border-b border-gray-200">
+            <div className="flex items-center space-x-2 text-sm text-gray-700">
+              <Type className="w-4 h-4" />
+              <span className="font-medium">Edit Paragraf</span>
+            </div>
+            <AdminControls />
+          </div>
           
           <div className="p-6">
             <div className="space-y-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <Type className="w-4 h-4" />
-                  <span>Edit Paragraf</span>
-                </div>
-                
-                {/* Text Alignment Options */}
-                <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
-                  {['left', 'center', 'right', 'justify'].map((align) => {
-                    const IconComponent = getAlignmentIcon(align)
-                    return (
-                      <button
-                        key={align}
-                        onClick={() => setTextAlign(align as any)}
-                        className={`p-1 rounded transition-colors ${
-                          textAlign === align 
-                            ? 'bg-white text-emerald-600 shadow-sm' 
-                            : 'text-gray-600 hover:text-gray-800'
-                        }`}
-                        title={`Rata ${align === 'left' ? 'kiri' : align === 'center' ? 'tengah' : align === 'right' ? 'kanan' : 'kiri-kanan'}`}
-                      >
-                        <IconComponent className="w-4 h-4" />
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
+              {/* 🚀 FIXED: Alignment Controls moved to top, always visible */}
+              <AlignmentControls />
               
+              {/* Text Editor */}
               <textarea
                 value={editingContent}
                 onChange={(e) => setEditingContent(e.target.value)}
-                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 min-h-[120px] text-black placeholder-gray-500 ${getTextAlignmentClass(textAlign)}`}
-                placeholder="Tulis paragraf di sini..."
+                className={`w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none min-h-[120px] text-gray-900 bg-white ${getTextAlignmentClass(textAlign)}`}
+                placeholder="Tulis paragraf di sini... Gunakan enter 2x untuk membuat paragraf baru."
+                rows={6}
               />
               
-              <div className="flex justify-end space-x-2">
+              {/* Action buttons */}
+              <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200">
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2 border border-gray-300"
                 >
                   <X className="w-4 h-4" />
                   Batal
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   Simpan
@@ -224,17 +267,33 @@ export default function ContentBlockRenderer({
       )
     }
 
-    // Display mode
+    // Display mode (both for view and edit mode when not locally editing)
     return (
-      <div className={`relative ${showControls ? 'group bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors' : ''}`}>
-        <AdminControls />
-        
-        <div className={showControls ? 'p-6' : 'py-4'}>
-          <div className={`${getTextAlignmentClass(block.style?.textAlign || 'justify')}`}>
-            <p className="text-gray-700 leading-relaxed m-0">
-              {block.content || (showControls ? 'Klik untuk menambahkan paragraf...' : '')}
-            </p>
+      <div className="relative group">
+        {/* Content with controls in same line */}
+        <div className="flex justify-between items-start gap-4">
+          <div className={`flex-1 prose prose-lg max-w-none text-gray-700 leading-relaxed ${getTextAlignmentClass(block.style?.textAlign || 'justify')}`}>
+            {/* 🚀 FIXED: Better paragraph rendering with proper spacing */}
+            {block.content.split('\n\n').map((paragraph, index) => {
+              if (paragraph.trim() === '') return null
+              return (
+                <p key={index} className="mb-4 last:mb-0">
+                  {paragraph.split('\n').map((line, lineIndex) => (
+                    <span key={lineIndex}>
+                      {line}
+                      {lineIndex < paragraph.split('\n').length - 1 && <br />}
+                    </span>
+                  ))}
+                </p>
+              )
+            })}
           </div>
+          {/* Admin controls aligned with content */}
+          {showControls && (
+            <div className="flex-shrink-0">
+              <AdminControls />
+            </div>
+          )}
         </div>
       </div>
     )
@@ -242,61 +301,42 @@ export default function ContentBlockRenderer({
 
   // SUBTITLE BLOCK
   if (block.type === 'subtitle') {
-    // If editing mode and local editing is active
     if (showControls && isEditing && localEditing && onEdit) {
       return (
         <div className="relative group bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
-          <AdminControls />
+          {/* Header with controls */}
+          <div className="flex justify-between items-center p-4 border-b border-gray-200">
+            <div className="flex items-center space-x-2 text-sm text-gray-700">
+              <Heading className="w-4 h-4" />
+              <span className="font-medium">Edit Sub Judul</span>
+            </div>
+            <AdminControls />
+          </div>
           
           <div className="p-6">
             <div className="space-y-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <Heading className="w-4 h-4" />
-                  <span>Edit Sub Judul</span>
-                </div>
-                
-                {/* Text Alignment Options */}
-                <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
-                  {['left', 'center', 'right'].map((align) => {
-                    const IconComponent = getAlignmentIcon(align)
-                    return (
-                      <button
-                        key={align}
-                        onClick={() => setTextAlign(align as any)}
-                        className={`p-1 rounded transition-colors ${
-                          textAlign === align 
-                            ? 'bg-white text-emerald-600 shadow-sm' 
-                            : 'text-gray-600 hover:text-gray-800'
-                        }`}
-                        title={`Rata ${align === 'left' ? 'kiri' : align === 'center' ? 'tengah' : 'kanan'}`}
-                      >
-                        <IconComponent className="w-4 h-4" />
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
+              {/* 🚀 FIXED: Alignment Controls untuk subtitle juga */}
+              <AlignmentControls />
               
               <input
                 type="text"
                 value={editingContent}
                 onChange={(e) => setEditingContent(e.target.value)}
-                className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold text-black placeholder-gray-500 ${getTextAlignmentClass(textAlign)}`}
-                placeholder="Tulis sub judul di sini..."
+                className={`w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold text-gray-900 bg-white ${getTextAlignmentClass(textAlign)}`}
+                placeholder="Masukkan sub judul..."
               />
               
-              <div className="flex justify-end space-x-2">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200">
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2 border border-gray-300"
                 >
                   <X className="w-4 h-4" />
                   Batal
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   Simpan
@@ -308,17 +348,19 @@ export default function ContentBlockRenderer({
       )
     }
 
-    // Display mode
     return (
-      <div className={`relative ${showControls ? 'group bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors' : ''}`}>
-        <AdminControls />
-        
-        <div className={showControls ? 'p-6' : 'py-4'}>
-          <div className={`${getTextAlignmentClass(block.style?.textAlign || 'left')}`}>
-            <h3 className="text-xl font-bold text-gray-900 m-0 leading-tight">
-              {block.content || (showControls ? 'Klik untuk menambahkan sub judul...' : '')}
-            </h3>
-          </div>
+      <div className="relative group">
+        {/* Content with controls in same line */}
+        <div className="flex justify-between items-center gap-4">
+          <h3 className={`flex-1 text-xl font-semibold text-gray-900 my-6 ${getTextAlignmentClass(block.style?.textAlign || 'center')}`}>
+            {block.content}
+          </h3>
+          {/* Admin controls aligned with subtitle */}
+          {showControls && (
+            <div className="flex-shrink-0">
+              <AdminControls />
+            </div>
+          )}
         </div>
       </div>
     )
@@ -326,37 +368,49 @@ export default function ContentBlockRenderer({
 
   // IMAGE BLOCK
   if (block.type === 'image') {
-    // If editing mode and local editing is active
     if (showControls && isEditing && localEditing && onEdit) {
       return (
         <div className="relative group bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
-          <AdminControls />
+          {/* Header with controls */}
+          <div className="flex justify-between items-center p-4 border-b border-gray-200">
+            <div className="flex items-center space-x-2 text-sm text-gray-700">
+              <ImageIcon className="w-4 h-4" />
+              <span className="font-medium">Edit Gambar</span>
+              <span className="text-emerald-600 text-xs">• Maksimal 10MB</span>
+            </div>
+            <AdminControls />
+          </div>
           
           <div className="p-6">
             <div className="space-y-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-600 mb-3">
-                <ImageIcon className="w-4 h-4" />
-                <span>Edit Gambar</span>
-              </div>
-              
-              {/* FIXED: Gunakan ImageUpload component */}
               <ImageUpload
                 value={editingContent}
-                onChange={setEditingContent}
-                label="Upload atau ganti gambar"
+                onChange={(url) => setEditingContent(url)}
+                label="Upload Gambar Baru"
+                className="w-full"
               />
               
-              <div className="flex justify-end space-x-2">
+              {editingContent && (
+                <div className="mt-4">
+                  <img
+                    src={editingContent}
+                    alt="Preview"
+                    className="w-full h-auto max-h-96 object-contain rounded-lg shadow-sm bg-gray-50"
+                  />
+                </div>
+              )}
+              
+              <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200">
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2 border border-gray-300"
                 >
                   <X className="w-4 h-4" />
                   Batal
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   Simpan
@@ -368,45 +422,30 @@ export default function ContentBlockRenderer({
       )
     }
 
-    // Display mode
     return (
-      <div className={`relative ${showControls ? 'group bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors' : ''}`}>
-        <AdminControls />
-        
-        <div className={showControls ? 'p-6' : 'py-4'}>
-          <div className="text-center">
-            {block.content ? (
-              <div className="inline-block max-w-full">
-                <img
-                  src={block.content}
-                  alt="Content image"
-                  className="max-w-full h-auto rounded-lg shadow-sm"
-                  style={{
-                    objectFit: 'contain',
-                    maxHeight: '500px'
-                  }}
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTUwQzIwNSAxNTAgMjEwIDE0NSAyMTAgMTQwQzIxMCAxMzUgMjA1IDEzMCAyMDAgMTMwQzE5NSAxMzAgMTkwIDEzNSAxOTAgMTQwQzE5MCAxNDUgMTk1IDE1MCAyMDAgMTUwWiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMTcwIDE4MEwyMzAgMTgwTDIyMCAxNjBMMjEwIDE3MEwxOTAgMTUwTDE3MCAxODBaIiBmaWxsPSIjOUNBM0FGIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOUNBM0FGIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPkdhbWJhciB0aWRhayBkYXBhdCBkaW11YXQ8L3RleHQ+Cjwvc3ZnPgo='
-                  }}
-                />
-                {/* Optional: Add image caption support */}
-                {block.style?.caption && (
-                  <div className="mt-2 text-sm text-gray-600 italic text-center">
-                    {block.style.caption}
-                  </div>
-                )}
-              </div>
-            ) : (
-              showControls && (
-                <div className="flex flex-col items-center justify-center h-48 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
-                  <ImageIcon className="w-12 h-12 text-gray-400 mb-2" />
-                  <p className="text-gray-500 text-sm">
-                    Klik untuk menambahkan gambar
-                  </p>
-                </div>
-              )
-            )}
-          </div>
+      <div className="relative group">
+        {/* Image with controls in top-right */}
+        <div className="relative">
+          {block.content && (
+            <div className="my-6">
+              <img
+                src={block.content}
+                alt={block.style?.caption || "Gambar"}
+                className="w-full h-auto max-h-96 object-contain rounded-lg shadow-sm bg-gray-50"
+              />
+              {block.style?.caption && (
+                <p className="text-sm text-gray-600 mt-2 text-center italic">
+                  {block.style.caption}
+                </p>
+              )}
+            </div>
+          )}
+          {/* Admin controls positioned at top-right of image */}
+          {showControls && (
+            <div className="absolute top-2 right-2">
+              <AdminControls />
+            </div>
+          )}
         </div>
       </div>
     )

@@ -80,7 +80,13 @@ export default function PageWrapper({
     '/admin/forgot-password',
     '/admin/reset-password',
     '/admin/register',
-    '/admin/dashboard'
+    '/admin/dashboard',
+    '/berita/umum/create',
+    '/berita/umum/[id]/edit',
+    '/berita/umum/[id]',
+    '/berita/umum',
+    '/produk-kuliner/kuliner',
+    '/produk-kuliner/produk'
   ]
 
   // Pages that need full width

@@ -21,7 +21,7 @@ export default function Home() {
      <div
        className="relative h-[60vh] sm:h-[70vh] bg-cover bg-center bg-no-repeat flex items-center justify-center overflow-hidden"
        style={{
-         backgroundImage: 'url(/foto-beranda.jpg)'
+         backgroundImage: 'url(/foto-beranda.jpeg)'
        }}
      >
        <div className="absolute inset-0 bg-black/20"></div> {/* Subtle black overlay */}
