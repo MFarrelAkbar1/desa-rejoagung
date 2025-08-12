@@ -1,13 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { BarChart3, Users, GraduationCap, Heart, Music, Trophy } from 'lucide-react'
+import { BarChart3, Users, GraduationCap, Heart } from 'lucide-react'
 import { tabsConfig } from '@/data/dataDesaConstants'
 import KependudukanTab from '@/components/tabs/KependudukanTab'
 import PendidikanTab from '@/components/tabs/PendidikanTab'
 import KesehatanTab from '@/components/tabs/KesehatanTab'
-import SeniTab from '@/components/tabs/SeniTab'
-import OlahragaTab from '@/components/tabs/OlahragaTab'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 
 export default function DataDesaPage() {
@@ -17,10 +15,7 @@ export default function DataDesaPage() {
     const icons = {
       kependudukan: Users,
       pendidikan: GraduationCap,
-      kesehatan: Heart,
-      seni: Music,
-      olahraga: Trophy
-      // DIHAPUS: booklet: FileText
+      kesehatan: Heart
     }
     return icons[tab as keyof typeof icons] || Users
   }
@@ -33,11 +28,6 @@ export default function DataDesaPage() {
         return <PendidikanTab />
       case 'kesehatan':
         return <KesehatanTab />
-      case 'seni':
-        return <SeniTab />
-      case 'olahraga':
-        return <OlahragaTab />
-      // DIHAPUS: case 'booklet': return <BookletTab />
       default:
         return <KependudukanTab />
     }
@@ -53,7 +43,7 @@ export default function DataDesaPage() {
             { label: 'Data Desa', href: '/informasi/data-desa' },
           ]}
         />
-        
+       
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8 mt-6">
           <div className="flex items-center mb-6">

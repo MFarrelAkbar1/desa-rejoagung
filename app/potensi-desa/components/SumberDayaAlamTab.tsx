@@ -225,7 +225,7 @@ export default function SumberDayaAlamTab() {
                 🌴 Perkebunan
               </h3>
               <div className="text-xl md:text-xl text-black justify-paragraph">
-                <p>Selain pertanian, sektor perkebunan rakyat juga berkembang dengan cukup baik. Beberapa komoditas yang banyak dihasilkan antara lain pisang dan kelapa, yang diolah menjadi produk turunan seperti sale pisang dan gula merah, baik untuk konsumsi lokal maupun dipasarkan keluar desa. Komoditas unggulan lainnya adalah durian dan tembakau, yang memiliki nilai ekonomi tinggi. Hasil panen dari dua komoditas ini dipasarkan ke wilayah sekitar, seperti Banyuwangi dan Jember, dan menjadi sumber pendapatan tambahan bagi petani, terutama di luar musim tanam padi.</p>
+                <p>Selain pertanian, sektor perkebunan rakyat juga berkembang dengan cukup baik. Beberapa komoditas yang banyak dihasilkan antara lain pisang gula merah, yang diolah menjadi produk turunan seperti sale pisang dan gula merah, baik untuk konsumsi lokal maupun dipasarkan keluar desa. Komoditas unggulan lainnya adalah durian dan tembakau, yang memiliki nilai ekonomi tinggi. Hasil panen dari dua komoditas ini dipasarkan ke wilayah sekitar, seperti Banyuwangi dan Jember, dan menjadi sumber pendapatan tambahan bagi petani, terutama di luar musim tanam padi.</p>
               </div>
             </div>
 

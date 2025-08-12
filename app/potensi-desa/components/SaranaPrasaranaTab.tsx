@@ -212,17 +212,6 @@ export default function SaranaPrasaranaTab() {
               </div>
             </div>
 
-            <div>
-              <div className="text-xl md:text-xl text-black justify-paragraph">
-                <p>Meski demikian, jumlah fasilitas pendidikan formal di desa masih tergolong minim, terutama jika dibandingkan dengan jumlah penduduk yang terus bertambah. Hal ini menjadi tantangan tersendiri dalam penyediaan layanan pendidikan yang merata dan berkualitas, khususnya untuk anak-anak usia sekolah.</p>
-              </div>
-            </div>
-
-            <div>
-              <div className="text-xl md:text-xl text-black justify-paragraph">
-                <p>Sementara itu, sektor peternakan dan perikanan di Desa Rejoagung saat ini masih dalam tahap pengembangan. Kepemilikan ternak oleh warga umumnya masih berskala kecil dan bersifat tradisional, sehingga kontribusinya terhadap perekonomian desa belum terlalu signifikan. Meski demikian, sektor ini menyimpan potensi besar untuk dikembangkan di masa depan melalui dukungan program pemerintah, pelatihan, serta inisiatif swadaya masyarakat.</p>
-              </div>
-            </div>
           <style jsx>{`
             .justify-paragraph p {
               text-align: justify;

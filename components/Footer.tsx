@@ -23,25 +23,24 @@ export default function Footer() {
   const quickLinks = [
     { name: 'Beranda', href: '/' },
     { name: 'Profil Desa', href: '/profil/tentang-desa' },
-    { name: 'Berita & Artikel', href: '/berita' },
+    { name: 'Data Statistik', href: '/data-statistik' },
     { name: 'Produk Unggulan', href: '/produk-kuliner/produk' },
-    { name: 'Layanan', href: '/informasi/data-desa' },
-    { name: 'Galeri Foto', href: '/galeri/foto' }
+    { name: 'Kuliner Lokal', href: '/produk-kuliner/kuliner' }
   ]
 
   const layananDesa = [
-    { name: 'Data Penduduk', href: '/informasi/data-desa' },
-    { name: 'Layanan', href: '/informasi/layanan' },
-    { name: 'Peta Sekolah', href: '/peta-sekolah' },
+    { name: 'Tentang Desa', href: '/profil/tentang-desa' },
+    { name: 'Profil Kepala Desa', href: '/profil/kepala-desa' },
+    { name: 'Struktur Organisasi', href: '/profil/struktur-organisasi' },
     { name: 'Visi & Misi', href: '/profil/visi-misi' },
     { name: 'Peta Desa', href: '/profil/peta-desa' },
-    { name: 'Wisata', href: '/wisata' }
+    { name: 'Data Statistik', href: '/data-statistik' }
   ]
 
   const produkUnggulan = [
-    { name: 'Gula Merah (Gula Kelapa)', icon: '🍯' },
-    { name: 'Sale Pisang UD. Sejati', icon: '🍌' },
     { name: 'Kelapa Sawit Premium', icon: '🌴' },
+    { name: 'Gula Merah Tradisional', icon: '🍯' },
+    { name: 'Sale Pisang UD. Sejati', icon: '🍌' },
     { name: 'Kuliner Lokal', icon: '🍛' }
   ]
 
@@ -63,10 +62,6 @@ export default function Footer() {
                   <p className="text-emerald-200 text-sm">Portal Resmi</p>
                 </div>
               </div>
-              <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                Desa Rejoagung, pusat agrobisnis kelapa sawit yang mandiri, sejahtera, 
-                dan berkelanjutan dengan tetap menjaga kelestarian lingkungan.
-              </p>
             </div>
 
             {/* Statistik Singkat */}
@@ -75,7 +70,7 @@ export default function Footer() {
                 <div className="flex items-center space-x-2">
                   <Users className="w-4 h-4 text-emerald-400" />
                   <div>
-                    <div className="text-lg font-bold text-white">10.715</div>
+                    <div className="text-lg font-bold text-white">8.574</div>
                     <div className="text-xs text-gray-300">Penduduk</div>
                   </div>
                 </div>
@@ -84,8 +79,8 @@ export default function Footer() {
                 <div className="flex items-center space-x-2">
                   <TreePine className="w-4 h-4 text-emerald-400" />
                   <div>
-                    <div className="text-lg font-bold text-white">6,777.6</div>
-                    <div className="text-xs text-gray-300">km²</div>
+                    <div className="text-lg font-bold text-white">668,88</div>
+                    <div className="text-xs text-gray-300">Ha</div>
                   </div>
                 </div>
               </div>
@@ -117,7 +112,7 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
               <Package className="w-5 h-5 mr-2 text-emerald-400" />
-              Layanan & Info
+              Profil & Layanan
             </h4>
             <ul className="space-y-2">
               {layananDesa.map((layanan, index) => (

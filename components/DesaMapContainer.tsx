@@ -93,13 +93,6 @@ const DESA_LOCATIONS = [
     description: 'Gabungan Kelompok Tani',
     facilities: 'Gudang, Tempat Pertemuan'
   },
-  {
-    coordinates: [-8.380, 114.308] as [number, number],
-    name: 'Lahan Sawit Blok A',
-    type: 'pertanian',
-    description: 'Area Perkebunan Kelapa Sawit',
-    facilities: 'Lahan Produktif, Akses Jalan'
-  },
   // Ekonomi (Merah)
   {
     coordinates: [-8.390, 114.304] as [number, number],

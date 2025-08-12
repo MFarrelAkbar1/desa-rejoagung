@@ -1,7 +1,7 @@
 // data/dataDesaConstants.ts
 
 export const kependudukanData = {
-  deskripsi: "Desa Rejoagung terdiri dari 4 Dusun yaitu Dusun Sumberagung, Dusun Sumberagung Kidul, Dusun Sumbergroto, dan Dusun Sumbergroto Kidul, dengan 14 RT dan 5 RW. Jumlah penduduk Desa Rejoagung akhir Januari 2025 sebanyak 8451 jiwa yang terdiri dari 4247 laki-laki dan 4204 perempuan dengan jumlah Kepala Keluarga sebanyak 2886 KK.",
+  deskripsi: "Desa Rejoagung terdiri dari 4 Dusun yaitu Dusun Sumberagung, Dusun Sumberagung Kidul, Dusun Sumbergroto, dan Dusun Sumbergroto Kidul, dengan 50 RT dan 9 RW. Jumlah penduduk Desa Rejoagung akhir Januari 2025 sebanyak 8451 jiwa yang terdiri dari 4247 laki-laki dan 4204 perempuan dengan jumlah Kepala Keluarga sebanyak 2886 KK.",
 
   table: [
     ["LAKI-LAKI", "PEREMPUAN", "TOTAL"],
@@ -71,31 +71,9 @@ export const kesehatanData = {
   ]
 }
 
-export const seniData = {
-  deskripsi: "Di Desa Rejoagung terdapat berbagai kesenian, salah satunya kesenian tradisional (Osing) seperti:",
-  kesenianTradisional: ["Gandrung", "Janger", "Barong", "Seblang", "Kuntulan"],
-  budayaInfo: "Kesenian tradisional (Osing) biasanya dilakukan setiap ada acara tertentu seperti pada saat 17 Agustus namun saat ini kesenian ini sudah kurang yang disebabkan dengan banyaknya kesenian konvensional yang lebih mendominasi di daerah.",
-  budayaTitle: "BUDAYA",
-  budayaDesc: "Desa Rejoagung adalah salah satu dari 5 (Delapan) Desa di Kecamatan Srono Kabupaten Banyuwangi dihuni oleh ± 99,06 % Etnis/Suku Bugis secara turun temurun sejak hampir seluruh aktivitas masyarakat memiliki ciri khas Bugis Budaya yang sampai saat ini tetap terjaga dengan baik."
-}
-
-export const olahragaData = {
-  deskripsi: "Di Desa Rejoagung terdapat berbagai macam olahraga yang dimainkan oleh masyarakat.",
-  olahragaTradisional: ["Egrang", "Gobak Sodor", "Lompat Tali", "Petak Umpet"],
-  olahragaKonvensional: ["Sepak Bola", "Voli", "Badminton", "Tenis Meja", "Takraw"],
-  saranaOlahraga: [
-    ["Jenis Sarana", "Jumlah", "Kondisi"],
-    ["Lapangan Sepak Bola", "2", "Baik"],
-    ["Lapangan Voli", "3", "Baik"],
-    ["Lapangan Badminton", "1", "Cukup"],
-    ["Meja Tenis", "2", "Baik"]
-  ]
-}
 
 export const tabsConfig = [
   { id: 'kependudukan', label: 'Kependudukan', color: 'bg-blue-600' },
   { id: 'pendidikan', label: 'Pendidikan', color: 'bg-green-600' },
-  { id: 'kesehatan', label: 'Kesehatan', color: 'bg-red-600' },
-  { id: 'seni', label: 'Seni', color: 'bg-purple-600' },
-  { id: 'olahraga', label: 'Olahraga', color: 'bg-orange-600' }
+  { id: 'kesehatan', label: 'Kesehatan', color: 'bg-red-600' }
 ]

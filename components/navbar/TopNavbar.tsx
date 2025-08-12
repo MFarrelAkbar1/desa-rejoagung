@@ -1,8 +1,9 @@
 // components/navbar/TopNavbar.tsx
+
 'use client'
 
 import { useState, useEffect } from 'react'
-import { LogIn, User } from 'lucide-react'
+import { User } from 'lucide-react'
 import NavbarLogo from './NavbarLogo'
 import NavbarMenu from './NavbarMenu'
 import MobileMenu from './MobileMenu'
@@ -16,13 +17,10 @@ export default function TopNavbar() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
     }
+
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
-  const handleLoginClick = () => {
-    window.location.href = '/admin/login'
-  }
 
   const handleLogout = async () => {
     if (confirm('Apakah Anda yakin ingin logout?')) {
@@ -48,10 +46,11 @@ export default function TopNavbar() {
           <div className="flex-1 flex justify-center">
             <NavbarMenu isScrolled={isScrolled} />
           </div>
-          {/* Right Side - Admin Profile or Login Button */}
+
+          {/* Right Side - Admin Profile (only when logged in) */}
           <div className="flex items-center space-x-3">
-            {/* Admin Profile Icon atau Login Button */}
-            {isAdmin ? (
+            {/* Admin Profile Icon - Only show when admin is logged in */}
+            {isAdmin && (
               <div className="relative group">
                 <button className={`
                   flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium
@@ -66,7 +65,7 @@ export default function TopNavbar() {
                     {adminUser?.username || 'Admin'}
                   </span>
                 </button>
-                
+               
                 {/* Dropdown Menu */}
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                   <div className="py-1">
@@ -85,23 +84,8 @@ export default function TopNavbar() {
                   </div>
                 </div>
               </div>
-            ) : (
-              <button
-                onClick={handleLoginClick}
-                className={`
-                  flex items-center space-x-2 px-4 py-2 text-sm font-medium
-                  rounded-lg transition-all duration-200
-                  ${isScrolled
-                    ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'
-                    : 'text-white bg-white/10 hover:bg-white/20'
-                  }
-                `}
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Login</span>
-              </button>
             )}
-            
+           
             {/* Mobile Menu */}
             <MobileMenu isScrolled={isScrolled} />
           </div>
