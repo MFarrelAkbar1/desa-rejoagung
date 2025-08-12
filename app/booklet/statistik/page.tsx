@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Download, BookOpen, Maximize2, ExternalLink, GraduationCap, Smartphone, Monitor, AlertCircle } from 'lucide-react'
+import { Download, BarChart3, Maximize2, ExternalLink, Smartphone, Monitor, AlertCircle, FileText } from 'lucide-react'
 import Breadcrumb from '@/components/layout/Breadcrumb'
 
-export default function BookletGuidebookPage() {
+export default function BookletStatistikPage() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -28,8 +28,8 @@ export default function BookletGuidebookPage() {
 
   const handleDownload = () => {
     const link = document.createElement('a')
-    link.href = '/guide-book.pdf'
-    link.download = 'E-GuideBook-Desa-Rejoagung-UGM.pdf'
+    link.href = '/Booklet.pdf'
+    link.download = 'Booklet-Statistik-Penduduk-Desa-Rejoagung.pdf'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -40,7 +40,7 @@ export default function BookletGuidebookPage() {
   }
 
   const handleOpenNewTab = () => {
-    window.open('/guide-book.pdf', '_blank')
+    window.open('/Booklet.pdf', '_blank')
   }
 
   const handlePdfError = () => {
@@ -75,11 +75,11 @@ export default function BookletGuidebookPage() {
   const MobilePDFViewer = () => (
     <div className="mobile-card">
       <div className="text-center py-8">
-        <div className="bg-purple-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-          <BookOpen className="w-12 h-12 text-purple-600" />
+        <div className="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+          <BarChart3 className="w-12 h-12 text-blue-600" />
         </div>
         
-        <h3 className="mobile-heading mb-4">E-GuideBook UGM</h3>
+        <h3 className="mobile-heading mb-4">Booklet Statistik Penduduk</h3>
         <p className="mobile-text mb-6 max-w-md mx-auto">
           Untuk pengalaman terbaik di mobile, silakan buka PDF di aplikasi pembaca PDF atau unduh file
         </p>
@@ -88,8 +88,8 @@ export default function BookletGuidebookPage() {
         <div className="bg-gray-100 rounded-lg p-4 mb-6 max-w-sm mx-auto">
           <div className="aspect-[3/4] bg-white rounded border-2 border-dashed border-gray-300 flex items-center justify-center">
             <div className="text-center">
-              <GraduationCap className="w-12 h-12 text-purple-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-500">E-GuideBook<br />UGM Serona</p>
+              <BarChart3 className="w-12 h-12 text-blue-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-500">Statistik Penduduk<br />Desa Rejoagung</p>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function BookletGuidebookPage() {
         <div className="space-y-3 max-w-sm mx-auto">
           <button
             onClick={handleOpenNewTab}
-            className="w-full mobile-button bg-purple-600 text-white hover:bg-purple-700 flex items-center justify-center gap-3"
+            className="w-full mobile-button bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center gap-3"
           >
             <ExternalLink className="w-5 h-5" />
             Buka PDF di Tab Baru
@@ -106,7 +106,7 @@ export default function BookletGuidebookPage() {
           
           <button
             onClick={handleDownload}
-            className="w-full mobile-button bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center gap-3"
+            className="w-full mobile-button bg-green-600 text-white hover:bg-green-700 flex items-center justify-center gap-3"
           >
             <Download className="w-5 h-5" />
             Download PDF
@@ -136,7 +136,7 @@ export default function BookletGuidebookPage() {
     }`}>
       {isFullscreen && (
         <div className="bg-gray-800 p-3 flex justify-between items-center">
-          <h3 className="text-white font-medium">E-GuideBook - Desa Rejoagung UGM</h3>
+          <h3 className="text-white font-medium">Booklet Statistik - Desa Rejoagung</h3>
           <button
             onClick={handleFullscreen}
             className="text-white hover:text-gray-300 p-1 rounded"
@@ -149,9 +149,9 @@ export default function BookletGuidebookPage() {
       <div className={`relative ${isFullscreen ? 'h-full' : 'h-[800px]'} bg-gray-50`}>
         {!pdfError ? (
           <iframe
-            src="/guide-book.pdf#toolbar=1&navpanes=1&scrollbar=1"
+            src="/Booklet.pdf#toolbar=1&navpanes=1&scrollbar=1"
             className="w-full h-full border-0"
-            title="E-GuideBook Desa Rejoagung UGM"
+            title="Booklet Statistik Penduduk Desa Rejoagung"
             loading="lazy"
             onError={handlePdfError}
           />
@@ -164,14 +164,14 @@ export default function BookletGuidebookPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleOpenNewTab}
-                className="mobile-button bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-2"
+                className="mobile-button bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
               >
                 <ExternalLink className="w-4 h-4" />
                 Buka di Tab Baru
               </button>
               <button
                 onClick={handleDownload}
-                className="mobile-button bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
+                className="mobile-button bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Download PDF
@@ -192,19 +192,19 @@ export default function BookletGuidebookPage() {
             <Breadcrumb
               items={[
                 { label: 'Booklet Desa', href: '/booklet' },
-                { label: 'E-GuideBook UGM', href: '/booklet/guidebook' },
+                { label: 'Statistik Penduduk', href: '/booklet/statistik' },
               ]}
             />
 
             {/* Header */}
             <div className="mobile-card mt-6">
               <div className="flex items-center mb-4 md:mb-6">
-                <div className="bg-purple-100 p-2 md:p-3 rounded-xl mr-3 md:mr-4 flex-shrink-0">
-                  <GraduationCap className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
+                <div className="bg-blue-100 p-2 md:p-3 rounded-xl mr-3 md:mr-4 flex-shrink-0">
+                  <BarChart3 className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h1 className="mobile-heading text-gray-800">E-GuideBook Desa UGM</h1>
-                  <p className="mobile-text text-black">Panduan lengkap hasil kerja Tim KKN-PPM UGM</p>
+                  <h1 className="mobile-heading text-black">Booklet Statistik Penduduk</h1>
+                  <p className="mobile-text text-black">Data lengkap statistik kependudukan Desa Rejoagung Srono</p>
                 </div>
               </div>
             </div>
@@ -212,16 +212,16 @@ export default function BookletGuidebookPage() {
             {/* Content */}
             <div className="space-y-4 md:space-y-6">
               {/* Header Section */}
-              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 md:p-6 border border-purple-200">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 md:p-6 border border-blue-200">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center space-x-3 md:space-x-4">
-                    <div className="bg-purple-100 p-2 md:p-3 rounded-xl flex-shrink-0">
-                      <BookOpen className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
+                    <div className="bg-blue-100 p-2 md:p-3 rounded-xl flex-shrink-0">
+                      <BarChart3 className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
                     </div>
                     <div>
-                      <h2 className="text-lg md:text-2xl font-bold text-gray-800">E-GuideBook</h2>
+                      <h2 className="text-lg md:text-2xl font-bold text-gray-800">Booklet Statistik Penduduk</h2>
                       <p className="mobile-text text-gray-600">
-                        Panduan lengkap hasil kerja Tim KKN-PPM UGM Serona Srono 2025
+                        Data lengkap statistik kependudukan Desa Rejoagung Srono 2025
                       </p>
                     </div>
                   </div>
@@ -247,7 +247,7 @@ export default function BookletGuidebookPage() {
                   <div className="flex flex-wrap gap-2 mt-4">
                     <button
                       onClick={handleDownload}
-                      className="mobile-button bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-2 text-sm"
+                      className="mobile-button bg-green-600 text-white hover:bg-green-700 flex items-center gap-2 text-sm"
                     >
                       <Download className="w-4 h-4" />
                       Download
@@ -274,17 +274,17 @@ export default function BookletGuidebookPage() {
               {isMobile ? <MobilePDFViewer /> : <DesktopPDFViewer />}
 
               {/* Info Section */}
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-start space-x-3">
-                  <div className="bg-purple-100 p-2 rounded-lg flex-shrink-0">
-                    <BookOpen className="w-5 h-5 text-purple-600" />
+                  <div className="bg-blue-100 p-2 rounded-lg flex-shrink-0">
+                    <FileText className="w-5 h-5 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-purple-800 mb-2">Informasi E-GuideBook</h4>
-                    <ul className="mobile-text text-purple-700 space-y-1">
-                      <li>• Panduan lengkap hasil kerja Tim KKN-PPM UGM Serona Srono 2025</li>
-                      <li>• Berisi dokumentasi kegiatan dan program-program unggulan</li>
-                      <li>• Informasi detail tentang kontribusi mahasiswa UGM di Desa Rejoagung</li>
+                    <h4 className="font-semibold text-blue-800 mb-2">Informasi Booklet Statistik</h4>
+                    <ul className="mobile-text text-blue-700 space-y-1">
+                      <li>• Data lengkap statistik kependudukan dan demografis Desa Rejoagung</li>
+                      <li>• Berisi informasi jumlah penduduk, usia, dan data demografis lainnya</li>
+                      <li>• Hasil dokumentasi Tim KKN-PPM UGM Serona Srono 2025</li>
                       <li>• {isMobile ? 'Tap "Buka di Tab Baru" untuk tampilan optimal di mobile' : 'Gunakan mode fullscreen untuk kemudahan membaca'}</li>
                       <li>• Dokumen dapat diunduh untuk referensi atau dokumentasi</li>
                     </ul>

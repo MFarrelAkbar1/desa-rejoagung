@@ -38,7 +38,6 @@ export default function Footer() {
   ]
 
   const produkUnggulan = [
-    { name: 'Kelapa Sawit Premium', icon: '🌴' },
     { name: 'Gula Merah Tradisional', icon: '🍯' },
     { name: 'Sale Pisang UD. Sejati', icon: '🍌' },
     { name: 'Kuliner Lokal', icon: '🍛' }
@@ -70,7 +69,7 @@ export default function Footer() {
                 <div className="flex items-center space-x-2">
                   <Users className="w-4 h-4 text-emerald-400" />
                   <div>
-                    <div className="text-lg font-bold text-white">8.574</div>
+                    <div className="text-lg font-bold text-white">10.715</div>
                     <div className="text-xs text-gray-300">Penduduk</div>
                   </div>
                 </div>
@@ -79,8 +78,8 @@ export default function Footer() {
                 <div className="flex items-center space-x-2">
                   <TreePine className="w-4 h-4 text-emerald-400" />
                   <div>
-                    <div className="text-lg font-bold text-white">668,88</div>
-                    <div className="text-xs text-gray-300">Ha</div>
+                    <div className="text-lg font-bold text-white">6,7776</div>
+                    <div className="text-xs text-gray-300">km<sup>2</sup></div>
                   </div>
                 </div>
               </div>

@@ -18,7 +18,8 @@ export default function BookletGuidebookPage() {
     const checkMobile = () => {
       const isMobileDevice = window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       setIsMobile(isMobileDevice)
-      setIsLoading(false)
+      // Kurangi waktu loading untuk desktop
+      setTimeout(() => setIsLoading(false), isMobileDevice ? 500 : 100)
     }
     
     checkMobile()
@@ -47,8 +48,17 @@ export default function BookletGuidebookPage() {
     setPdfError(true)
   }
 
-  // Loading component
-  if (!mounted || isLoading) {
+  // Simplified loading component - faster rendering
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+      </div>
+    )
+  }
+
+  // Show loading only for mobile, skip for desktop
+  if (isLoading && isMobile) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="mobile-container py-4 md:py-8">
@@ -61,9 +71,6 @@ export default function BookletGuidebookPage() {
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                 </div>
               </div>
-            </div>
-            <div className="mobile-card">
-              <div className="h-96 bg-gray-200 rounded"></div>
             </div>
           </div>
         </div>
@@ -129,7 +136,7 @@ export default function BookletGuidebookPage() {
     </div>
   )
 
-  // Desktop PDF Viewer Component
+  // Desktop PDF Viewer Component - optimized loading
   const DesktopPDFViewer = () => (
     <div className={`bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden ${
       isFullscreen ? 'fixed inset-4 z-50' : ''
@@ -149,10 +156,10 @@ export default function BookletGuidebookPage() {
       <div className={`relative ${isFullscreen ? 'h-full' : 'h-[800px]'} bg-gray-50`}>
         {!pdfError ? (
           <iframe
-            src="/guide-book.pdf#toolbar=1&navpanes=1&scrollbar=1"
+            src="/guide-book.pdf#toolbar=1&navpanes=1&scrollbar=1&view=FitH"
             className="w-full h-full border-0"
             title="E-GuideBook Desa Rejoagung UGM"
-            loading="lazy"
+            onLoad={() => setIsLoading(false)}
             onError={handlePdfError}
           />
         ) : (

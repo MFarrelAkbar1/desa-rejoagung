@@ -1,17 +1,18 @@
-// components/OptimizedKulinerGrid.tsx - Consistent with ProductGrid
+// components/OptimizedKulinerGrid.tsx - Fixed with Navigation
+
 'use client'
 
 import { useState, memo } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { 
-  Clock, 
-  Users, 
-  Star, 
-  MapPin, 
+import {
+  Clock,
+  Users,
+  Star,
+  MapPin,
   Phone,
   Edit2,
   Trash2,
-  Heart,
   Share2,
   ChefHat,
   Loader2,
@@ -45,20 +46,20 @@ interface OptimizedKulinerGridProps {
   onDelete: (item: CulinaryItem) => void
 }
 
-// Culinary Card Component - Consistent with ProductCard
-const CulinaryCard = memo(({ 
-  item, 
-  isAdmin, 
-  onEdit, 
-  onDelete 
-}: { 
+// Culinary Card Component - Now with Navigation
+const CulinaryCard = memo(({
+  item,
+  isAdmin,
+  onEdit,
+  onDelete
+}: {
   item: CulinaryItem
   isAdmin: boolean
   onEdit: (item: CulinaryItem) => void
   onDelete: (item: CulinaryItem) => void
 }) => {
+  const router = useRouter()
   const [imageError, setImageError] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -78,26 +79,50 @@ const CulinaryCard = memo(({
     }
   }
 
-  const handleShare = async () => {
+  // Navigation handler - same as in homepage
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent navigation if clicking on action buttons
+    const target = e.target as HTMLElement
+    if (target.closest('.admin-actions, .action-button')) {
+      return
+    }
+    router.push(`/produk-kuliner/kuliner/${item.id}`)
+  }
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (navigator.share) {
       try {
         await navigator.share({
           title: item.name,
           text: item.description,
-          url: window.location.href
+          url: `${window.location.origin}/produk-kuliner/kuliner/${item.id}`
         })
       } catch (error) {
         console.log('Share cancelled')
       }
     } else {
       // Fallback copy to clipboard
-      navigator.clipboard.writeText(window.location.href)
+      navigator.clipboard.writeText(`${window.location.origin}/produk-kuliner/kuliner/${item.id}`)
       alert('Link berhasil disalin!')
     }
   }
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onEdit(item)
+  }
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onDelete(item)
+  }
+
   return (
-    <div className="group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-emerald-200">
+    <div 
+      className="group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-emerald-200 cursor-pointer"
+      onClick={handleCardClick}
+    >
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
         {item.image_url && !imageError ? (
@@ -107,129 +132,125 @@ const CulinaryCard = memo(({
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             onError={() => setImageError(true)}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center">
-            <ChefHat className="w-16 h-16 text-emerald-600 opacity-60" />
+            <ChefHat className="w-12 h-12 text-emerald-400" />
           </div>
         )}
+
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
+        
+        {/* Category Badge */}
+        <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(item.category)}`}>
+          {getCategoryIcon(item.category)} {item.category}
+        </div>
 
         {/* Signature Badge */}
         {item.is_signature && (
-          <div className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
-            <Star className="w-3 h-3 fill-current" />
-            Unggulan
+          <div className="absolute top-3 right-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+            ⭐ Signature
           </div>
         )}
 
-        {/* Admin Actions - Direct Buttons (Same style as ProductCard) */}
+        {/* Action Buttons - Show on Hover */}
+        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 action-button">
+          <button
+            onClick={handleShare}
+            className="p-2 rounded-full bg-white/90 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Admin Actions */}
         {isAdmin && (
-          <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="admin-actions absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <button
-              onClick={() => onEdit(item)}
-              className="bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-md shadow-md transition-colors duration-200"
+              onClick={handleEdit}
+              className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors"
               title="Edit"
             >
-              <Edit2 className="w-3 h-3" />
+              <Edit2 className="w-4 h-4" />
             </button>
             <button
-              onClick={() => onDelete(item)}
-              className="bg-red-600 hover:bg-red-700 text-white p-1.5 rounded-md shadow-md transition-colors duration-200"
+              onClick={handleDelete}
+              className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
               title="Hapus"
             >
-              <Trash2 className="w-3 h-3" />
+              <Trash2 className="w-4 h-4" />
             </button>
-          </div>
-        )}
-
-        {/* User Actions */}
-        {!isAdmin && (
-          <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <button
-              onClick={() => setIsLiked(!isLiked)}
-              className={`p-1.5 rounded-md shadow-md transition-all duration-200 ${
-                isLiked 
-                  ? 'bg-red-500 text-white' 
-                  : 'bg-white/90 text-gray-700 hover:bg-red-50 hover:text-red-500'
-              }`}
-              title="Suka"
-            >
-              <Heart className={`w-3 h-3 ${isLiked ? 'fill-current' : ''}`} />
-            </button>
-            <button
-              onClick={handleShare}
-              className="bg-white/90 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 p-1.5 rounded-md shadow-md transition-all duration-200"
-              title="Bagikan"
-            >
-              <Share2 className="w-3 h-3" />
-            </button>
-          </div>
-        )}
-
-        {/* Rating */}
-        {item.rating && (
-          <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
-            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-            <span className="text-xs font-medium text-gray-700">{item.rating}</span>
           </div>
         )}
       </div>
 
-      {/* Content */}
+      {/* Card Content */}
       <div className="p-4">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-emerald-700 transition-colors duration-200">
-            {item.name}
-          </h3>
-          <span className={`text-xs px-2 py-1 rounded-full font-medium flex-shrink-0 ml-2 ${getCategoryColor(item.category)}`}>
-            {getCategoryIcon(item.category)} {item.category}
-          </span>
-        </div>
+        {/* Title */}
+        <h3 className="font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
+          {item.name}
+        </h3>
 
         {/* Description */}
-        <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed mb-3">
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {item.description}
         </p>
 
         {/* Meta Information */}
-        <div className="space-y-2 mb-4">
-          {/* Cooking Time & Serving */}
+        <div className="space-y-2">
+          {/* Rating & Location Row */}
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            {item.rating && (
+              <div className="flex items-center gap-1">
+                <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                <span className="text-gray-700 font-medium">{item.rating.toFixed(1)}</span>
+              </div>
+            )}
+            {item.location && (
+              <div className="flex items-center gap-1">
+                <MapPin className="w-4 h-4" />
+                <span className="truncate">{item.location}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Time & Serving Row */}
           {(item.cooking_time || item.serving_size) && (
-            <div className="flex items-center gap-4 text-xs text-gray-500">
+            <div className="flex items-center justify-between text-sm text-gray-500">
               {item.cooking_time && (
                 <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
+                  <Clock className="w-4 h-4" />
                   <span>{item.cooking_time}</span>
                 </div>
               )}
               {item.serving_size && (
                 <div className="flex items-center gap-1">
-                  <Users className="w-3 h-3" />
+                  <Users className="w-4 h-4" />
                   <span>{item.serving_size}</span>
                 </div>
               )}
             </div>
           )}
 
-          {/* Location */}
-          {item.location && (
-            <div className="flex items-center gap-1 text-xs text-gray-500">
-              <MapPin className="w-3 h-3 flex-shrink-0" />
-              <span className="truncate">{item.location}</span>
-            </div>
-          )}
-
-          {/* Contact */}
-          {item.contact && (
-            <div className="flex items-center gap-1 text-xs text-gray-500">
-              <Phone className="w-3 h-3 flex-shrink-0" />
-              <span className="truncate">{item.contact}</span>
-            </div>
-          )}
+          {/* Contact & Price Row */}
+          <div className="flex items-center justify-between text-sm">
+            {item.contact && (
+              <div className="flex items-center gap-1 text-gray-500">
+                <Phone className="w-4 h-4" />
+                <span className="truncate">{item.contact}</span>
+              </div>
+            )}
+            {item.price && (
+              <div className="text-emerald-600 font-bold text-base">
+                {item.price}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Price */}
+        {/* Price Section - if exists */}
         {item.price && (
           <div className="flex items-center justify-between pt-3 border-t border-gray-100">
             <span className="text-emerald-600 font-bold text-lg">
@@ -264,142 +285,64 @@ const CulinaryCard = memo(({
   )
 })
 
-// Main Grid Component - Consistent with ProductGrid structure
-export default function OptimizedKulinerGrid({ 
-  items, 
-  loading, 
-  isAdmin, 
-  onEdit, 
-  onDelete 
+CulinaryCard.displayName = 'CulinaryCard'
+
+// Main Grid Component
+export default function OptimizedKulinerGrid({
+  items,
+  loading,
+  isAdmin,
+  onEdit,
+  onDelete
 }: OptimizedKulinerGridProps) {
   
-  // Loading State - Same as ProductGrid
+  // Loading State
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="relative">
-          <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
-          <Loader2 className="w-8 h-8 text-emerald-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
-        </div>
-        <p className="text-gray-600 mt-4 text-lg font-medium">Memuat menu kuliner...</p>
-        <p className="text-gray-500 text-sm mt-1">Harap tunggu sebentar</p>
-      </div>
-    )
-  }
-
-  // Empty State - Same structure as ProductGrid
-  if (!items || items.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-xl">
-        <div className="relative mb-6">
-          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-            <ChefHat className="w-12 h-12 text-gray-400" />
-          </div>
-          <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
-            <Search className="w-4 h-4 text-white" />
-          </div>
-        </div>
-        
-        <h3 className="text-xl font-bold text-gray-700 mb-2">Tidak Ada Menu Kuliner Ditemukan</h3>
-        <p className="text-gray-500 text-center max-w-md mb-6">
-          Maaf, tidak ada menu kuliner yang sesuai dengan kriteria pencarian Anda. 
-          Coba ubah filter atau kata kunci pencarian.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row gap-3 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-            <span>Coba kata kunci yang berbeda</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <span>Pilih kategori lain</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-            <span>Reset semua filter</span>
-          </div>
-        </div>
-
-        {/* Admin hint */}
-        {isAdmin && (
-          <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg max-w-md">
-            <p className="text-blue-700 text-sm text-center">
-              <strong>Tips Admin:</strong> Tambahkan menu kuliner baru dengan mengklik tombol "Tambah Kuliner" di atas.
-            </p>
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  // Kuliner Grid - Same structure as ProductGrid
-  return (
-    <div className="space-y-6">
-      {/* Grid Header Info */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-          <span className="text-gray-700 font-medium">
-            {items.length} Menu Kuliner Tersedia
-          </span>
-        </div>
-        
-        {isAdmin && (
-          <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-            Mode Admin Aktif
-          </div>
-        )}
-      </div>
-
-      {/* Kuliner Grid - Same responsive structure */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {items.map((item, index) => (
-          <div
-            key={item.id}
-            className="animate-fadeInUp"
-            style={{
-              animationDelay: `${index * 100}ms`,
-              animationFillMode: 'both'
-            }}
-          >
-            <CulinaryCard
-              item={item}
-              isAdmin={isAdmin}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+            <div className="h-48 bg-gray-200"></div>
+            <div className="p-4">
+              <div className="h-6 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            </div>
           </div>
         ))}
       </div>
+    )
+  }
 
-      {/* Grid Footer Info */}
-      <div className="flex items-center justify-center pt-8 border-t border-gray-100">
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <ChefHat className="w-4 h-4" />
-          <span>
-            Menampilkan {items.length} dari total menu kuliner Desa Rejoagung
-          </span>
+  // Empty State
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+          <Search className="w-12 h-12 text-gray-400" />
         </div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+          Tidak Ada Menu Ditemukan
+        </h3>
+        <p className="text-gray-600 max-w-md mx-auto">
+          Coba ubah filter pencarian atau tambahkan menu kuliner baru.
+        </p>
       </div>
+    )
+  }
 
-      {/* Custom CSS for animations - Same as ProductGrid */}
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fadeInUp {
-          animation: fadeInUp 0.6s ease-out;
-        }
-      `}</style>
+  // Items Grid
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {items.map((item) => (
+        <CulinaryCard
+          key={item.id}
+          item={item}
+          isAdmin={isAdmin}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      ))}
     </div>
   )
 }
